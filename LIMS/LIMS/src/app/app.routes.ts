@@ -1,0 +1,54 @@
+import { Routes } from '@angular/router';
+import { CountryComponent } from './master/country/country.component';
+import { StateComponent } from './master/state/state.component';
+import { CityComponent } from './master/city/city.component';
+import { SliderbarComponent } from './component/sliderbar/sliderbar.component';
+import { AreaComponent } from './master/area/area.component';
+import { BranchComponent } from './master/branch/branch.component';
+import { B2BComponent } from './master/b2b/b2b.component';
+import { DoctorComponent } from './master/doctor/doctor.component';
+import { TestComponent } from './master/test/test.component';
+import { ServiceComponent } from './master/service/service.component';
+
+export const routes: Routes = [
+    {
+        path : '',
+        component : SliderbarComponent
+    },
+    {
+        path : 'country',
+        component : CountryComponent
+    },
+    {
+        path : 'state',
+        component : StateComponent
+    },
+    {
+        path : 'city',
+        component : CityComponent
+    },
+    {
+        path : 'area',
+        component : AreaComponent
+    },
+    {
+        path : 'branch',
+        component : BranchComponent
+    },
+    {
+        path : 'b2b',
+        component : B2BComponent
+    },
+    {
+        path  : 'doctor',
+        component : DoctorComponent
+    },
+    {
+        path : 'test',
+        component : TestComponent
+    },
+    {
+        path : 'service',
+        component : ServiceComponent
+    }
+];

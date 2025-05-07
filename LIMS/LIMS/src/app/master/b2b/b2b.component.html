@@ -1,0 +1,159 @@
+<app-sliderbar></app-sliderbar>
+
+<div class="container p-3" style="max-width: 94%;">
+  <div class="d-flex justify-content-between">
+    <h4>B2B</h4>
+    <button class="btn btn-primary btn-sm" data-bs-target="#myModal" (click)="openModal()">Add</button>
+  </div>
+
+  <!-- search table -->
+  <div class="border border-dark rounded-2 my-3 p-3">
+    <div class="row g-3">
+      <!-- B2B ID -->
+      <div class="col-md-3 col-sm-6">
+        <div class="d-flex align-items-center">
+          <label class="form-label mb-0" style="min-width: 120px;">B2B Id</label>
+          <input type="number" [(ngModel)]="searchCriteria.b2BId" class="form-control" placeholder="B2B Id">
+        </div>
+      </div>
+
+      <!-- B2B Code -->
+      <div class="col-md-3 col-sm-6">
+        <div class="d-flex align-items-center">
+          <label class="form-label mb-0" style="min-width: 120px;">B2B Code</label>
+          <input type="text" [(ngModel)]="searchCriteria.b2BCode" class="form-control" placeholder="B2B Code">
+        </div>
+      </div>
+
+      <!-- B2B Name -->
+      <div class="col-md-3 col-sm-6">
+        <div class="d-flex align-items-center">
+          <label class="form-label mb-0" style="min-width: 120px;">B2B Name</label>
+          <input type="text" [(ngModel)]="searchCriteria.b2BName" class="form-control" placeholder="B2B Name">
+        </div>
+      </div>
+
+      <!-- Status -->
+      <div class="col-md-3 col-sm-6">
+        <div class="d-flex align-items-center">
+          <label class="form-label mb-0" style="min-width: 120px;">Status</label>
+          <select class="form-select" [(ngModel)]="searchCriteria.isActive">
+            <option [ngValue]="null">All</option>
+            <option [ngValue]="true">Active</option>
+            <option [ngValue]="false">Inactive</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Button Row -->
+    <div class="row mt-3">
+      <div class="col d-flex justify-content-end gap-2">
+        <button class="btn btn-primary" (click)="getB2B()">Search</button>
+        <button class="btn btn-danger" (click)="clearSearch()">Clear</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- show data table -->
+<div class="container my-3 p-3" style="max-width: 94%;">
+  <div class="border border-dark rounded-2" *ngIf="searchClick">
+    <div class="table-responsive">
+      <table class="table table-borderless table-striped text-center" *ngIf="b2bList.length > 0; else noData">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>B2B Id</th>
+            <th>B2B Code</th>
+            <th>B2B Name</th>
+            <th>IsActive</th>
+            <th>IsAction</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let b2b of b2bList; let index = index">
+            <td>{{ index + 1 }}</td>
+            <td>{{ b2b.b2BId }}</td>
+            <td>{{ b2b.b2BCode }}</td>
+            <td>{{ b2b.b2BName }}</td>
+            <td>{{ b2b.isActive ? 'Active' : 'Inactive' }}</td>
+            <td>
+              <button class="btn btn-primary btn-sm" (click)="onEdit(b2b.b2BId)">&#9998;</button> ||
+              <button class="btn btn-danger btn-sm" *ngIf="b2b.isActive" (click)="onDelete(b2b.b2BId)">
+                <i class="fa-solid fa-trash-can"></i>
+              </button>
+              <button class="btn btn-success btn-sm" *ngIf="!b2b.isActive" (click)="onDelete(b2b.b2BId)">
+                <i class="fa-solid fa-check"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <ng-template #noData>
+        <div class="text-center text-danger fw-bold p-3" style="background-color: #f1f1f1">No data found.</div>
+      </ng-template>
+    </div>
+  </div>
+</div>
+
+<!-- Add / Edit Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" #myModal>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title">{{ isEditModal ? 'Edit' : 'Add' }}</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" (click)="closeModal()"></button>
+      </div>
+
+      <form [formGroup]="b2bForm" (ngSubmit)="onSubmit()">
+        <!-- Modal body -->
+        <div class="modal-body">
+          <div class="table-responsive">
+            <table class="table table-borderless">
+              <tbody>
+                <tr>
+                  <td>B2B Id</td>
+                  <td><input type="number" class="form-control" formControlName="b2BId" placeholder="B2B Id"></td>
+                </tr>
+                <tr>
+                  <td>B2B Code</td>
+                  <td>
+                    <input type="text" class="form-control" placeholder="B2B Code" (input)="onInputChange()" formControlName="b2BCode">
+                    <small *ngIf="b2bForm.controls['b2BCode']?.errors?.['required'] && submitted" class="text-danger">
+                      B2B code is required.
+                    </small>
+                  </td>
+                </tr>
+                <tr>
+                  <td>B2B Name</td>
+                  <td>
+                    <input type="text" class="form-control" placeholder="B2B Name" (input)="onInputChange()" formControlName="b2BName">
+                    <small *ngIf="b2bForm.controls['b2BName']?.errors?.['required'] && submitted" class="text-danger">
+                      B2B name is required.
+                    </small>
+
+                    <ng-container *ngFor="let error of validationErrors">
+                      <small *ngIf="error.toLowerCase().includes('b2b')" class="text-danger">
+                        {{ error }}
+                      </small>
+                    </ng-container>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-success">{{ isEditModal ? 'Update' : 'Save' }}</button>
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal" (click)="closeModal()">Close</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,159 @@
+<app-sliderbar></app-sliderbar>
+
+<div class="container p-3" style="max-width: 94%;">
+  <div class="d-flex justify-content-between">
+    <h4>Branch</h4>
+    <button class="btn btn-primary btn-sm" data-bs-target="#myModal" (click)="openModal()">Add</button>
+  </div>
+
+  <!-- search table -->
+  <div class="border border-dark rounded-2 my-3 p-3">
+    <div class="row g-3">
+      <!-- Branch ID -->
+      <div class="col-md-3 col-sm-6">
+        <div class="d-flex align-items-center">
+          <label class="form-label mb-0" style="min-width: 120px;">Branch Id</label>
+          <input type="number" [(ngModel)]="searchCriteria.branchId" class="form-control" placeholder="Branch Id">
+        </div>
+      </div>
+
+      <!-- Branch Code -->
+      <div class="col-md-3 col-sm-6">
+        <div class="d-flex align-items-center">
+          <label class="form-label mb-0" style="min-width: 120px;">Branch Code</label>
+          <input type="text" [(ngModel)]="searchCriteria.branchCode" class="form-control" placeholder="Branch Code">
+        </div>
+      </div>
+
+      <!-- Branch Name -->
+      <div class="col-md-3 col-sm-6">
+        <div class="d-flex align-items-center">
+          <label class="form-label mb-0" style="min-width: 120px;">Branch Name</label>
+          <input type="text" [(ngModel)]="searchCriteria.branchName" class="form-control" placeholder="Branch Name">
+        </div>
+      </div>
+
+      <!-- Status -->
+      <div class="col-md-3 col-sm-6">
+        <div class="d-flex align-items-center">
+          <label class="form-label mb-0" style="min-width: 120px;">Status</label>
+          <select class="form-select" [(ngModel)]="searchCriteria.isActive">
+            <option [ngValue]="null">All</option>
+            <option [ngValue]="true">Active</option>
+            <option [ngValue]="false">Inactive</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Button Row -->
+    <div class="row mt-3">
+      <div class="col d-flex justify-content-end gap-2">
+        <button class="btn btn-primary" (click)="getBranch()">Search</button>
+        <button class="btn btn-danger" (click)="clearSearch()">Clear</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- show data table -->
+<div class="container my-3 p-3" style="max-width: 94%;">
+  <div class="border border-dark rounded-2" *ngIf="searchClick">
+    <div class="table-responsive">
+      <table class="table table-borderless table-striped text-center" *ngIf="branchList.length > 0; else noData">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Branch Id</th>
+            <th>Branch Code</th>
+            <th>Branch Name</th>
+            <th>IsActive</th>
+            <th>IsAction</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let branch of branchList; let index = index">
+            <td>{{ index + 1 }}</td>
+            <td>{{ branch.branchId }}</td>
+            <td>{{ branch.branchCode }}</td>
+            <td>{{ branch.branchName }}</td>
+            <td>{{ branch.isActive ? 'Active' : 'Inactive' }}</td>
+            <td>
+              <button class="btn btn-primary btn-sm" (click)="onEdit(branch.branchId)">&#9998;</button> ||
+              <button class="btn btn-danger btn-sm" *ngIf="branch.isActive" (click)="onDelete(branch.branchId)">
+                <i class="fa-solid fa-trash-can"></i>
+              </button>
+              <button class="btn btn-success btn-sm" *ngIf="!branch.isActive" (click)="onDelete(branch.branchId)">
+                <i class="fa-solid fa-check"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <ng-template #noData>
+        <div class="text-center text-danger fw-bold p-3" style="background-color: #f1f1f1">No data found.</div>
+      </ng-template>
+    </div>
+  </div>
+</div>
+
+<!-- Add / Edit Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" #myModal>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title">{{ isEditModal ? 'Edit' : 'Add' }}</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" (click)="closeModal()"></button>
+      </div>
+
+      <form [formGroup]="branchForm" (ngSubmit)="onSubmit()">
+        <!-- Modal body -->
+        <div class="modal-body">
+          <div class="table-responsive">
+            <table class="table table-borderless">
+              <tbody>
+                <tr>
+                  <td>Branch Id</td>
+                  <td><input type="number" class="form-control" formControlName="BranchId" placeholder="Branch Id"></td>
+                </tr>
+                <tr>
+                  <td>Branch Code</td>
+                  <td>
+                    <input type="text" class="form-control" placeholder="Branch Code" (input)="onInputChange()" formControlName="BranchCode">
+                    <small *ngIf="branchForm.controls['BranchCode']?.errors?.['required'] && submitted" class="text-danger">
+                      Branch code is required.
+                    </small>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Branch Name</td>
+                  <td>
+                    <input type="text" class="form-control" placeholder="Branch Name" (input)="onInputChange()" formControlName="BranchName">
+                    <small *ngIf="branchForm.controls['BranchName']?.errors?.['required'] && submitted" class="text-danger">
+                      Branch name is required.
+                    </small>
+
+                    <ng-container *ngFor="let error of validationErrors">
+                      <small *ngIf="error.toLowerCase().includes('branch')" class="text-danger">
+                        {{ error }}
+                      </small>
+                    </ng-container>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-success">{{ isEditModal ? 'Update' : 'Save' }}</button>
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal" (click)="closeModal()">Close</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

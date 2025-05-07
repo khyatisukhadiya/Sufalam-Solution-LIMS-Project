@@ -1,0 +1,210 @@
+<app-sliderbar></app-sliderbar>
+
+<div class="container  p-3" style="max-width: 94%;">
+    <div class="d-flex justify-content-between">
+        <h4>State</h4>
+        <button class="btn btn-primary btn-sm" data-bs-target="#myModal" (click)="openModal()">Add</button>
+    </div>
+
+    <!-- search table -->
+    <div class="border border-dark rounded-2 my-3 p-3">
+        <div class="row g-3">
+          <!-- State Id -->
+          <div class="col-md-3 col-sm-6">
+            <div class="d-flex align-items-center">
+              <label class="form-label mb-0" style="min-width: 120px;">State Id</label>
+              <input type="number" [(ngModel)]="searchCriteria.stateId" class="form-control" placeholder="State Id">
+            </div>
+          </div>
+      
+          <!-- State Code -->
+          <div class="col-md-3 col-sm-6">
+            <div class="d-flex align-items-center">
+              <label class="form-label mb-0" style="min-width: 120px;">State Code</label>
+              <input type="text" [(ngModel)]="searchCriteria.stateCode" class="form-control" placeholder="State Code">
+            </div>
+          </div>
+      
+          <!-- State Name -->
+          <div class="col-md-3 col-sm-6">
+            <div class="d-flex align-items-center">
+              <label class="form-label mb-0" style="min-width: 120px;">State Name</label>
+              <input type="text" [(ngModel)]="searchCriteria.stateName" class="form-control" placeholder="State Name">
+            </div>
+          </div>
+      
+          <!-- Status -->
+          <div class="col-md-3 col-sm-6">
+            <div class="d-flex align-items-center">
+              <label class="form-label mb-0" style="min-width: 120px;">Status</label>
+              <select class="form-select" [(ngModel)]="searchCriteria.isActive">
+                <option [ngValue]="null">All</option>
+                <option [ngValue]="true">Active</option>
+                <option [ngValue]="false">Inactive</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      
+        <!-- Button Row -->
+        <div class="row mt-3">
+          <div class="col d-flex justify-content-end gap-2">
+            <button class="btn btn-primary" (click)="getState()">Search</button>
+            <button class="btn btn-danger" (click)="clearSearch()">Clear</button>
+          </div>
+        </div>
+      </div>
+      
+</div>
+
+<!-- show data table -->
+<div class="container my-3 p-3" style="max-width: 94%;">
+    <div class="border border-dark rounded-2" *ngIf="searchClick">
+        <div class="table-responsive">
+            <!-- Show table if data exists -->
+            <table class="table table-borderless table-striped text-center" *ngIf="stateList.length > 0; else noData">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>State Id</th>
+                        <th>State Code</th>
+                        <th>State Name</th>
+                        <th>Country</th>
+                        <th>IsActive</th>
+                        <th>IsAction</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let state of stateList; let index = index">
+                        <td>{{ index + 1 }}</td>
+                        <td>{{ state.stateId }}</td>
+                        <td>{{ state.stateCode }}</td>
+                        <td>{{ state.stateName }}</td>
+                        <td>{{ state.countryName }}</td>
+                        <td>{{ state.isActive ? 'Active' : 'Inactive' }}</td>
+                        <td>
+                            <button class="btn btn-primary btn-sm" (click)="onEdit(state.stateId)">&#9998;</button> ||
+                            <button class="btn btn-danger btn-sm" *ngIf="state.isActive"
+                                (click)="onDelete(state.stateId)">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                            <button class="btn btn-success btn-sm" *ngIf="!state.isActive"
+                                (click)="onDelete(state.stateId)">
+                                <i class="fa-solid fa-check"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- "No data found" message -->
+            <ng-template #noData>
+                <div class="text-center text-danger fw-bold p-3" style="background-color: #f1f1f1">No data found.</div>
+            </ng-template>
+        </div>
+    </div>
+</div>
+
+
+<!-- Add / Edit Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" #myModal>
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">{{ isEditModal ? 'Edit' : 'Add' }}</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" (click)="closeModal()"></button>
+            </div>
+
+            <form [formGroup]="stateForm" (ngSubmit)="onSubmit()">
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="table-responsive">
+                        <table class="table table-borderless">
+                            <tbody>
+                                <tr>
+                                    <td>State Id</td>
+                                    <td><input type="number" class="form-control" formControlName="StateId"
+                                            placeholder="State Id"></td>
+                                </tr>
+                                <tr>
+                                    <td>State Code</td>
+                                    <td><input type="text" class="form-control" placeholder="State Code"
+                                            (input)="onInputChange()" formControlName="StateCode">
+
+                                        <!-- Frontend Validation: required -->
+                                        <div *ngIf="stateForm.controls['StateCode']?.errors?.['required'] && submitted"
+                                            class="text-danger">
+                                            State code is required.
+                                        </div>
+
+                                        <!-- Backend Validation: Duplicate state code -->
+                                        <ng-container *ngFor="let error of validationErrors">
+                                            <div *ngIf="error.toLowerCase().includes('state code')" class="text-danger">
+                                                {{ error }}
+                                            </div>
+                                        </ng-container>
+
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>State Name</td>
+                                    <td><input type="text" class="form-control" placeholder="State Name"
+                                            (input)="onInputChange()" formControlName="StateName">
+
+                                        <!-- Frontend validation -->
+                                        <div *ngIf="stateForm.controls['StateName']?.errors?.['required'] && submitted"
+                                            class="text-danger">
+                                            State name is required.
+                                        </div>
+
+                                        <!-- Backend validation -->
+                                        <ng-container *ngFor="let error of validationErrors">
+                                            <div *ngIf="error.toLowerCase().includes('state name')" class="text-danger">
+                                                {{ error }}
+                                            </div>
+                                        </ng-container>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Country</td>
+                                    <td>
+                                        <select class="form-select" formControlName="countryId"
+                                            (input)="onInputChange()">
+                                            <option value="null">-- Select Country --</option>
+                                            <option *ngFor="let country of countries" [ngValue]="country.countryId">
+                                                {{ country.countryName }}
+                                            </option>
+                                        </select>
+
+                                        <!-- FrontEnd Validation -->
+                                        <div *ngIf="stateForm.controls['countryId']?.errors?.['required'] && submitted"
+                                            class="text-danger">
+                                            Country is required.
+                                        </div>
+
+                                        <!-- backend Validation -->
+                                        <ng-container *ngFor="let error of validationErrors">
+                                            <div *ngIf="error.toLowerCase().includes('country')" class="text-danger">
+                                                {{ error }}
+                                            </div>
+                                        </ng-container>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">{{ isEditModal? 'Update' : 'Save' }}</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal"
+                        (click)="closeModal()">Close</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,87 @@
+## Ignore Visual Studio temporary files, build results, and
+## user-specific files.
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+TestResults/
+[Dd]ebug/
+[Rr]elease/
+
+# Visual Studio working folder
+.vs/
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# User-specific files
+*.dbmdl
+*.bak
+*.cache
+*.config
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# DotCover
+.idea/
+*.dotCover
+
+# NCrunch
+_NCrunch_*
+.*crunch*.local.xml
+
+# Azure Web App publish settings
+PublishProfiles/
+
+# Rider
+.idea/
+
+# JetBrains Rider and VS Code settings
+*.sln.iml
+.vscode/
+
+# Other files
+*.nupkg
+*.snupkg
+*.log
+*.tlog
+*.pdb
+*.dll
+*.exe
+
+# Backup & temp files
+*.tmp
+*.bak
+*.old
+*.orig
+
+# NuGet packages
+packages/
+*.nupkg
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Entity Framework
+Migrations/
+
+# dotenv environment files
+.env
+.env.*
+
+# Recycle Bin used by file managers
+$RECYCLE.BIN/
+
+# macOS and Linux system files
+.DS_Store
+.Trashes

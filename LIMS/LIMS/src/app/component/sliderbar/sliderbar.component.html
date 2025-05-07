@@ -1,0 +1,126 @@
+<div [class.body-pd]="isNavOpen" id="body-pd">
+  <!-- Header -->
+  <header class="header" id="header" [class.body-pd]="isNavOpen">
+    <div class="header_toggle" (click)="toggleNavbar()">
+      <i class='bx' [class.bx-menu]="!isNavOpen" [class.bx-x]="isNavOpen" id="header-toggle"></i>
+    </div>
+    <div class="header_img">
+      <img src="https://cdn-icons-png.flaticon.com/512/5951/5951752.png" alt="">
+    </div>
+  </header>
+
+  <!-- Sidebar -->
+  <div class="l-navbar" id="nav-bar" [class.show]="isNavOpen">
+    <nav class="nav">
+      <div>
+        <!-- Logo -->
+        <a href="#" class="nav_logo">
+          <i class='bx bx-layer nav_logo-icon'></i>
+          <span class="nav_logo-name">LIMS</span>
+        </a>
+
+        <div class="nav_list">
+          <!-- Dashboard -->
+          <a class="nav_link" routerLink="/dashboard" routerLinkActive="active">
+            <i class='bx bx-grid-alt nav_icon'></i>
+            <span class="nav_name">Dashboard</span>
+          </a>
+
+          <!-- Master -->
+          <button class="nav_link" (click)="toggleMasterMenu()">
+            <i class='bx bx-folder nav_icon'></i>
+            <span class="nav_name">Master</span>
+          </button>
+
+          <!-- Master Submenu -->
+          <div class="nav_sublist" *ngIf="isMasterOpen">
+            <a class="nav_link" [class.active]="activeLink === 0" (click)="setActiveLink(0)" routerLink="/country">
+              <span class="nav_name">Country</span>
+            </a>
+            <a class="nav_link" [class.active]="activeLink === 1" (click)="setActiveLink(1)" routerLink="/state">
+              <span class="nav_name">State</span>
+            </a>
+            <a class="nav_link" [class.active]="activeLink === 2" (click)="setActiveLink(2)" routerLink="/city">
+              <span class="nav_name">City</span>
+            </a>
+            <a class="nav_link" [class.active]="activeLink === 3" (click)="setActiveLink(3)" routerLink="/area">
+              <span class="nav_name">Area</span>
+            </a>
+            <a class="nav_link" [class.active]="activeLink === 4" (click)="setActiveLink(4)" routerLink="/service">
+              <span class="nav_name">Service</span>
+            </a>
+            <a class="nav_link" [class.active]="activeLink === 5" (click)="setActiveLink(5)" routerLink="/branch">
+              <span class="nav_name">Branch</span>
+            </a>
+            <a class="nav_link" [class.active]="activeLink === 6" (click)="setActiveLink(6)" routerLink="/b2b">
+              <span class="nav_name">B2B</span>
+            </a>
+            <a class="nav_link" [class.active]="activeLink === 7" (click)="setActiveLink(7)" routerLink="/doctor">
+              <span class="nav_name">Doctor</span>
+            </a>
+            <a class="nav_link" [class.active]="activeLink === 8" (click)="setActiveLink(8)" routerLink="/test">
+              <span class="nav_name">Test</span>
+            </a>
+          </div>
+
+
+          <!-- Transaction -->
+          <button class="nav_link" (click)="toggleTransactionMenu()">
+            <i class='bx bx-transfer nav_icon'></i>
+            <span class="nav_name">Transaction</span>
+          </button>
+
+          <!-- Transaction Submenu -->
+          <div class="nav_sublist" *ngIf="isTransactionOpen">
+            <a class="nav_link" [class.active]="activeLink === 9" (click)="setActiveLink(9)" routerLink="/sampleregister">
+              <span class="nav_name">Sample Register</span>
+            </a>
+            <a class="nav_link" [class.active]="activeLink === 10" (click)="setActiveLink(10)" routerLink="/testresult">
+              <span class="nav_name">Test Result</span>
+            </a>
+            <a class="nav_link" [class.active]="activeLink === 11" (click)="setActiveLink(11)" routerLink="/approvedreport">
+              <span class="nav_name">Approved Report</span>
+            </a>
+          </div>
+
+
+          <!-- finance -->
+          <button class="nav_link" (click)="toggleFinanceMenu()">
+            <i class='bx bx-dollar-circle nav_icon'></i>
+            <span class="nav_name">Finance</span>
+          </button>
+
+          <!-- Finance Submenu -->
+          <div class="nav_sublist" *ngIf="isFinanceOpen">
+            <a class="nav_link" [class.active]="activeLink === 12" (click)="setActiveLink(12)" routerLink="/paymentmode">
+              <span class="nav_name">Payment Mode</span>
+            </a>
+            </div>
+
+
+          <!-- Other Links -->
+          <!-- <a class="nav_link" routerLink="/users" routerLinkActive="active">
+            <i class='bx bx-user nav_icon'></i>
+            <span class="nav_name">Users</span>
+          </a>
+
+
+          <a class="nav_link" routerLink="/bookmarks" routerLinkActive="active">
+            <i class='bx bx-bookmark nav_icon'></i>
+            <span class="nav_name">Bookmark</span>
+          </a>
+          <a class="nav_link" routerLink="/stats" routerLinkActive="active">
+            <i class='bx bx-bar-chart-alt-2 nav_icon'></i>
+            <span class="nav_name">Stats</span>
+          </a> -->
+        </div>
+
+        <!-- Sign Out -->
+        <a href="#" class="nav_link">
+          <i class='bx bx-log-out nav_icon'></i>
+          <span class="nav_name">SignOut</span>
+        </a>
+      </div>
+    </nav>
+  </div>
+</div>

@@ -1,0 +1,277 @@
+<app-slidebar></app-slidebar>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<div class="container" style="max-width: 100%;">
+    <!-- Header with Add Button -->
+    <div class="d-flex justify-content-between align-items-center pb-3">
+        <h5>Service List</h5>
+        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#serviceModal"
+            (click)="openModal()">ADD</button>
+    </div>
+
+    <!-- Search Filter Section -->
+    <div class="border border-dark p-3 rounded">
+        <div class="table-responsive">
+            <table class="table table-borderless align-middle">
+                <tbody>
+                    <tr>
+                        <td><label for="serviceID">Service ID</label></td>
+                        <td><input type="number" class="form-control" placeholder="Service ID"
+                                [(ngModel)]="searchCriteria.serviceId" name="serviceID"></td>
+
+                        <td><label for="serviceName">Service Code</label></td>
+                        <td><input type="text" class="form-control" placeholder="Service Code"
+                                [(ngModel)]="searchCriteria.serviceCode" name="serviceCode"></td>
+
+                        <td><label for="serviceName">Service Name</label></td>
+                        <td><input type="text" class="form-control" placeholder="Service Name"
+                                [(ngModel)]="searchCriteria.serviceName" name="serviceName"></td>
+
+
+                        <td><label for="status">Status</label></td>
+                        <td>
+                            <select class="form-select" [(ngModel)]="searchCriteria.status"
+                                [ngModelOptions]="{standalone: true}" id="status">
+                                <option value="all">All</option>
+                                <option value="active" selected>Active</option>
+                                <option value="disable">Disable</option>
+                            </select>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="d-flex justify-content-end gap-2 mt-3">
+                <button class="btn btn-primary" (click)="getService()">Search</button>
+                <button class="btn btn-danger" (click)="clearSearch()">Clear</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal" id="serviceModal" tabindex="-1" aria-labelledby="serviceModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" style="max-width: 600px;">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h5 class="modal-title">{{ isEditMode ? 'Edit Service' : 'Add Service' }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body">
+                <form [formGroup]="serviceForm">
+
+                    <!-- Tab Navigation -->
+                    <ul class="nav nav-tabs">
+                        <li class="nav-item">
+                            <a class="nav-link" [class.active]="selectedTab === 'general'"
+                                (click)="selectedTab = 'general'" ngDefaultControl>General</a>
+                        </li>
+                        <li class="nav-item" *ngIf="isEditMode">
+                            <a class="nav-link" [class.active]="selectedTab === 'mapping'"
+                                (click)="selectedTab = 'mapping'">Mapping</a>
+                        </li>
+                    </ul>
+
+                    <!-- Tab Content -->
+                    <div class="tab-content p-3 border border-top-0">
+
+                        <!-- General Section -->
+                        <div *ngIf="selectedTab === 'general'">
+                            <!-- <h6>General</h6> -->
+                            <table class="table table-borderless">
+                                <tbody>
+                                    <!-- Service ID -->
+                                    <tr>
+                                        <td><label class="fw-bold">Service ID</label></td>
+                                        <td>
+                                            <input type="text" class="form-control" placeholder="Service ID" disabled
+                                                [value]="isEditMode ? editingService?.id : ''">
+                                        </td>
+                                    </tr>
+
+                                    <!-- Service Code -->
+                                    <tr>
+                                        <td><label class="fw-bold">Service Code</label></td>
+                                        <td>
+                                            <input type="text" class="form-control" placeholder="Service Code"
+                                                formControlName="code" required>
+                                            <div *ngIf="serviceForm.get('code')?.invalid && submitted"
+                                                class="text-danger small">
+                                                <span *ngIf="serviceForm.get('code')?.hasError('required')">Service Code
+                                                    is required.</span>
+                                                <span *ngIf="serviceForm.get('code')?.hasError('pattern')">Only numbers
+                                                    allowed.</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                    <!-- Service Name -->
+                                    <tr>
+                                        <td><label class="fw-bold">Service Name</label></td>
+                                        <td>
+                                            <input type="text" class="form-control" placeholder="Service Name"
+                                                formControlName="name" required>
+                                            <div *ngIf="serviceForm.get('name')?.invalid && submitted"
+                                                class="text-danger small">
+                                                <span *ngIf="serviceForm.get('name')?.hasError('required')">Service name
+                                                    is
+                                                    required.</span>
+                                                <span *ngIf="serviceForm.get('name')?.hasError('pattern')">Only
+                                                    alphabets
+                                                    are allowed and spaces are not allowed.</span>
+                                                <span
+                                                    *ngIf="serviceForm.get('name')?.hasError('duplicateService')">Service
+                                                    name already exists!</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <!-- B2B Amount -->
+                                    <tr>
+                                        <td><label class="fw-bold">B2B Amount</label></td>
+                                        <td>
+                                            <input type="text" class="form-control" placeholder="B2B Amount"
+                                                formControlName="b2bamount" required>
+                                            <div *ngIf="serviceForm.get('b2bamount')?.invalid && submitted"
+                                                class="text-danger small">
+                                                <span *ngIf="serviceForm.get('b2bamount')?.hasError('required')">B2B
+                                                    Amount
+                                                    is required.</span>
+                                                <span *ngIf="serviceForm.get('b2bamount')?.hasError('pattern')">B2B
+                                                    Amount
+                                                    must contain only numbers.</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                    <!-- B2C Amount -->
+                                    <tr>
+                                        <td><label class="fw-bold">B2C Amount</label></td>
+                                        <td>
+                                            <input type="number" class="form-control" placeholder="B2C Amount"
+                                                formControlName="b2camount" required>
+                                            <div *ngIf="serviceForm.get('b2camount')?.invalid && submitted"
+                                                class="text-danger small">
+                                                <span *ngIf="serviceForm.get('b2camount')?.hasError('required')">B2C
+                                                    Amount
+                                                    is required.</span>
+                                                <span *ngIf="serviceForm.get('b2camount')?.hasError('pattern')">B2C
+                                                    Amount
+                                                    must contain only numbers.</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Mapping Section -->
+                        <div *ngIf="selectedTab === 'mapping'">
+                            <!-- <div class="border p-3 rounded"> -->
+                            <!-- Test Selection Dropdown -->
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="flex-grow-1">
+                                    <label for="testMaster" class="form-label fw-bold">Select Test</label>
+                                    <select formControlName="testMaster" class="form-control"
+                                        (change)="onTestChange($event)">
+                                        <option [ngValue]="null" disabled selected>-- Select a Test --</option>
+                                        <option *ngFor="let test of testmasters" [ngValue]="test">
+                                            {{ test.name }}
+                                        </option>
+                                    </select>
+                                </div>
+                                <!-- Button to add selected test -->
+                                <button class="btn btn-primary mt-4" (click)="addTest()">+</button>
+                            </div>
+
+                            <!-- Display Selected Tests -->
+                            <div *ngIf="selectedTests.length" class="mt-3">
+                                <h6 class="fw-bold">Selected Tests</h6>
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Test ID</th>
+                                            <th>Test Name</th>
+                                            <th>Test Code</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let test of selectedTests">
+                                            <td>{{ test.id}}</td>
+                                            <td>{{ test.name }}</td>
+                                            <td>{{ test.code }}</td>
+                                            <td>
+                                                <button class="btn btn-danger btn-sm" (click)="removeTest(test)"> <i
+                                                        class="fa-solid fa-trash-can"></i></button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                <button class="btn btn-success" (click)="isEditMode ? updateService() : saveData()">
+                    {{ isEditMode ? 'Update' : 'Save' }}
+                </button>
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Service List Table -->
+<div class="container mt-4" style="max-width: 100%;">
+    <div class="table-responsive border border-dark p-3 rounded" *ngIf="filteredServices.length > 0">
+        <table class="table table-bordered table-striped table-hover text-center">
+            <thead>
+                <tr>
+                    <th>Service ID</th>
+                    <th>Service Code</th>
+                    <th>Service Name</th>
+                    <th>B2B Amount</th>
+                    <th>B2C Amount</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let service of filteredServices">
+                    <td>{{ service.id }}</td>
+                    <td>{{ service.code}}</td>
+                    <td>{{ service.name }}</td>
+                    <td>{{ service.b2bamount }}</td>
+                    <td>{{ service.b2camount }}</td>
+                    <td>{{ service.status }}</td>
+                    <td>
+                        <button class="btn btn-primary btn-sm" (click)="editService(service)" data-bs-toggle="modal"
+                            data-bs-target="#serviceModal">
+                            &#9998;
+                        </button>
+                        <button *ngIf="service.isActive" class="btn btn-danger btn-sm" (click)="toggleActive(service)">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                        <button *ngIf="!service.isActive" class="btn btn-success btn-sm"
+                            (click)="toggleActive(service)">
+                            <i class="fa-solid fa-check"></i>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="border border-dark p-3 rounded bg-danger text-center mt-3 fw-bold text-white"
+        *ngIf="searchClicked && filteredServices.length === 0">
+        No data found
+    </div>
+</div>
