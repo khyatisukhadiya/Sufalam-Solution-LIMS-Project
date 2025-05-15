@@ -1,32 +1,32 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, Inject, inject, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { B2BService } from '../../service/MasterService/b2b/b2b.service';
 import { RouterModule } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { filter } from 'rxjs';
 import { Modal } from 'bootstrap';
 import { SliderbarComponent } from "../../component/sliderbar/sliderbar.component";
-import { b2bModal } from '../../modal/MasterModel/b2bModal';
-
+import { PaymentService } from '../../service/FinanceService/payment/payment.service';
+import { paymentModel } from '../../modal/FinanceModel/payment';
 
 @Component({
-  selector: 'app-b2b',
+  selector: 'app-payment',
   imports: [RouterModule, ReactiveFormsModule, FormsModule, CommonModule, SliderbarComponent],
-  templateUrl: './b2b.component.html',
-  styleUrl: './b2b.component.css'
+  templateUrl: './payment.component.html',
+  styleUrl: './payment.component.css'
 })
-export class B2BComponent implements OnInit {
+export class PaymentComponent implements OnInit {
   @ViewChild('myModal') modal: ElementRef | undefined;
-  b2bForm: FormGroup = new FormGroup({});
-  b2bService = inject(B2BService);
-  filteredB2Bs: any = [];
+  paymentForm: FormGroup = new FormGroup({});
+  paymentService = inject(PaymentService)
+  filteredPayments: any = [];
   modalInstance: Modal | undefined;
-  b2bs: any[] = [];
+  payments: any[] = []
   searchClick: boolean = false;
   submitted: boolean = false;
-  b2bList: b2bModal[] = [];
+  paymentList: paymentModel[] = [];
   isEditModal = false;
-  searchCriteria = { b2BId: '', b2BCode: '', b2BName: '', isActive: true };
+  searchCriteria = { paymentId: '', paymentName: '', isActive: true };
   errorMessage: string = '';
   validationErrors: string[] = [];
   formErrors: any = {};
@@ -34,15 +34,17 @@ export class B2BComponent implements OnInit {
 
   constructor(private fb: FormBuilder, private toastr: ToastrService) { }
 
+
   ngOnInit(): void {
     this.setForm();
   }
 
-  openModal() {
-    const b2bModal = document.getElementById('myModal');
 
-    if (b2bModal != null) {
-      b2bModal.style.display = "block";
+  openModal() {
+    const paymentModal = document.getElementById('myModal');
+
+    if (paymentModal != null) {
+      paymentModal.style.display = "block";
     }
 
     if (this.modal?.nativeElement) {
@@ -55,6 +57,7 @@ export class B2BComponent implements OnInit {
   }
 
   closeModal() {
+
     this.isEditModal = false;
 
     if (this.modalInstance) {
@@ -69,15 +72,14 @@ export class B2BComponent implements OnInit {
     this.validationErrors = [];
     this.submitted = false;
 
-    this.b2bForm.reset({
-      b2BId: 0,
-      b2BName: '',
-      b2BCode: '',
+    this.paymentForm.reset({
+      PaymentId: 0,
+      PaymentName: '',
       isActive: true
     });
+
   }
 
-  // Toast messages
   showSuccess(message: string) {
     this.toastr.success(message, 'Success');
   }
@@ -87,8 +89,8 @@ export class B2BComponent implements OnInit {
   }
 
   onInputChange(): void {
-    Object.keys(this.b2bForm.controls).forEach((field) => {
-      const control = this.b2bForm.get(field);
+    Object.keys(this.paymentForm.controls).forEach((field) => {
+      const control = this.paymentForm.get(field);
       if (control && control.errors) {
         control.setErrors(null);
       }
@@ -103,20 +105,23 @@ export class B2BComponent implements OnInit {
     this.errorMessage = '';
     this.validationErrors = [];
 
-    if (this.b2bForm.invalid) {
+    if (this.paymentForm.invalid) {
       return;
     }
 
-    const payload = this.b2bForm.getRawValue();
-    const isUpdate = payload.b2BId && payload.b2BId > 0;
+    const payload = this.paymentForm.getRawValue();
 
-    this.b2bService.addUpdatedB2B(payload).subscribe({
-      next: (res) => {
+    console.log(payload);
+
+    const isUpdate = payload.PaymentId && payload.PaymentId > 0;
+
+    this.paymentService.addUpdatePayment(payload).subscribe({
+      next: (res:any) => {
         if (res.success) {
           this.showSuccess(res.message);
           this.closeModal();
           this.searchClick = true;
-          this.getB2B();
+          this.getPayment();
           this.isEditModal = false;
         } else if (res.errors) {
           this.validationErrors = res.errors;
@@ -134,71 +139,72 @@ export class B2BComponent implements OnInit {
   }
 
   setForm() {
-    this.b2bForm = this.fb.group({
-      b2BId: [{ value: 0, disabled: true }],
-      b2BName: ['', Validators.required],
-      b2BCode: ['', Validators.required],
+    this.paymentForm = this.fb.group({
+      PaymentId: [{ value: 0, disabled: true }],
+      PaymentName: ['', Validators.required],
+      PaymentCode: ['', Validators.required],
       isActive: [true],
     });
   }
 
-  getB2B(): void {
+  getPayment(): void {
     this.searchClick = true;
 
     const filter = {
-      name: this.searchCriteria.b2BName?.trim() || '',
-      code: this.searchCriteria.b2BCode?.trim() || '',
-      id: this.searchCriteria.b2BId || null,
+      name: this.searchCriteria.paymentName?.trim() || '',
+      id: this.searchCriteria.paymentId || null,
       isActive: this.searchCriteria.isActive
     };
 
-    this.b2bService.fetchB2B(filter).subscribe({
-      next: (res) => {
-        this.b2bList = res?.data || [];
-      },
-      error: (err) => {
-        console.error('Failed to load B2Bs:', err);
-      }
-    });
+    this.paymentService.fetchPayment(filter)
+      .subscribe({
+        next: (res) => {
+          this.paymentList = res?.data || [];
+        },
+        error: (err) => {
+          console.error('Failed to load payments:', err);
+        }
+      });
   }
 
-  onEdit(b2BId: number) {
-    this.b2bService.getB2BById(b2BId).subscribe({
-      next: (res) => {
-        this.b2bForm.patchValue({
-          b2BId: res.b2BId,
-          b2BName: res.b2BName,
-          b2BCode: res.b2BCode,
-          isActive: res.isActive
+  onEdit(paymentId : number) {
+    this.paymentService.getPaymentId(paymentId).subscribe({
+      next : (res : any) => {
+        console.log('onedit', res);
+
+        this.paymentForm.patchValue({
+          PaymentId : res.paymentId,
+          PaymentName : res.paymentName,
+          isActive : res.isActive
         });
         this.isEditModal = true;
         this.openModal();
-        this.getB2B();
+        this.getPayment();
       }
-    });
+    }); 
   }
 
-  onDelete(b2BId: number) {
-    const b2B = this.b2bList.find(b => b.b2BId === b2BId);
-    if (b2B && b2B.isActive === null) {
-      b2B.isActive = false;
+  onDelete(paymentId: number) {
+    const payment = this.paymentList.find(c => c.paymentId === paymentId);
+    if (payment && payment.isActive === null) {
+      payment.isActive = false;
     }
 
-    this.b2bService.deleteB2B(b2BId).subscribe(() => {
-      const message = b2B?.isActive ? 'Deactivated' : 'Activated';
+    this.paymentService.deletePaymentId(paymentId).subscribe(() => {
+      const message = payment?.isActive ? 'Deactivated' : 'Activated';
       this.showSuccess(message);
-      this.getB2B();
+      this.getPayment();
       this.closeModal();
-    });
+    })
   }
 
   clearSearch() {
     this.searchClick = false;
     this.searchCriteria = {
-      b2BId: '',
-      b2BName: '',
-      b2BCode: '',
+      paymentId: '',
+      paymentName: '',
       isActive: true
     };
   }
+
 }

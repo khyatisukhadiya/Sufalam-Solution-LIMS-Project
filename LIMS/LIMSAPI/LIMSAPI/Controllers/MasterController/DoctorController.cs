@@ -43,14 +43,30 @@ namespace LIMSAPI.Controllers.MasterController
                 codeCol: "DoctorCode",
                 nameVal: doctorModal.DoctorName,
                 codeVal: doctorModal.DoctorCode,
-                excludeId: doctorModal.DoctorId, // Exclude the current doctor
+                excludeId: doctorModal.DoctorId, 
                 idCol: "DoctorId",
-                additionalConditions: additionalConditions
+                additionalConditions : new Dictionary<string, object>()
             );
 
             if (isDuplicate)
             {
                 errors.Add("A doctor with this data already exists.");
+            }
+
+            var isPhoneDuplicate = _doctorSL.IsDuplicate(
+                    table: "doctor",
+                    nameCol: "PhoneNumber",
+                   codeCol: "PhoneNumber", 
+                   nameVal: doctorModal.PhoneNumber,
+                   codeVal: doctorModal.PhoneNumber,
+                  excludeId: doctorModal.DoctorId,
+                 idCol: "DoctorId"
+                );
+
+            if (isPhoneDuplicate)
+
+            {
+                errors.Add("This phone number is already registered with another doctor.");
             }
 
             if (errors.Any())

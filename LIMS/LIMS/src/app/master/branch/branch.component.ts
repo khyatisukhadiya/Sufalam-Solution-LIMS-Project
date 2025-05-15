@@ -1,12 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { BranchService } from '../../service/branch/branch.service';
+import { BranchService } from '../../service/MasterService/branch/branch.service';
 import { RouterModule } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { Modal } from 'bootstrap';
 import { SliderbarComponent } from "../../component/sliderbar/sliderbar.component";
-import { branchModal } from '../../modal/branchModal';
+import { branchModal } from '../../modal/MasterModel/branchModal';
 
 @Component({
   selector: 'app-branch',

@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, Inject, inject, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { CountryService } from '../../service/country/country.service';
+import { CountryService } from '../../service/MasterService/country/country.service';
 import { RouterModule } from '@angular/router';
-import { countryModal } from '../../modal/countrymodal';
+import { countryModal } from '../../modal/MasterModel/countrymodal';
 import { ToastrService } from 'ngx-toastr';
 import { filter } from 'rxjs';
 import { Modal } from 'bootstrap';

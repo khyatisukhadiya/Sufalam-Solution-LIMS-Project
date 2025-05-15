@@ -1,12 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, OnInit, ViewChild, inject } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { AreaService } from '../../service/area/area.service';
+import { AreaService } from '../../service/MasterService/area/area.service';
 import { RouterModule } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { Modal } from 'bootstrap';
 import { SliderbarComponent } from "../../component/sliderbar/sliderbar.component";
-import { AreaModal } from '../../modal/areaModal';
+import { AreaModal } from '../../modal/MasterModel/areaModal';
 
 @Component({
   selector: 'app-area',

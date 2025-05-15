@@ -9,6 +9,8 @@ import { B2BComponent } from './master/b2b/b2b.component';
 import { DoctorComponent } from './master/doctor/doctor.component';
 import { TestComponent } from './master/test/test.component';
 import { ServiceComponent } from './master/service/service.component';
+import { PaymentComponent } from './finance/payment/payment.component';
+import { SampleRegisterComponent } from './transaction/sample-register/sample-register.component';
 
 export const routes: Routes = [
     {
@@ -50,5 +52,13 @@ export const routes: Routes = [
     {
         path : 'service',
         component : ServiceComponent
+    },
+    {
+        path : 'payment',
+        component : PaymentComponent
+    },
+    {
+        path : 'sampleRegister',
+        component : SampleRegisterComponent
     }
 ];

@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, OnInit, ViewChild, inject } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { CityService } from '../../service/city/city.service';
+import { CityService } from '../../service/MasterService/city/city.service';
 import { RouterModule } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { cityModal } from '../../modal/cityModal';
+import { cityModal } from '../../modal/MasterModel/cityModal';
 import { Modal } from 'bootstrap';
 import { SliderbarComponent } from "../../component/sliderbar/sliderbar.component";
 

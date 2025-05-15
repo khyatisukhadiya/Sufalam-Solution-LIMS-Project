@@ -298,8 +298,24 @@ namespace LIMSAPI.ServiceLayer
             return _lIMSRepositryInterface.AddUpdatedPayment(paymentModal);
         }
 
+        public List<PaymentModal> GetPaymentByFilter(FilterModel filterModel)
+        {
+            return _lIMSRepositryInterface.GetPaymentByFilter(filterModel);
+        }
 
+        public PaymentModal GetPaymentById(int PaymentId)
+        {
+            return _lIMSRepositryInterface.GetPaymentById(PaymentId);
+        }
 
+        public PaymentModal DeletePaymentById(int PaymentId)
+        {
+            return _lIMSRepositryInterface.DeletePaymentById(PaymentId);
+        }
 
+        public List<PaymentModal> GetPaymentIsActive()
+        {
+            return _lIMSRepositryInterface.GetPaymentIsActive();
+        }
     }
 }

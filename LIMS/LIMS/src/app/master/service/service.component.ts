@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ServiceService } from '../../service/service/service.service';
+import { ServiceService } from '../../service/MasterService/service/service.service';
 import { RouterModule } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { Modal } from 'bootstrap';
-import { serviceModal } from '../../modal/serviceModal';
+import { serviceModal } from '../../modal/MasterModel/serviceModal';
 import { SliderbarComponent } from "../../component/sliderbar/sliderbar.component";
 
 

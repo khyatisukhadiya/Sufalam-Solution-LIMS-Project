@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LIMSAPI.Controllers.Finance
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[Action]")]
     [ApiController]
     public class PaymentController : BaseAPIController
     {
@@ -43,19 +43,20 @@ namespace LIMSAPI.Controllers.Finance
 
             var errors = new List<string>();
 
-            //var isDuplicate = _payment.IsDuplicate(
-            //    table: "payment",
-            //    nameCol: "PaymentName",
-            //    codeCol : "",
-            //    nameVal: paymentModal.PaymentName,
-            //    codeVal : paymentModal.,
-            //    excludeId: paymentModal.PaymentId,
+            var isDuplicate = _payment.IsDuplicate(
+                table: "payment",
+                nameCol: "PaymentName",
+                codeCol: "PaymentName",
+                nameVal: paymentModal.PaymentName,
+                codeVal: paymentModal.PaymentName,
+                excludeId: paymentModal.PaymentId,
                 idCol: "PaymentId",
-
-            //if (isDuplicate)
-            //{
-            //    errors.Add("A test with the same name or code already exists.");
-            //}
+                additionalConditions: new Dictionary<string, object>());
+            ;
+            if (isDuplicate)
+            {
+                errors.Add("A payment name already exists.");
+            }
 
             if (errors.Any())
             {
@@ -73,6 +74,37 @@ namespace LIMSAPI.Controllers.Finance
             {
                 return Error(ex.Message, HttpStatusCode.InternalServerError);
             }
+        }
+
+
+        [HttpGet]
+        public IActionResult GetPaymentByFilter([FromQuery ]FilterModel filterModel)
+        {
+            var result = _payment.GetPaymentByFilter(filterModel);
+            return Ok( new { data = result });
+        }
+
+
+        [HttpGet]
+        public IActionResult GetPaymentById(int PaymentId)
+        {
+            var result = _payment.GetPaymentById(PaymentId);
+            return Ok(result);
+        }
+
+        [HttpDelete]
+        public  IActionResult DeletePaymentById(int PaymentId)
+        {
+            var result = _payment.DeletePaymentById(PaymentId);
+            string status = result.IsActive ? "activated" : "deactivated";
+            return Success(status, result);
+        }
+
+        [HttpGet]
+        public IActionResult GetPaymentIsActive()
+        {
+            var result = _payment.GetPaymentIsActive();
+            return Ok(result);
         }
     }
 }

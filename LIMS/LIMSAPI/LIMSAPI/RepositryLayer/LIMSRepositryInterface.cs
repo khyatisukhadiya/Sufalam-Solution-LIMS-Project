@@ -142,5 +142,13 @@ namespace LIMSAPI.RepositryLayer
         // PAYMENT
 
         PaymentModal AddUpdatedPayment(PaymentModal paymentModal);
+
+        List<PaymentModal> GetPaymentByFilter(FilterModel filterModel);
+
+        PaymentModal GetPaymentById(int PaymentId);
+
+        PaymentModal DeletePaymentById(int PaymentId);
+
+        List<PaymentModal> GetPaymentIsActive();
     }
 }

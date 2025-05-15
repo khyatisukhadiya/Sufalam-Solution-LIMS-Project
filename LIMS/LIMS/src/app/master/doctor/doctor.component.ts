@@ -1,12 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { DoctorService } from '../../service/doctor/doctor.service';
+import { DoctorService } from '../../service/MasterService/doctor/doctor.service';
 import { RouterModule } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { Modal } from 'bootstrap';
 import { SliderbarComponent } from "../../component/sliderbar/sliderbar.component";
-import { doctorModal } from '../../modal/doctorModal';
+import { doctorModal } from '../../modal/MasterModel/doctorModal';
 
 @Component({
   selector: 'app-doctor',

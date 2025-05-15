@@ -21,9 +21,8 @@ namespace LIMSAPI.Helpers
             connection.Open();
 
             var query = $@"
-                   SELECT COUNT(*) 
-                       FROM [{table}] 
-                       WHERE ({nameCol} = @nameVal OR {codeCol} = @codeVal)";
+            SELECT COUNT(*) FROM [{table}]
+            WHERE ({nameCol} = @nameVal OR {codeCol} = @codeVal)";
 
             // Add additional conditions to the query if they exist
             if (additionalConditions != null && additionalConditions.Any())
@@ -56,7 +55,7 @@ namespace LIMSAPI.Helpers
             // Exclude the current record if needed
             if (excludeId.HasValue)
             {
-                command.Parameters.AddWithValue("@excludeId", excludeId.Value);
+                command.Parameters.AddWithValue("@excludeId", excludeId.Value); 
             }
 
             int count = (int)command.ExecuteScalar();

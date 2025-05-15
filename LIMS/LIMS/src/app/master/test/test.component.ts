@@ -1,13 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, Inject, inject, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { TestService } from '../../service/test/test.service';
+import { TestService } from '../../service/MasterService/test/test.service';
 import { RouterModule } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { filter } from 'rxjs';
 import { Modal } from 'bootstrap';
 import { SliderbarComponent } from "../../component/sliderbar/sliderbar.component";
-import { testModal } from '../../modal/testModal';
+import { testModal } from '../../modal/MasterModel/testModal';
 
 @Component({
   selector: 'app-test',

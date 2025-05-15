@@ -2478,5 +2478,153 @@ namespace LIMSAPI.RepositryLayer
             }
             return response;
         }
+
+        public List<PaymentModal> GetPaymentByFilter(FilterModel filterModel)
+        {
+            try
+            {
+                return _addFilter.GetFilteredList<PaymentModal>(
+                    tableName: "payment",
+                    codeColumn: "PaymentName",
+                    nameColumn: "PaymentName",
+                    idColumn: "PaymentId",
+                    filter: filterModel,
+                    mapFunc: reader => new PaymentModal
+                    {
+                        PaymentId = Convert.ToInt32(reader["PaymentId"]),
+                        PaymentName = reader["PaymentName"].ToString(),
+                        IsActive = Convert.ToBoolean(reader["IsActive"]),
+                    },
+                    selectColumns: "PaymentId, PaymentName, IsActive"
+                );
+            }
+            catch (Exception ex)
+            {   
+                throw new Exception("An error are occure to fetching payment", ex);
+            }
+        }
+
+        public PaymentModal GetPaymentById(int PaymentId)
+        {
+            var response = new PaymentModal();
+
+            try
+            {
+
+                if(_sqlConnection.State != ConnectionState.Open)
+                {
+                    _sqlConnection.Open();
+                }
+
+                string query = "SELECT * FROM payment WHERE PaymentId = @PaymentId";
+
+                SqlCommand command = new SqlCommand(query, _sqlConnection);
+
+                command.Parameters.AddWithValue("@PaymentId", PaymentId);
+
+                var readre = command.ExecuteReader();
+
+                if(readre.Read())
+                {
+                    response.PaymentId = Convert.ToInt32(readre["PaymentId"]);
+                    response.PaymentName = readre["PaymentName"].ToString();
+                    response.IsActive = Convert.ToBoolean(readre["IsActive"]);
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch(Exception ex)
+            {
+                throw new Exception("error accour to fetch payment by id", ex);
+            }
+            finally
+            {
+                _sqlConnection.Close();
+            }
+            return response;
+        }
+
+        public PaymentModal DeletePaymentById(int PaymentId)
+        {
+            var response = new PaymentModal();
+            try
+            {
+
+                if(_sqlConnection.State != ConnectionState.Open)
+                {
+                    _sqlConnection.Open();
+                }
+
+                string query = @"UPDATE payment SET IsActive = CASE WHEN IsActive = 1 THEN 0 ELSE 1 END WHERE PaymentId = @PaymentId
+
+                                 SELECT PaymentId, PaymentName, IsActive FROM payment WHERE PaymentId = @PaymentId";
+
+                SqlCommand command = new SqlCommand(query, _sqlConnection);
+
+                command.Parameters.AddWithValue("@PaymentId", PaymentId);
+
+                var reader = command.ExecuteReader();
+
+                if (reader.Read())
+                {
+                    response.PaymentId = Convert.ToInt32(reader["PaymentId"]);
+                    response.PaymentName = reader["PaymentName"].ToString();
+                    response.IsActive = Convert.ToBoolean(reader["IsActive"]);
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch(Exception ex)
+            {
+                throw new Exception("An error accure to fetch delete payment by id", ex);
+            }
+            return response;
+        }
+
+        public List<PaymentModal> GetPaymentIsActive()
+        {
+            var response = new List<PaymentModal>();
+
+            try
+            {
+                 if(_sqlConnection.State != ConnectionState.Open)
+                {
+                    _sqlConnection.Open();
+                }
+
+
+                string query = "SELECT PaymentId, PaymentName, IsActive FROM payment WHERE IsActive = 1";
+
+                SqlCommand command = new SqlCommand(query, _sqlConnection);
+
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        response.Add(new PaymentModal
+                        {
+                               PaymentId = Convert.ToInt32(reader["PaymentId"]),
+                               PaymentName = reader["PaymentName"].ToString(),
+                               IsActive = Convert.ToBoolean(reader["IsActive"]),
+                        });
+                    }
+                }
+                
+               
+            }
+            catch(Exception ex)
+            {
+                throw new Exception("Fetching an error in payment isActive", ex);
+            }
+            finally
+            {
+                _sqlConnection.Close();
+            }
+            return response;
+        }
     }
 }
