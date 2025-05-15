@@ -1,4 +1,4 @@
-﻿using LIMSAPI.Models;
+﻿using LIMSAPI.Models.Master;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.Data.SqlClient;
 

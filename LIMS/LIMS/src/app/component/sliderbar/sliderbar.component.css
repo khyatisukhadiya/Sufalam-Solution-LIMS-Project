@@ -196,7 +196,7 @@ button {
 /* ========================== */
 /* Responsive Adjustments     */
 /* ========================== */
-@media screen and (min-width: 768px) {
+@media screen and (min-width: 200px) {
   :host ::ng-deep body {
     margin: calc(var(--header-height) + 1rem) 0 0 0;
     padding-left: calc(var(--nav-width) + 2rem);
@@ -221,11 +221,14 @@ button {
     padding: 1rem 1rem 0 0;
   }
 
-  .show {
-    width: calc(var(--nav-width) + 156px);
-  }
+  /* Toggle sidebar open/close */
+.show {
+  width: calc(var(--nav-width) + 156px); /* Or adjust as needed */
+}
 
-  .body-pd {
-    padding-left: calc(var(--nav-width) + 188px);
-  }
+
+ .body-pd {
+  padding-left: calc(var(--nav-width) + 188px); /* Adjust to match .show */
+}
+
 }

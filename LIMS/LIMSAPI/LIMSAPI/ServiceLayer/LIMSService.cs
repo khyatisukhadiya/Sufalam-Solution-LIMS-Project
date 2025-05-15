@@ -1,5 +1,6 @@
 ﻿using LIMSAPI.Helpers;
-using LIMSAPI.Models;
+using LIMSAPI.Models.FinanceModal;
+using LIMSAPI.Models.Master;
 using LIMSAPI.RepositryLayer;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 
@@ -254,5 +255,51 @@ namespace LIMSAPI.ServiceLayer
         {
             return _lIMSRepositryInterface.GetTestIsActive();
         }
+
+
+
+        // SERVICE
+
+        public ServiceModal AddUpdatedServiceModal(ServiceModal serviceModal, List<TestModal> testModals)
+        {
+           return _lIMSRepositryInterface.AddUpdatedServiceModal(serviceModal, testModals);
+        }
+
+        public List<ServiceModal> GetServiceByFilter(FilterModel filterModel)
+        {
+            return _lIMSRepositryInterface.GetServiceByFilter(filterModel); 
+        }
+
+        public ServiceModal GetServiceById(int ServiceId)
+        {
+            return _lIMSRepositryInterface.GetServiceById(ServiceId);
+        }
+
+        public ServiceModal DeleteServiceById(int ServiceId)
+        {
+            return _lIMSRepositryInterface.DeleteServiceById(ServiceId);
+        }
+
+        public List<ServiceModal> GetServiceIsActive()
+        {
+            return _lIMSRepositryInterface.GetServiceIsActive();
+        }
+
+        public ServiceTestMap DeleteServiceMapTestById(int ServiceTestId)
+        {
+            return _lIMSRepositryInterface.DeleteServiceMapTestById(ServiceTestId);
+        }
+
+
+
+        // PAYMENT
+        public PaymentModal AddUpdatedPayment(PaymentModal paymentModal)
+        {
+            return _lIMSRepositryInterface.AddUpdatedPayment(paymentModal);
+        }
+
+
+
+
     }
 }

@@ -1,6 +1,6 @@
-﻿    using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
-    namespace LIMSAPI.Models
+namespace LIMSAPI.Models.Master
     {
         public class CountryModal
         {

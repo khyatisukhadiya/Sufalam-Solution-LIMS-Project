@@ -4,7 +4,7 @@ using System.Text;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace LIMSAPI.Controllers
+namespace LIMSAPI.Controllers.MasterController
 {
     [Route("api/[controller]")]
     [ApiController]

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace LIMSAPI.Models
+namespace LIMSAPI.Models.Master
 {
     public class TestModal
     {
@@ -17,7 +17,7 @@ namespace LIMSAPI.Models
         [StringLength(5, MinimumLength = 1, ErrorMessage = "Test Code must be between 1 to 5 character.")]
         public string TestCode { get; set; }
 
-
+        public int ServiceTestId { get; set; }
         public bool IsActive { get; set; }
     }
 }

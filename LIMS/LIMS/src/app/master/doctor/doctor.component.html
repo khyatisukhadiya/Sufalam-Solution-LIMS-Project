@@ -1,6 +1,6 @@
 <app-sliderbar></app-sliderbar>
 
-<div class="container p-3" style="max-width: 94%;">
+<div class="container p-3" style="max-width: 96%;">
   <div class="d-flex justify-content-between">
     <h4>Doctor</h4>
     <button class="btn btn-primary btn-sm" data-bs-target="#myModal" (click)="openModal()">Add</button>
@@ -57,7 +57,7 @@
 </div>
 
 <!-- show data table -->
-<div class="container my-3 p-3" style="max-width: 94%;">
+<div class="container my-3 p-3" style="max-width: 96%;">
   <div class="border border-dark rounded-2" *ngIf="searchClick">
     <div class="table-responsive">
       <table class="table table-borderless table-striped text-center" *ngIf="doctorList.length > 0; else noData">
@@ -168,7 +168,7 @@
                 <tr>
                   <td>Phone Number</td>
                   <td>
-                    <input type="text" class="form-control" placeholder="PhoneNumber" (input)="onInputChange()" formControlName="PhoneNumber">
+                    <input type="text" class="form-control" placeholder="PhoneNumber"  min="1" max="10" (input)="onInputChange()" formControlName="PhoneNumber">
                     <small *ngIf="doctorForm.controls['PhoneNumber']?.errors?.['required'] && submitted" class="text-danger">
                      Phone Number is required.
                     </small>

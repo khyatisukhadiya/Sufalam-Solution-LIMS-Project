@@ -1,7 +1,10 @@
 ﻿using System.Data;
+using System.Formats.Tar;
 using Azure;
+using Azure.Core;
 using LIMSAPI.Helpers;
-using LIMSAPI.Models;
+using LIMSAPI.Models.FinanceModal;
+using LIMSAPI.Models.Master;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 
@@ -1604,7 +1607,7 @@ namespace LIMSAPI.RepositryLayer
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while fetching brances.", ex);
+                throw new Exception("An error occurred while fetching doctor.", ex);
             }
         }
 
@@ -1971,6 +1974,508 @@ namespace LIMSAPI.RepositryLayer
                 throw new Exception("Error fetching all test", ex);
             }
 
+            return response;
+        }
+
+
+
+        // SERVICE
+        public ServiceModal AddUpdatedServiceModal(ServiceModal serviceModal, List<TestModal> testModals)
+        {
+            var response = new ServiceModal();
+
+            try
+            {
+
+                if (_sqlConnection.State != ConnectionState.Open)
+                {
+                    _sqlConnection.Open();
+                }
+
+                string query;
+                SqlCommand command;
+
+                if (serviceModal.ServiceId > 0)
+                {
+                    // UPDATE + SELECT updated row
+                    query = @"
+                      UPDATE service 
+                      SET ServiceCode = @ServiceCode, ServiceName = @ServiceName, B2BAmount=@B2BAmount, B2CAmount=@B2CAmount 
+                      WHERE ServiceId = @ServiceId;
+
+                     SELECT ServiceId, ServiceCode, ServiceName, B2BAmount,B2CAmount,IsActive 
+                     FROM service 
+                     WHERE ServiceId = @ServiceId";            
+
+                    command = new SqlCommand(query, _sqlConnection);
+                    command.Parameters.AddWithValue("@ServiceId", serviceModal.ServiceId);
+                }
+                else
+                {
+                    // INSERT and return inserted ID
+                    query = @"
+                     INSERT INTO service (ServiceCode , ServiceName, B2BAmount, B2CAmount) 
+                     OUTPUT INSERTED.ServiceId 
+                     VALUES (@ServiceCode, @ServiceName, @B2BAmount, @B2CAmount)";
+
+                    command = new SqlCommand(query, _sqlConnection);
+                }
+
+                command.Parameters.AddWithValue("@ServiceCode", serviceModal.ServiceCode);
+                command.Parameters.AddWithValue("@ServiceName", serviceModal.ServiceName);
+                command.Parameters.AddWithValue("@B2BAmount", serviceModal.B2BAmount);
+                command.Parameters.AddWithValue("@B2CAmount", serviceModal.B2CAmount);
+
+                if (serviceModal.ServiceId > 0)
+                {
+                    using var reader = command.ExecuteReader();
+
+                    // Move to the SELECT result set
+                    if (reader.Read())
+                    {
+                        response.ServiceId = Convert.ToInt32(reader["ServiceId"]);
+                        response.ServiceCode = reader["ServiceCode"].ToString();
+                        response.ServiceName = reader["ServiceName"].ToString();
+                        response.B2BAmount = Convert.ToInt32(reader["B2BAmount"]);
+                        response.B2CAmount = Convert.ToInt32(reader["B2CAmount"]);
+                        response.IsActive = Convert.ToBoolean(reader["IsActive"]);
+                    }
+                    else
+                    {
+                        throw new Exception("Update succeeded but no data returned.");
+                    }
+                }
+
+                else
+                {
+                    // Return inserted row info
+                    int insertedId = (int)command.ExecuteScalar();
+                    response.ServiceId = insertedId;
+                    response.ServiceCode = serviceModal.ServiceCode;
+                    response.ServiceName = serviceModal.ServiceName;
+                    response.B2BAmount = serviceModal.B2BAmount;
+                    response.B2CAmount = serviceModal.B2CAmount;
+                    response.IsActive = true;
+
+                    serviceModal.ServiceId = insertedId;
+                }
+
+                if (serviceModal.ServiceId > 0 && testModals != null && testModals.Count > 0)
+                {
+                    foreach (var testModal in testModals)
+                    {
+                        if (testModal.TestId > 0)
+                        {
+                            var checkQuery = @"SELECT ServiceTestId FROM serviceTestMap 
+                               WHERE ServiceId = @ServiceId AND TestId = @TestId";
+
+                            using (var checkCommand = new SqlCommand(checkQuery, _sqlConnection))
+                            {
+                                checkCommand.Parameters.AddWithValue("@ServiceId", serviceModal.ServiceId);
+                                checkCommand.Parameters.AddWithValue("@TestId", testModal.TestId);
+
+                                object existingId = checkCommand.ExecuteScalar();
+
+                                if (existingId == null)
+                                {
+                                    var insertTest = @"INSERT INTO serviceTestMap (ServiceId, TestId) 
+                                       VALUES (@ServiceId, @TestId)";
+                                    using (var insertCommand = new SqlCommand(insertTest, _sqlConnection))
+                                    {
+                                        insertCommand.Parameters.AddWithValue("@ServiceId", serviceModal.ServiceId);
+                                        insertCommand.Parameters.AddWithValue("@TestId", testModal.TestId);
+                                        insertCommand.ExecuteNonQuery();
+                                    }
+                                }
+                                else
+                                {
+                                    var updateTest = @"UPDATE serviceTestMap 
+                                       SET IsActive = 1 
+                                       WHERE ServiceTestId = @ServiceTestId";
+                                    using (var updateCommand = new SqlCommand(updateTest, _sqlConnection))
+                                    {
+                                        updateCommand.Parameters.AddWithValue("@ServiceTestId", (int)existingId);
+                                        updateCommand.ExecuteNonQuery();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error while saving service: " + ex.Message);
+            }
+            finally
+            {
+                _sqlConnection.Close();
+            }
+
+            return response;
+       
+        }
+
+        public List<ServiceModal> GetServiceByFilter(FilterModel filterModel)
+        {
+            var services = new List<ServiceModal>();
+
+            try
+            {
+               
+                services = _addFilter.GetFilteredList<ServiceModal>(
+                    tableName: "service",
+                    nameColumn: "ServiceName",
+                    idColumn: "ServiceId",
+                    codeColumn: "ServiceCode",
+                    filter: filterModel,
+                    mapFunc: reader => new ServiceModal
+                    {
+                        ServiceId = Convert.ToInt32(reader["ServiceId"]),
+                        ServiceCode = reader["ServiceCode"].ToString(),
+                        ServiceName = reader["ServiceName"].ToString(),
+                        B2BAmount = Convert.ToInt32(reader["B2BAmount"]),
+                        B2CAmount = Convert.ToInt32(reader["B2CAmount"]),
+                        IsActive = Convert.ToBoolean(reader["IsActive"]),
+                        Test = new List<TestModal>() 
+                    },
+                    selectColumns: "ServiceId, ServiceCode, ServiceName, B2BAmount, B2CAmount, IsActive"
+                );
+
+                
+                if (_sqlConnection.State != ConnectionState.Open)
+                    _sqlConnection.Open();
+
+           
+                foreach (var service in services)
+                {
+                    string testQuery = @"
+                SELECT t.TestId, t.TestCode, t.TestName
+                FROM serviceTestMap stm
+                INNER JOIN test t ON stm.TestId = t.TestId
+                WHERE stm.ServiceId = @ServiceId AND stm.IsActive = 1";
+
+                    using (var testCmd = new SqlCommand(testQuery, _sqlConnection))
+                    {
+                        testCmd.Parameters.AddWithValue("@ServiceId", service.ServiceId);
+
+                        using (var reader = testCmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                service.Test.Add(new TestModal
+                                {
+                                    TestId = Convert.ToInt32(reader["TestId"]),
+                                    TestCode = reader["TestCode"].ToString(),
+                                    TestName = reader["TestName"].ToString()
+                                });
+                            }
+                        }
+                    }
+                }
+
+                return services;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while fetching services with tests.", ex);
+            }
+            finally
+            {
+                if (_sqlConnection.State == ConnectionState.Open)
+                    _sqlConnection.Close();
+            }
+        }
+
+        public ServiceModal GetServiceById(int serviceId)
+        {
+            var response = new ServiceModal();
+
+            try
+            {
+                if (_sqlConnection.State != ConnectionState.Open)
+                {
+                    _sqlConnection.Open();  
+                }
+
+
+                string query = "SELECT * FROM service WHERE ServiceId = @ServiceId";
+                using (var command = new SqlCommand(query, _sqlConnection))
+                {
+                    command.Parameters.AddWithValue("@ServiceId", serviceId);
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            response.ServiceId = Convert.ToInt32(reader["ServiceId"]);
+                            response.ServiceCode = reader["ServiceCode"].ToString();
+                            response.ServiceName = reader["ServiceName"].ToString();
+                            response.B2BAmount = Convert.ToInt32(reader["B2BAmount"]);
+                            response.B2CAmount = Convert.ToInt32(reader["B2CAmount"]);
+                            response.IsActive = Convert.ToBoolean(reader["IsActive"]);
+                        }
+                        else
+                        {
+                            return null;
+                        }
+                    }
+                }
+
+
+                response.Test = new List<TestModal>();
+
+                string testQuery = @"
+                     SELECT t.TestId, t.TestCode, t.TestName, stm.ServiceTestId, stm.IsActive, stm.ServiceId
+                      FROM serviceTestMap stm
+                       INNER JOIN test t ON stm.TestId = t.TestId
+                          WHERE stm.ServiceId = @ServiceId AND stm.IsActive = 1";
+
+                using (var testCmd = new SqlCommand(testQuery, _sqlConnection))
+                {
+                    testCmd.Parameters.AddWithValue("@ServiceId", serviceId);
+
+                    using (var testReader = testCmd.ExecuteReader())
+                    {
+                        while (testReader.Read())
+                        {
+                            response.Test.Add(new TestModal
+                            {
+                                TestId = Convert.ToInt32(testReader["TestId"]),
+                                TestCode = testReader["TestCode"].ToString(),
+                                TestName = testReader["TestName"].ToString(),
+                                IsActive = Convert.ToBoolean(testReader["IsActive"]),
+                                ServiceTestId = Convert.ToInt32(testReader["ServiceTestId"])
+                            });
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error fetching service by ID: " + ex.Message);
+            }
+            finally
+            {
+                _sqlConnection.Close();
+            }
+
+            return response;
+        }
+
+        public ServiceModal DeleteServiceById(int ServiceId)
+        {
+            var response = new ServiceModal();
+            try
+            {
+                if (_sqlConnection.State != ConnectionState.Open)
+                    _sqlConnection.Open();
+
+                string query = @"UPDATE service SET IsActive = CASE WHEN IsActive = 1 THEN 0 ELSE 1 END WHERE  ServiceId= @ServiceId;
+
+                                SELECT ServiceId, ServiceName, ServiceCode, B2BAmount, B2CAmount, IsActive FROM service WHERE ServiceId = @ServiceId;";
+
+                var commond = new SqlCommand(query, _sqlConnection);
+                commond.Parameters.AddWithValue("@ServiceId", ServiceId);
+
+                var reader = commond.ExecuteReader();
+                if (reader.Read())
+                {
+                    response.ServiceId = Convert.ToInt32(reader["ServiceId"]);
+                    response.ServiceName = reader["ServiceName"].ToString();
+                    response.ServiceCode = reader["ServiceCode"].ToString();
+                    response.B2BAmount = Convert.ToInt32(reader["B2BAmount"]);
+                    response.B2CAmount = Convert.ToInt32(reader["B2CAmount"]);
+                    response.IsActive = Convert.ToBoolean(reader["IsActive"]);
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _sqlConnection.Close();
+            }
+            return response;
+        }
+
+        public List<ServiceModal> GetServiceIsActive()
+        {
+            var response = new List<ServiceModal>();
+
+            try
+            {
+
+                using (SqlConnection sqlConnection = new SqlConnection(_configuration["ConnectionStrings:DefaultConnection"]))
+                {
+
+                    sqlConnection.Open();
+
+
+                    string query = "SELECT ServiceId, ServiceName, ServiceCode,B2BAmount,B2CAmount, IsActive FROM service WHERE IsActive = 1";
+
+                    using (SqlCommand cmd = new SqlCommand(query, sqlConnection))
+                    {
+
+
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                response.Add(new ServiceModal
+                                {
+                                    ServiceId = Convert.ToInt32(reader["ServiceId"]),
+                                    ServiceName = reader["ServiceName"].ToString(),
+                                    ServiceCode = reader["ServiceCode"].ToString(),
+                                    B2BAmount = Convert.ToInt32(reader["B2BAmount"]),
+                                    B2CAmount = Convert.ToInt32(reader["B2CAmount"]),
+                                    IsActive = Convert.ToBoolean(reader["IsActive"]),
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception("Error fetching all service", ex);
+            }
+
+            return response;
+        }
+
+
+
+
+        // SERVICETESTMAP
+        public ServiceTestMap DeleteServiceMapTestById(int ServiceTestId)
+        {
+            var response = new ServiceTestMap();
+            try
+            {
+                if (_sqlConnection.State != ConnectionState.Open)
+                    _sqlConnection.Open();
+
+
+                           //select ServiceTestId,serviceTestMap.ServiceId, serviceTestMap.TestId, serviceTestMap.IsActive
+                           //      from serviceTestMap 
+                           //      inner join service on service.ServiceId = serviceTestMap.ServiceId
+                           //      inner join test on test.TestId = serviceTestMap.TestId
+                                 //delete from serviceTestMap where ServiceTestId = @ServiceTestId;
+
+                string query = @"select ServiceTestId,serviceTestMap.ServiceId, serviceTestMap.TestId, serviceTestMap.IsActive
+                                 from serviceTestMap 
+                                 inner join service on service.ServiceId = serviceTestMap.ServiceId
+                                 inner join test on test.TestId = serviceTestMap.TestId
+                                 UPDATE serviceTestMap 
+                                 SET IsActive = CASE WHEN IsActive = 1 THEN 0 ELSE 1 END 
+                                 WHERE ServiceTestId = @ServiceTestId;";
+
+
+                var commond = new SqlCommand(query, _sqlConnection);
+                commond.Parameters.AddWithValue("@ServiceTestId", ServiceTestId);
+
+                var reader = commond.ExecuteReader();
+                if (reader.Read())
+                {
+
+                    response.ServiceTestId = Convert.ToInt32(reader["ServiceTestId"]);
+                    response.ServiceId = Convert.ToInt32(reader["ServiceId"]);
+                    response.TestId = Convert.ToInt32(reader["TestId"]);
+                    response.IsActive = Convert.ToBoolean(reader["IsActive"]);
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _sqlConnection.Close();
+            }
+            return response;
+        }
+
+
+
+        // PAYMENT
+        public PaymentModal AddUpdatedPayment(PaymentModal paymentModal)
+        {
+            var response = new PaymentModal();
+
+            try
+            {
+                
+                if(_sqlConnection.State != ConnectionState.Open)
+                {
+                    _sqlConnection.Open();
+                }
+                SqlCommand command;
+
+                if (paymentModal.PaymentId > 0)
+                {
+                    string query = @"UPDATE payment
+                                    SET PaymentName = @PaymentName
+                                    WHERE PaymentId = @PaymentId
+                              
+                                    SELECT PaymentId, PaymentName, IsActive FROM payment WHERE PaymentId = @PaymentId";
+
+                     command = new SqlCommand(query, _sqlConnection);
+
+
+                    command.Parameters.AddWithValue("@PaymentId", paymentModal.PaymentId);
+                }
+                else
+                {
+                    string query = @"INSERT INTO payment(PaymentName) OUTPUT INSERTED.PaymentId VALUES (@PaymentName)";
+
+                    command = new SqlCommand(query, _sqlConnection);
+                }
+
+                command.Parameters.AddWithValue("@PaymentName", paymentModal.PaymentName);
+
+                if(paymentModal.PaymentId > 0)
+                {
+                    using var reader = command.ExecuteReader();
+
+                    if (reader.Read())
+                    {
+                        response.PaymentId = Convert.ToInt32(reader["PaymentId"]);
+                        response.PaymentName = reader["PaymentName"].ToString();
+                        response.IsActive = Convert.ToBoolean(reader["IsActive"]);
+                    }
+                    else
+                    {
+                        throw new Exception("Update successed but not data retrived.");
+                    }
+                }
+                else
+                {
+                    int insertedId = (int)command.ExecuteScalar();
+                    response.PaymentId = insertedId;
+                    response.PaymentName = paymentModal.PaymentName;
+                    response.IsActive = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error fetching data in to the payment",ex);
+            }
+            finally
+            {
+                _sqlConnection.Close();
+                _sqlConnection.Dispose();
+            }
             return response;
         }
     }

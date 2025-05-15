@@ -1,4 +1,5 @@
-﻿using LIMSAPI.Models;
+﻿using LIMSAPI.Models.FinanceModal;
+using LIMSAPI.Models.Master;
 
 namespace LIMSAPI.ServiceLayer
 {
@@ -116,5 +117,32 @@ namespace LIMSAPI.ServiceLayer
         TestModal DeleteTestById(int TestId);
 
         List<TestModal> GetTestIsActive();
+
+
+
+
+        // SERVICE 
+
+        ServiceModal AddUpdatedServiceModal(ServiceModal serviceModal, List<TestModal> testModals);
+
+        List<ServiceModal> GetServiceByFilter(FilterModel filterModel);
+
+        ServiceModal GetServiceById(int ServiceId);
+
+        ServiceModal DeleteServiceById(int ServiceId);
+
+        List<ServiceModal> GetServiceIsActive();
+
+
+
+        // SERVICETESTMAP 
+
+        ServiceTestMap DeleteServiceMapTestById(int ServiceTestId);
+
+
+
+        // PAYMENT
+
+        PaymentModal AddUpdatedPayment(PaymentModal paymentModal);
     }
 }

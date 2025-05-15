@@ -1,10 +1,10 @@
 ﻿using System.Net;
-using LIMSAPI.Models;
+using LIMSAPI.Models.Master;
 using LIMSAPI.RepositryLayer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace LIMSAPI.Controllers
+namespace LIMSAPI.Controllers.MasterController
 {
     [Route("api/[controller]/[Action]")]
     [ApiController]
@@ -23,7 +23,6 @@ namespace LIMSAPI.Controllers
             if (doctorModal == null)
             {
                 return Error("Invalid data.");
-
             }
 
             if (!ModelState.IsValid)
@@ -39,17 +38,19 @@ namespace LIMSAPI.Controllers
             var errors = new List<string>();
 
             var isDuplicate = _doctorSL.IsDuplicate(
-                 table: "doctor",
-                 nameCol: "DoctorName",
-                 codeCol: "DoctorCode",
-                 nameVal: doctorModal.DoctorName,
-                 codeVal: doctorModal.DoctorCode,
-                 excludeId: doctorModal.DoctorId,
-                 idCol: "DoctorId");
+                table: "doctor",
+                nameCol: "DoctorName",
+                codeCol: "DoctorCode",
+                nameVal: doctorModal.DoctorName,
+                codeVal: doctorModal.DoctorCode,
+                excludeId: doctorModal.DoctorId, // Exclude the current doctor
+                idCol: "DoctorId",
+                additionalConditions: additionalConditions
+            );
 
             if (isDuplicate)
             {
-                errors.Add("A doctor data is already exists.");
+                errors.Add("A doctor with this data already exists.");
             }
 
             if (errors.Any())
@@ -60,7 +61,7 @@ namespace LIMSAPI.Controllers
             try
             {
                 var result = _doctorSL.AddUpdatedDoctor(doctorModal);
-                string message =doctorModal.DoctorId > 0 ? "Doctor updated successfully." : "Doctor added successfully.";
+                string message = doctorModal.DoctorId > 0 ? "Doctor updated successfully." : "Doctor added successfully.";
                 return Success(message, result);
             }
             catch (Exception ex)
@@ -68,6 +69,7 @@ namespace LIMSAPI.Controllers
                 return Error(ex.Message, HttpStatusCode.InternalServerError);
             }
         }
+
 
         [HttpGet]
         public IActionResult GetDoctorsByFilter([FromQuery] FilterModel filterModel)

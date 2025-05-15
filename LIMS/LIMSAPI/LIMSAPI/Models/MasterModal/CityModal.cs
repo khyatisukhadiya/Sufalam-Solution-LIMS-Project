@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 
-namespace LIMSAPI.Models
+namespace LIMSAPI.Models.Master
 {
     public class CityModal
     {

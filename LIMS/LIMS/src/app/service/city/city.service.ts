@@ -12,7 +12,7 @@ export class CityService {
     return this.http.post<any>('https://localhost:7161/api/City/AddUpdatedCity', data);
   }
 
-  // Get all active States (formerly GetCountry)
+  // Get all active States 
   GetStates() {
     return this.http.get<any>('https://localhost:7161/api/State/GetStateIsActivate');
   }

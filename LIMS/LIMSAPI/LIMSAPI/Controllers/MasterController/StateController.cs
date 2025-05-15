@@ -1,11 +1,11 @@
 ﻿using LIMSAPI.Helpers;
-using LIMSAPI.Models;
+using LIMSAPI.Models.Master;
 using LIMSAPI.ServiceLayer;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics.Metrics;
 using System.Net;
 
-namespace LIMSAPI.Controllers
+namespace LIMSAPI.Controllers.MasterController
 {
     [Route("api/[controller]/[action]")]
     [ApiController]

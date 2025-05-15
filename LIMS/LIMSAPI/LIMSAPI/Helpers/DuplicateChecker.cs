@@ -21,8 +21,9 @@ namespace LIMSAPI.Helpers
             connection.Open();
 
             var query = $@"
-            SELECT COUNT(*) FROM [{table}]
-            WHERE ({nameCol} = @nameVal OR {codeCol} = @codeVal)";
+                   SELECT COUNT(*) 
+                       FROM [{table}] 
+                       WHERE ({nameCol} = @nameVal OR {codeCol} = @codeVal)";
 
             // Add additional conditions to the query if they exist
             if (additionalConditions != null && additionalConditions.Any())

@@ -1,4 +1,4 @@
-﻿namespace LIMSAPI.Models
+﻿namespace LIMSAPI.Models.Master
 {
     public class FilterModel
     {
