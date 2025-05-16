@@ -126,7 +126,7 @@
                 <tr>
                   <td>Doctor Code</td>
                   <td>
-                    <input type="text" class="form-control" placeholder="Doctor Code" (input)="onInputChange()" formControlName="DoctorCode">
+                    <input type="text" class="form-control" placeholder="Doctor Code" (input)="onInputChange()" formControlName="DoctorCode" #autofocus>
                     <small *ngIf="doctorForm.controls['DoctorCode']?.errors?.['required'] && submitted" class="text-danger">
                       Doctor code is required.
                     </small>

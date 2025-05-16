@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 using System.Formats.Tar;
 using Azure;
 using Azure.Core;
@@ -797,16 +798,16 @@ namespace LIMSAPI.RepositryLayer
 
                 if(areaModal.AreaId > 0)
                 {
-                    string query = $@" UPDATE area SET AreaCode = @AreaCode, AreaName = @AreaName, CityId = @CityId WHERE AreaId = @AreaId
+                    string query = $@" UPDATE area SET PinCode = @PinCode, AreaName = @AreaName, CityId = @CityId WHERE AreaId = @AreaId
 
-                                         SELECT a.AreaId, a.AreaCode, a.AreaName, a.CityId, a.IsActive , a.CityName
+                                         SELECT a.AreaId, a.PinCode, a.AreaName, c.CityId, a.IsActive , c.CityName
                                          FROM area a
                                          INNER JOIN city c ON a.CityId = c.CityId
                                          WHERE a.AreaId = @AreaId";
                     
                     using var common = new SqlCommand(query, _sqlConnection);
                     common.Parameters.AddWithValue("@AreaId", areaModal.AreaId);
-                    common.Parameters.AddWithValue("@AreaCode",areaModal.AreaCode);
+                    common.Parameters.AddWithValue("@PinCode", areaModal.PinCode);
                     common.Parameters.AddWithValue("@AreaName", areaModal.AreaName);
                     common.Parameters.AddWithValue("@CityId", areaModal.CityId);
 
@@ -814,11 +815,11 @@ namespace LIMSAPI.RepositryLayer
                     if (reader.Read())
                     {
                         response.AreaId = Convert.ToInt32(reader["AreaId"]);
-                        response.AreaCode = reader["AreaCode"].ToString();
+                        response.PinCode = reader["PinCode"].ToString();
                         response.AreaName = reader["AreaName"].ToString();
                         response.CityId = Convert.ToInt32(reader["CityId"]);
                         response.IsActive = Convert.ToBoolean(reader["IsActive"]);
-                        response.CityName = reader["CItyName"].ToString();
+                        response.CityName = reader["CityName"].ToString();
                     }
                     else
                     {
@@ -827,10 +828,10 @@ namespace LIMSAPI.RepositryLayer
                 }
                 else
                 {
-                    string query = $@"INSERT INTO area (AreaCode, AreaName, CityId) OUTPUT INSERTED.AreaId VALUES (@AreaCode, @AreaName, @CityId)";
+                    string query = $@"INSERT INTO area (PinCode, AreaName, CityId) OUTPUT INSERTED.AreaId VALUES (@PinCode, @AreaName, @CityId)";
 
                     var common = new SqlCommand(query, _sqlConnection);
-                    common.Parameters.AddWithValue("@AreaCode", areaModal.AreaCode);
+                    common.Parameters.AddWithValue("@PinCode", areaModal.PinCode);
                     common.Parameters.AddWithValue("@AreaName", areaModal.AreaName);
                     common.Parameters.AddWithValue("@CityId", areaModal.CityId);
 
@@ -843,7 +844,7 @@ namespace LIMSAPI.RepositryLayer
                     string CityName = (string?)cityCommon.ExecuteScalar() ?? "";
                     
                     response.AreaId = insertedId;
-                    response.AreaCode = areaModal.AreaCode;
+                    response.PinCode = areaModal.PinCode;
                     response.AreaName = areaModal.AreaName;
                     response.CityId = areaModal.CityId;
                     response.IsActive = true;
@@ -853,7 +854,7 @@ namespace LIMSAPI.RepositryLayer
             }
             catch (Exception ex)
             {
-                throw new Exception("Error fetxhing saving data", ex);
+                throw new Exception("Error fetching saving data" + ex.Message, ex);
             }
             finally
             {
@@ -875,19 +876,19 @@ namespace LIMSAPI.RepositryLayer
                 return _addFilter.GetFilteredList<AreaModal>(
                     tableName: query,
                     nameColumn: "AreaName",
-                    codeColumn: "AreaCode",
+                    codeColumn: "PinCode",
                     idColumn: "AreaId",
                     filter: filterModel,
                     mapFunc: reader => new AreaModal
                     {
                         AreaId = Convert.ToInt32(reader["AreaId"]),
-                        AreaCode = reader["AreaCode"].ToString(),
+                        PinCode = reader["PinCode"].ToString(),
                         AreaName = reader["AreaName"].ToString(),
                         IsActive = Convert.ToBoolean(reader["IsActive"]),
                         CityId = Convert.ToInt32(reader["CityId"]),
                         CityName = reader["CityName"].ToString()
                     },
-                    selectColumns : "a.AreaId, a.AreaCode, a.AreaName, a.IsActive, a.CityId, c.CityName",
+                    selectColumns : "a.AreaId, a.PinCode, a.AreaName, a.IsActive, a.CityId, c.CityName",
                     isActiveColumn : "a.IsActive"
                );
             }
@@ -909,7 +910,7 @@ namespace LIMSAPI.RepositryLayer
                 }
 
                 string query = $@"UPDATE area SET IsActive = CASE WHEN IsActive = 1 THEN 0 Else 1 END WHERE AreaId = @AreaId
-                                SELECT a.AreaId, a.AreaCode, a.AreaName, a.CityId, a.IsActive , c.CityName
+                                SELECT a.AreaId, a.PinCode, a.AreaName, a.CityId, a.IsActive , c.CityName
                                          FROM area a
                                          INNER JOIN city c ON a.CityId = c.CityId
                                          WHERE a.AreaId = @AreaId";
@@ -921,7 +922,7 @@ namespace LIMSAPI.RepositryLayer
                 if (reader.Read())
                 {
                     response.AreaId = Convert.ToInt32(reader["AreaId"]);
-                    response.AreaCode = reader["AreaCode"].ToString();
+                    response.PinCode = reader["PinCode"].ToString();
                     response.AreaName = reader["AreaName"].ToString();
                     response.CityId = Convert.ToInt32(reader["CityId"]);
                     response.IsActive = Convert.ToBoolean(reader["IsActive"]);
@@ -950,7 +951,7 @@ namespace LIMSAPI.RepositryLayer
                     _sqlConnection.Open();
                 }
 
-                string query = $@" SELECT a.AreaId, a.AreaCode, a.AreaName, a.CityId, a.IsActive , c.CityName
+                string query = $@" SELECT a.AreaId, a.PinCode, a.AreaName, a.CityId, a.IsActive , c.CityName
                                          FROM area a
                                          INNER JOIN city c ON a.CityId = c.CityId
                                          WHERE a.IsActive = 1";
@@ -964,7 +965,7 @@ namespace LIMSAPI.RepositryLayer
                             response.Add(new AreaModal
                             {
                                 AreaId = Convert.ToInt32(reader["AreaId"]),
-                                AreaCode = reader["AreaCode"].ToString(),
+                                PinCode = reader["PinCode"].ToString(),
                                 AreaName = reader["AreaName"].ToString(),
                                 IsActive = Convert.ToBoolean(reader["IsActive"]),
                                 CityId = Convert.ToInt32(reader["CityId"]),
@@ -992,7 +993,7 @@ namespace LIMSAPI.RepositryLayer
                     _sqlConnection.Open();
                 }
 
-                string query = $@"SELECT a.AreaId, a.AreaCode, a.AreaName, a.CityId, a.IsActive , c.CityName
+                string query = $@"SELECT a.AreaId, a.PinCode, a.AreaName, a.CityId, a.IsActive , c.CityName
                                          FROM area a
                                          INNER JOIN city c ON a.CityId = c.CityId
                                          WHERE a.AreaId = @AreaId";
@@ -1004,7 +1005,7 @@ namespace LIMSAPI.RepositryLayer
                 if (reader.Read())
                 {
                     response.AreaId = Convert.ToInt32(reader["AreaId"]);
-                    response.AreaCode = reader["AreaCode"].ToString();
+                    response.PinCode = reader["PinCode"].ToString();
                     response.AreaName = reader["AreaName"].ToString();
                     response.CityId = Convert.ToInt32(reader["CityId"]);
                     response.IsActive = Convert.ToBoolean(reader["IsActive"]);
@@ -2425,10 +2426,10 @@ namespace LIMSAPI.RepositryLayer
                 if (paymentModal.PaymentId > 0)
                 {
                     string query = @"UPDATE payment
-                                    SET PaymentName = @PaymentName
+                                    SET PaymentName = @PaymentName, IsCash = @IsCash, IsCheque = @IsCheque, IsOnline = @IsOnline 
                                     WHERE PaymentId = @PaymentId
                               
-                                    SELECT PaymentId, PaymentName, IsActive FROM payment WHERE PaymentId = @PaymentId";
+                                    SELECT PaymentId, PaymentName, IsCash, IsCheque, IsOnline, IsActive FROM payment WHERE PaymentId = @PaymentId";
 
                      command = new SqlCommand(query, _sqlConnection);
 
@@ -2437,12 +2438,15 @@ namespace LIMSAPI.RepositryLayer
                 }
                 else
                 {
-                    string query = @"INSERT INTO payment(PaymentName) OUTPUT INSERTED.PaymentId VALUES (@PaymentName)";
+                    string query = @"INSERT INTO payment(PaymentName, IsCash, IsCheque, IsOnline) OUTPUT INSERTED.PaymentId VALUES (@PaymentName, @IsCash, @IsCheque, @IsOnline)";
 
                     command = new SqlCommand(query, _sqlConnection);
                 }
 
                 command.Parameters.AddWithValue("@PaymentName", paymentModal.PaymentName);
+                command.Parameters.AddWithValue("@IsCash", paymentModal.IsCash);
+                command.Parameters.AddWithValue("@IsCheque", paymentModal.IsCheque);
+                command.Parameters.AddWithValue("IsOnline", paymentModal.IsOnline);
 
                 if(paymentModal.PaymentId > 0)
                 {
@@ -2452,6 +2456,9 @@ namespace LIMSAPI.RepositryLayer
                     {
                         response.PaymentId = Convert.ToInt32(reader["PaymentId"]);
                         response.PaymentName = reader["PaymentName"].ToString();
+                        response.IsCash = Convert.ToBoolean(reader["IsCash"]);
+                        response.IsCheque = Convert.ToBoolean(reader["IsCheque"]);
+                        response.IsOnline = Convert.ToBoolean(reader["IsOnline"]);
                         response.IsActive = Convert.ToBoolean(reader["IsActive"]);
                     }
                     else
@@ -2464,6 +2471,9 @@ namespace LIMSAPI.RepositryLayer
                     int insertedId = (int)command.ExecuteScalar();
                     response.PaymentId = insertedId;
                     response.PaymentName = paymentModal.PaymentName;
+                    response.IsCash = paymentModal.IsCash;
+                    response.IsCheque = paymentModal.IsCheque;  
+                    response.IsOnline = paymentModal.IsOnline;
                     response.IsActive = true;
                 }
             }
@@ -2493,9 +2503,12 @@ namespace LIMSAPI.RepositryLayer
                     {
                         PaymentId = Convert.ToInt32(reader["PaymentId"]),
                         PaymentName = reader["PaymentName"].ToString(),
+                        IsCash = Convert.ToBoolean(reader["IsCash"]),
+                        IsCheque = Convert.ToBoolean(reader["IsCash"]),
+                        IsOnline = Convert.ToBoolean(reader["IsOnline"]),
                         IsActive = Convert.ToBoolean(reader["IsActive"]),
                     },
-                    selectColumns: "PaymentId, PaymentName, IsActive"
+                    selectColumns: "PaymentId, PaymentName, IsCash, IsCheque, IsOnline, IsActive"
                 );
             }
             catch (Exception ex)
@@ -2528,6 +2541,9 @@ namespace LIMSAPI.RepositryLayer
                 {
                     response.PaymentId = Convert.ToInt32(readre["PaymentId"]);
                     response.PaymentName = readre["PaymentName"].ToString();
+                    response.IsCash = Convert.ToBoolean(readre["IsCash"]);
+                    response.IsCheque = Convert.ToBoolean(readre["IsCheque"]);
+                    response.IsOnline = Convert.ToBoolean(readre["IsOnline"]);
                     response.IsActive = Convert.ToBoolean(readre["IsActive"]);
                 }
                 else
@@ -2571,6 +2587,9 @@ namespace LIMSAPI.RepositryLayer
                 {
                     response.PaymentId = Convert.ToInt32(reader["PaymentId"]);
                     response.PaymentName = reader["PaymentName"].ToString();
+                    response.IsCash = Convert.ToBoolean(reader["IsCash"]);
+                    response.IsCheque = Convert.ToBoolean(reader["IsCheque"]);
+                    response.IsOnline = Convert.ToBoolean(reader["IsOnline"]);
                     response.IsActive = Convert.ToBoolean(reader["IsActive"]);
                 }
                 else
@@ -2597,7 +2616,7 @@ namespace LIMSAPI.RepositryLayer
                 }
 
 
-                string query = "SELECT PaymentId, PaymentName, IsActive FROM payment WHERE IsActive = 1";
+                string query = "SELECT PaymentId, PaymentName,IsCash, IsCheque, IsOnline, IsActive FROM payment WHERE IsActive = 1";
 
                 SqlCommand command = new SqlCommand(query, _sqlConnection);
 
@@ -2609,7 +2628,10 @@ namespace LIMSAPI.RepositryLayer
                         {
                                PaymentId = Convert.ToInt32(reader["PaymentId"]),
                                PaymentName = reader["PaymentName"].ToString(),
-                               IsActive = Convert.ToBoolean(reader["IsActive"]),
+                            IsCash = Convert.ToBoolean(reader["IsCash"]),
+                            IsCheque = Convert.ToBoolean(reader["IsCash"]),
+                            IsOnline = Convert.ToBoolean(reader["IsOnline"]),
+                            IsActive = Convert.ToBoolean(reader["IsActive"]),
                         });
                     }
                 }
@@ -2626,5 +2648,8 @@ namespace LIMSAPI.RepositryLayer
             }
             return response;
         }
+
+
+
     }
 }

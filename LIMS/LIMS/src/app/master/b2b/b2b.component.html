@@ -122,7 +122,7 @@
                 <tr>
                   <td>B2B Code</td>
                   <td>
-                    <input type="text" class="form-control" placeholder="B2B Code" (input)="onInputChange()" formControlName="b2BCode">
+                    <input type="text" class="form-control" placeholder="B2B Code" (input)="onInputChange()" formControlName="b2BCode" #autofocus>
                     <small *ngIf="b2bForm.controls['b2BCode']?.errors?.['required'] && submitted" class="text-danger">
                       B2B code is required.
                     </small>

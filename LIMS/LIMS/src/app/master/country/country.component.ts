@@ -17,6 +17,8 @@ import { SliderbarComponent } from "../../component/sliderbar/sliderbar.componen
 })
 export class CountryComponent implements OnInit {
   @ViewChild('myModal') modal: ElementRef | undefined;
+@ViewChild('autofocus') autofocus!: ElementRef;
+
   countryForm: FormGroup = new FormGroup({});
   countryService = inject(CountryService)
   filteredCountries: any = [];
@@ -45,6 +47,9 @@ export class CountryComponent implements OnInit {
     
     if (countryModal != null) {
       countryModal.style.display = "block";
+      countryModal.addEventListener('shown.bs.modal', () => {
+        this.autofocus?.nativeElement.focus();
+      }, { once: true });
     }
 
     if (this.modal?.nativeElement) {

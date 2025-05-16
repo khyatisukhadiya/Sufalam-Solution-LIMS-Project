@@ -19,7 +19,7 @@ namespace LIMSAPI.Controllers.MasterController
 
         [HttpPost]
 
-        public IActionResult AddUpdatedArea(AreaModal areaModal)
+        public IActionResult AddUpdatedArea([FromBody] AreaModal areaModal)
         {
             if(areaModal == null)
             {
@@ -32,6 +32,8 @@ namespace LIMSAPI.Controllers.MasterController
                     .Select(v => v.Errors[0])
                     .Select(e => e.ErrorMessage)
                     .ToList();
+
+                return BadRequest(new { success = false, errors = validationError });
             }
 
             var errors = new List<string>();
@@ -39,9 +41,9 @@ namespace LIMSAPI.Controllers.MasterController
             var isDuplicate = _areaSL.IsDuplicate(
                 table: "area",
                 nameCol: "AreaName",
-                codeCol: "AreaCode",
+                codeCol: "PinCode",
                 nameVal: areaModal.AreaName,
-                codeVal: areaModal.AreaCode,
+                codeVal: areaModal.PinCode,
                 excludeId: areaModal.AreaId,
                 idCol: "AreaId",
                 additionalConditions: new Dictionary<string, object>
@@ -51,7 +53,7 @@ namespace LIMSAPI.Controllers.MasterController
 
             if (isDuplicate)
             {
-                errors.Add("A city with the same name or code already exists in the selected city.");
+                errors.Add("A area with the same name or PinCode already exists in the selected city.");
             }
 
             if (errors.Any())

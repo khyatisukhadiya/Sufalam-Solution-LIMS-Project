@@ -99,7 +99,7 @@
               <div class="mb-3 row">
                 <label class="col-sm-4 col-form-label fw-bold">Service Code</label>
                 <div class="col-sm-8">
-                  <input type="text" class="form-control" formControlName="ServiceCode" (input)="onInputChange()">
+                  <input type="text" class="form-control" placeholder="Service Code" formControlName="ServiceCode" (input)="onInputChange()" #autofocus>
                   <div *ngIf="serviceForm.controls['ServiceCode']?.errors?.['required'] && submitted"
                     class="text-danger">
                     Service code is required.
@@ -113,7 +113,7 @@
               <div class="mb-3 row">
                 <label class="col-sm-4 col-form-label fw-bold">Service Name</label>
                 <div class="col-sm-8">
-                  <input type="text" class="form-control" formControlName="ServiceName" (input)="onInputChange()">
+                  <input type="text" class="form-control" placeholder="ServiceName" formControlName="ServiceName" (input)="onInputChange()">
                   <div *ngIf="serviceForm.controls['ServiceName']?.errors?.['required'] && submitted"
                     class="text-danger">
                     Service Name is required.

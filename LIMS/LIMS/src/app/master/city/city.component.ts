@@ -16,7 +16,7 @@ import { SliderbarComponent } from "../../component/sliderbar/sliderbar.componen
 })
 export class CityComponent implements OnInit {
   @ViewChild('myModal') modal: ElementRef | undefined;
-
+@ViewChild('autofocus') autofocus !: ElementRef;
   cityForm: FormGroup = new FormGroup({});
   cityService = inject(CityService);
 
@@ -54,6 +54,9 @@ export class CityComponent implements OnInit {
     const modalEl = document.getElementById('myModal');
     if (modalEl) {
       modalEl.style.display = 'block';
+      modalEl.addEventListener('shown.bs.modal', () => {
+        this.autofocus?.nativeElement.focus();
+      }, { once: true });
     }
 
     if (this.modal?.nativeElement) {

@@ -17,6 +17,7 @@ import { AreaModal } from '../../modal/MasterModel/areaModal';
 })
 export class AreaComponent implements OnInit {
   @ViewChild('myModal') modal: ElementRef | undefined;
+  @ViewChild('autofocus') autofocus !: ElementRef;
 
   areaForm: FormGroup = new FormGroup({});
   areaService = inject(AreaService);
@@ -27,13 +28,13 @@ export class AreaComponent implements OnInit {
   submitted: boolean = false;
   areaList: AreaModal[] = [];
   isEditModal = false;
-  searchCriteria = { areaId: '', areaCode: '', areaName: '', isActive: true };
+  searchCriteria = { areaId: '', pinCode: '', areaName: '', isActive: true };
   errorMessage: string = '';
   validationErrors: string[] = [];
   formErrors: any = {};
   toastMessage: string = '';
 
-  constructor(private fb: FormBuilder, private toastr: ToastrService) {}
+  constructor(private fb: FormBuilder, private toastr: ToastrService) { }
 
   ngOnInit(): void {
     this.setForm();
@@ -55,6 +56,9 @@ export class AreaComponent implements OnInit {
     const modalEl = document.getElementById('myModal');
     if (modalEl) {
       modalEl.style.display = 'block';
+      modalEl.addEventListener('shown.bs.modal', () => {
+        this.autofocus?.nativeElement.focus();
+      }, { once: true });
     }
 
     if (this.modal?.nativeElement) {
@@ -84,7 +88,7 @@ export class AreaComponent implements OnInit {
     this.areaForm.reset({
       AreaId: 0,
       AreaName: '',
-      AreaCode: '',
+      PinCode: '',
       cityId: null,
       isActive: true
     });
@@ -153,7 +157,7 @@ export class AreaComponent implements OnInit {
     this.areaForm = this.fb.group({
       AreaId: [{ value: 0, disabled: true }],
       AreaName: ['', Validators.required],
-      AreaCode: ['', Validators.required],
+      PinCode: ['', Validators.required],
       isActive: [true],
       cityId: [null, Validators.required]
     });
@@ -164,7 +168,7 @@ export class AreaComponent implements OnInit {
 
     const filter = {
       name: this.searchCriteria.areaName?.trim() || '',
-      code: this.searchCriteria.areaCode?.trim() || '',
+      code: this.searchCriteria.pinCode?.trim() || '',
       id: this.searchCriteria.areaId || null,
       isActive: this.searchCriteria.isActive
     };
@@ -185,7 +189,7 @@ export class AreaComponent implements OnInit {
 
       this.areaForm.patchValue({
         AreaId: area.areaId,
-        AreaCode: area.areaCode,
+        PinCode: area.pinCode,
         AreaName: area.areaName,
         cityId: area.cityId,
         isActive: area.isActive
@@ -215,8 +219,11 @@ export class AreaComponent implements OnInit {
     this.searchCriteria = {
       areaId: '',
       areaName: '',
-      areaCode: '',
+      pinCode: '',
       isActive: true
     };
   }
+
+
+
 }

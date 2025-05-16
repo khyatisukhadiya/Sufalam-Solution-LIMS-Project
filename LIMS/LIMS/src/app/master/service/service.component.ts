@@ -18,6 +18,8 @@ import { SliderbarComponent } from "../../component/sliderbar/sliderbar.componen
 })
 export class ServiceComponent implements OnInit {
   @ViewChild('myModal') modal: ElementRef | undefined;
+@ViewChild('autofocus') autofocus!: ElementRef;
+
   serviceForm: FormGroup = new FormGroup({});
   serviceService = inject(ServiceService)
   filteredServices: any = [];
@@ -62,6 +64,11 @@ export class ServiceComponent implements OnInit {
 
     if (modalEl != null) {
       modalEl.style.display = "block";
+      modalEl.addEventListener('shown.bs.modal', () => {
+        if (this.autofocus) {
+          this.autofocus.nativeElement.focus();
+        }
+      }); 
     }
     this.selectedTab = 'general';
 

@@ -16,7 +16,9 @@ import { paymentModel } from '../../modal/FinanceModel/payment';
   styleUrl: './payment.component.css'
 })
 export class PaymentComponent implements OnInit {
-  @ViewChild('myModal') modal: ElementRef | undefined;
+  @ViewChild('myModal') modal: ElementRef | undefined;  
+@ViewChild('autofocus') autofocus !: ElementRef;
+
   paymentForm: FormGroup = new FormGroup({});
   paymentService = inject(PaymentService)
   filteredPayments: any = [];
@@ -45,6 +47,11 @@ export class PaymentComponent implements OnInit {
 
     if (paymentModal != null) {
       paymentModal.style.display = "block";
+      paymentModal.addEventListener('shown.bs.modal', () => { 
+        if (this.autofocus) {
+          this.autofocus.nativeElement.focus();
+        }
+      });
     }
 
     if (this.modal?.nativeElement) {
@@ -142,7 +149,9 @@ export class PaymentComponent implements OnInit {
     this.paymentForm = this.fb.group({
       PaymentId: [{ value: 0, disabled: true }],
       PaymentName: ['', Validators.required],
-      PaymentCode: ['', Validators.required],
+      isCash: [false],
+      isCheque: [false],
+      isOnline: [false],
       isActive: [true],
     });
   }
@@ -175,6 +184,9 @@ export class PaymentComponent implements OnInit {
         this.paymentForm.patchValue({
           PaymentId : res.paymentId,
           PaymentName : res.paymentName,
+          isCash : res.isCash,
+          isCheque : res.isCheque,
+          isOnline : res.isOnline,
           isActive : res.isActive
         });
         this.isEditModal = true;
@@ -207,4 +219,15 @@ export class PaymentComponent implements OnInit {
     };
   }
 
+
+  onCheckboxChange(selected: 'isCash' | 'isCheque' | 'isOnline') {
+    // Reset all to false
+    this.paymentForm.patchValue({
+      isCash:     false,
+      isCheque:   false,
+      isOnline: false
+    });
+    // Then set the chosen one to true
+    this.paymentForm.get(selected)?.setValue(true);
+  }
 }

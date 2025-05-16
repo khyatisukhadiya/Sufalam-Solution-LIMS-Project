@@ -17,6 +17,8 @@ import { b2bModal } from '../../modal/MasterModel/b2bModal';
 })
 export class B2BComponent implements OnInit {
   @ViewChild('myModal') modal: ElementRef | undefined;
+@ViewChild('autofocus') autofocus!: ElementRef;
+
   b2bForm: FormGroup = new FormGroup({});
   b2bService = inject(B2BService);
   filteredB2Bs: any = [];
@@ -43,6 +45,9 @@ export class B2BComponent implements OnInit {
 
     if (b2bModal != null) {
       b2bModal.style.display = "block";
+      b2bModal.addEventListener('shown.bs.modal', () => {
+        this.autofocus?.nativeElement.focus();
+      }, { once: true });
     }
 
     if (this.modal?.nativeElement) {

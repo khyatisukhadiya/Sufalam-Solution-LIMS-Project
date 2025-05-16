@@ -17,6 +17,9 @@ import { testModal } from '../../modal/MasterModel/testModal';
 })
 export class TestComponent implements OnInit {
   @ViewChild('myModal') modal: ElementRef | undefined;
+@ViewChild('autofocus') autofocus!: ElementRef;
+
+
   testForm: FormGroup = new FormGroup({});
   testService = inject(TestService)
   filteredTests: any = [];
@@ -43,6 +46,11 @@ export class TestComponent implements OnInit {
 
     if (testModal != null) {
       testModal.style.display = "block";
+      testModal.addEventListener('shown.bs.modal', () => {
+        if (this.autofocus) {
+          this.autofocus.nativeElement.focus();
+        }
+      });
     }
 
     if (this.modal?.nativeElement) {

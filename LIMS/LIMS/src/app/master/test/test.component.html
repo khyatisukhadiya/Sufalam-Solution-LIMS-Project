@@ -124,7 +124,7 @@
                                     <td>Test Code</td>
                                     <td>
                                         <input type="text" class="form-control" placeholder="Test Code"
-                                            (input)="onInputChange()" formControlName="TestCode">
+                                            (input)="onInputChange()" formControlName="TestCode" #autofocus>
                                         <!-- Frontend Validation: required -->
                                         <small *ngIf="testForm.controls['TestCode']?.errors?.['required'] && submitted"
                                             class="text-danger">

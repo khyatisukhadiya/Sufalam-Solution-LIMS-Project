@@ -130,7 +130,7 @@
                                 <tr>
                                     <td>State Code</td>
                                     <td><input type="text" class="form-control" placeholder="State Code"
-                                            (input)="onInputChange()" formControlName="StateCode">
+                                            (input)="onInputChange()" formControlName="StateCode" #autofocus>
 
                                         <!-- Frontend Validation: required -->
                                         <div *ngIf="stateForm.controls['StateCode']?.errors?.['required'] && submitted"

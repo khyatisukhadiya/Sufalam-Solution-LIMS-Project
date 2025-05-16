@@ -16,6 +16,8 @@ import { branchModal } from '../../modal/MasterModel/branchModal';
 })
 export class BranchComponent implements OnInit {
   @ViewChild('myModal') modal: ElementRef | undefined;
+@ViewChild('autofocus') autofocus !: ElementRef;
+
   branchForm: FormGroup = new FormGroup({});
   branchService = inject(BranchService)
   filteredBranches: any = [];
@@ -42,6 +44,9 @@ export class BranchComponent implements OnInit {
     
     if (branchModal != null) {
       branchModal.style.display = "block";
+      branchModal.addEventListener('shown.bs.modal', () => {
+        this.autofocus.nativeElement.focus(),{ once: true};
+        });
     }
 
     if (this.modal?.nativeElement) {

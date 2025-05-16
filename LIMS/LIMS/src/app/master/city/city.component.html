@@ -128,7 +128,7 @@
                                     <td>City Code</td>
                                     <td>
                                         <input type="text" class="form-control" placeholder="City Code"
-                                            (input)="onInputChange()" formControlName="CityCode">
+                                            (input)="onInputChange()" formControlName="CityCode" #autofocus>
                                         <div *ngIf="cityForm.controls['CityCode']?.errors?.['required'] && submitted" class="text-danger">
                                             City code is required.
                                         </div>

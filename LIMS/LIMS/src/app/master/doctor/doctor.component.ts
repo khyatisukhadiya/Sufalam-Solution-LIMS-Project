@@ -16,6 +16,8 @@ import { doctorModal } from '../../modal/MasterModel/doctorModal';
 })
 export class DoctorComponent implements OnInit {
   @ViewChild('myModal') modal: ElementRef | undefined;
+@ViewChild('autofocus') autofocus!: ElementRef;
+
   doctorForm: FormGroup = new FormGroup({});
   doctorService = inject(DoctorService)
   filteredDoctors: any = [];
@@ -42,6 +44,11 @@ export class DoctorComponent implements OnInit {
 
     if (doctorModal != null) {
       doctorModal.style.display = "block";
+      doctorModal.addEventListener('shown.bs.modal', () => {  
+        if (this.autofocus) {
+          this.autofocus.nativeElement.focus();
+        }
+      });
     }
 
     if (this.modal?.nativeElement) {

@@ -1,6 +1,6 @@
 export interface AreaModal {
   areaId : number;
-  areaCode : string;
+  pinCode : string;
   areaName : String;
   isActive : boolean;
   cityId : number;

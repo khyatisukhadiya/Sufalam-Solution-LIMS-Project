@@ -14,7 +14,7 @@ namespace LIMSAPI.Models.Master
 
 
         [Required(ErrorMessage = "City Name is required.")]
-        [StringLength(15, MinimumLength = 1, ErrorMessage = "City Code must be between 1 and 15 characters.")]
+        [StringLength(15, MinimumLength = 1, ErrorMessage = "City name must be between 1 and 15 characters.")]
         public string CityName { get; set; }
 
 

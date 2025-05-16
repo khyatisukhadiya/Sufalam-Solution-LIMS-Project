@@ -20,8 +20,9 @@
             <!-- Area Code -->
             <div class="col-md-3 col-sm-6">
                 <div class="d-flex align-items-center">
-                    <label class="form-label mb-0" style="min-width: 120px;">Area Code</label>
-                    <input type="text" [(ngModel)]="searchCriteria.areaCode" class="form-control" placeholder="Area Code">
+                    <label class="form-label mb-0" style="min-width: 120px;">PinCode</label>
+                    <input type="text" [(ngModel)]="searchCriteria.pinCode" class="form-control"
+                        placeholder="PinCode">
                 </div>
             </div>
 
@@ -29,7 +30,8 @@
             <div class="col-md-3 col-sm-6">
                 <div class="d-flex align-items-center">
                     <label class="form-label mb-0" style="min-width: 120px;">Area Name</label>
-                    <input type="text" [(ngModel)]="searchCriteria.areaName" class="form-control" placeholder="Area Name">
+                    <input type="text" [(ngModel)]="searchCriteria.areaName" class="form-control"
+                        placeholder="Area Name">
                 </div>
             </div>
 
@@ -65,7 +67,7 @@
                     <tr>
                         <th>#</th>
                         <th>Area Id</th>
-                        <th>Area Code</th>
+                        <th>PinCode</th>
                         <th>Area Name</th>
                         <th>City</th>
                         <th>IsActive</th>
@@ -76,17 +78,16 @@
                     <tr *ngFor="let area of areaList; let index = index">
                         <td>{{ index + 1 }}</td>
                         <td>{{ area.areaId }}</td>
-                        <td>{{ area.areaCode }}</td>
+                        <td>{{ area.pinCode }}</td>
                         <td>{{ area.areaName }}</td>
                         <td>{{ area.cityName }}</td>
                         <td>{{ area.isActive ? 'Active' : 'Inactive' }}</td>
                         <td>
                             <button class="btn btn-primary btn-sm" (click)="onEdit(area.areaId)">&#9998;</button> ||
-                            <button class="btn btn-danger btn-sm" *ngIf="area.isActive"
-                                (click)="onDelete(area.areaId)">
+                            <button class="btn btn-danger btn-sm" *ngIf="area.isActive" (click)="onDelete(area.areaId)">
                                 <i class="fa-solid fa-trash-can"></i>
                             </button>
-                            <button class="btn btn-success btn-sm" *ngIf="!area.areaId"
+                            <button class="btn btn-success btn-sm" *ngIf="!area.isActive"
                                 (click)="onDelete(area.areaId)">
                                 <i class="fa-solid fa-check"></i>
                             </button>
@@ -125,15 +126,17 @@
                                             placeholder="Area Id"></td>
                                 </tr>
                                 <tr>
-                                    <td>Area Code</td>
+                                    <td>PinCode</td>
                                     <td>
-                                        <input type="text" class="form-control" placeholder="Area Code"
-                                            (input)="onInputChange()" formControlName="AreaCode">
-                                        <div *ngIf="areaForm.controls['CityCode']?.errors?.['required'] && submitted" class="text-danger">
-                                            Area code is required.
+                                        <input type="text" class="form-control" placeholder="Pin Code"
+                                            (input)="onInputChange()" formControlName="PinCode" #autofocus />
+                                        <div *ngIf="areaForm.controls['PinCode']?.errors?.['required'] && submitted"
+                                            class="text-danger">
+                                            PinCode is required.
                                         </div>
                                         <ng-container *ngFor="let error of validationErrors">
-                                            <div *ngIf="error.toLowerCase().includes('area code')" class="text-danger">{{ error }}</div>
+                                            <div *ngIf="error.toLowerCase().includes('pin code')" class="text-danger">
+                                                {{ error }}</div>
                                         </ng-container>
                                     </td>
                                 </tr>
@@ -142,11 +145,13 @@
                                     <td>
                                         <input type="text" class="form-control" placeholder="Area Name"
                                             (input)="onInputChange()" formControlName="AreaName">
-                                        <div *ngIf="areaForm.controls['AreaName']?.errors?.['required'] && submitted" class="text-danger">
+                                        <div *ngIf="areaForm.controls['AreaName']?.errors?.['required'] && submitted"
+                                            class="text-danger">
                                             Area name is required.
                                         </div>
                                         <ng-container *ngFor="let error of validationErrors">
-                                            <div *ngIf="error.toLowerCase().includes('area name')" class="text-danger">{{ error }}</div>
+                                            <div *ngIf="error.toLowerCase().includes('area name')" class="text-danger">
+                                                {{ error }}</div>
                                         </ng-container>
                                     </td>
                                 </tr>
@@ -159,11 +164,13 @@
                                                 {{ city.cityName }}
                                             </option>
                                         </select>
-                                        <div *ngIf="areaForm.controls['cityId']?.errors?.['required'] && submitted" class="text-danger">
+                                        <div *ngIf="areaForm.controls['cityId']?.errors?.['required'] && submitted"
+                                            class="text-danger">
                                             City is required.
                                         </div>
                                         <ng-container *ngFor="let error of validationErrors">
-                                            <div *ngIf="error.toLowerCase().includes('city')" class="text-danger">{{ error }}</div>
+                                            <div *ngIf="error.toLowerCase().includes('city')" class="text-danger">{{
+                                                error }}</div>
                                         </ng-container>
                                     </td>
                                 </tr>
@@ -175,7 +182,8 @@
                 <!-- Modal Footer -->
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-success">{{ isEditModal ? 'Update' : 'Save' }}</button>
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal" (click)="closeModal()">Close</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal"
+                        (click)="closeModal()">Close</button>
                 </div>
             </form>
         </div>

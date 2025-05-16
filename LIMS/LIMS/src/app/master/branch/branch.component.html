@@ -122,7 +122,7 @@
                 <tr>
                   <td>Branch Code</td>
                   <td>
-                    <input type="text" class="form-control" placeholder="Branch Code" (input)="onInputChange()" formControlName="BranchCode">
+                    <input type="text" class="form-control" placeholder="Branch Code" (input)="onInputChange()" formControlName="BranchCode" #autofocus>
                     <small *ngIf="branchForm.controls['BranchCode']?.errors?.['required'] && submitted" class="text-danger">
                       Branch code is required.
                     </small>

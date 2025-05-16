@@ -12,9 +12,9 @@ namespace LIMSAPI.Models.Master
         public string AreaName { get; set; }
 
 
-        [Required(ErrorMessage = "Area code is required.")]
-        [StringLength(5, MinimumLength = 1, ErrorMessage = "Area code must be between 1 and 5 characters.")]
-        public string AreaCode { get; set; }
+        [Required(ErrorMessage = "Pin code is required.")]
+        [StringLength(5, MinimumLength = 1, ErrorMessage = "Pin code must be between 1 and 5 characters.")]
+        public string PinCode { get; set; }
 
 
         [Required(ErrorMessage = "City Id is required.")]
