@@ -1,3 +1,4 @@
+﻿using Azure.Core;
 using LIMSAPI.Helpers;
 using LIMSAPI.RepositryLayer;
 using LIMSAPI.ServiceLayer;
@@ -38,11 +39,15 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+app.UseHttpsRedirection(); // Automatically redirects HTTP requests to HTTPS.
 
-app.UseAuthorization();
+app.UseAuthorization(); // authorization checks based on user identity and roles.
 
-app.UseCors(policy => policy.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod());
+app.UseCors(policy =>  // Browsers block requests from one origin to another(for security).
+                       // For example: Frontend on http://localhost:4200 calling backend on https://localhost:5001 → Blocked without CORS.
+                      policy.AllowAnyHeader()  // Allow all HTTP headers (like Content-Type, Authorization)
+                            .AllowAnyOrigin()  // Allow requests from any domain (e.g., http://localhost:4200)
+                            .AllowAnyMethod()); // Allow all HTTP methods (GET, POST, PUT, DELETE, etc.)
 
 
 app.MapControllers();

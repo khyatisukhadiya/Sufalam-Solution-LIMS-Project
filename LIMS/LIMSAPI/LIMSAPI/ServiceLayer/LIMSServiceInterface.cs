@@ -1,5 +1,7 @@
-﻿using LIMSAPI.Models.FinanceModal;
+﻿using LIMSAPI.Models;
+using LIMSAPI.Models.FinanceModal;
 using LIMSAPI.Models.Master;
+using LIMSAPI.Models.TransactionModal;
 
 namespace LIMSAPI.ServiceLayer
 {
@@ -10,7 +12,7 @@ namespace LIMSAPI.ServiceLayer
         public bool IsDuplicate(string table, string nameCol, string codeCol, string nameVal, string codeVal, int? excludeId = null, string idCol = "Id", Dictionary<string, object> additionalConditions = null);
 
 
-
+            
         // COUNTRY
         CountryModal AddUpdatedCountry(CountryModal countryModal); 
 
@@ -152,5 +154,14 @@ namespace LIMSAPI.ServiceLayer
         PaymentModal DeletePaymentById(int PaymentId);
 
         List<PaymentModal> GetPaymentIsActive();
+
+
+
+
+        // SAMPLE REGISTER
+
+        SampleRegister AddUpdateSampleRegister(SampleRegister sampleRegister);
+
+        List<SampleRegister> GetSampleByFilter(FilterModel filterModel);
     }
 }

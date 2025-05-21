@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using LIMSAPI.Models;
 using LIMSAPI.Models.Master;
 using LIMSAPI.RepositryLayer;
 using Microsoft.AspNetCore.Http;

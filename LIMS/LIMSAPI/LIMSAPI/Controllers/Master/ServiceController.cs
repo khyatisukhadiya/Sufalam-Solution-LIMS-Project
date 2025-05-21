@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using LIMSAPI.Models.Master;
+using LIMSAPI.Models;
 
 namespace LIMSAPI.Controllers.MasterController
 {

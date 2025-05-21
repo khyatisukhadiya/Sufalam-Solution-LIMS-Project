@@ -1,6 +1,8 @@
 ﻿using LIMSAPI.Helpers;
+using LIMSAPI.Models;
 using LIMSAPI.Models.FinanceModal;
 using LIMSAPI.Models.Master;
+using LIMSAPI.Models.TransactionModal;
 using LIMSAPI.RepositryLayer;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 
@@ -316,6 +318,19 @@ namespace LIMSAPI.ServiceLayer
         public List<PaymentModal> GetPaymentIsActive()
         {
             return _lIMSRepositryInterface.GetPaymentIsActive();
+        }
+
+
+
+        // SAMPLE REGISTER
+        public SampleRegister AddUpdateSampleRegister(SampleRegister sampleRegister)
+        {
+            return _lIMSRepositryInterface.AddUpdateSampleRegister(sampleRegister);
+        }
+
+        public List<SampleRegister> GetSampleByFilter(FilterModel filterModel)
+        {
+            return _lIMSRepositryInterface.GetSampleByFilter(filterModel);
         }
     }
 }

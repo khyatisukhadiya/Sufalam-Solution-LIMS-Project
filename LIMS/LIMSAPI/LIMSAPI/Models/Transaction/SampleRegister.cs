@@ -1,21 +1,33 @@
-﻿namespace LIMSAPI.Models.TransactionModal
+﻿using LIMSAPI.Models.Master;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+
+namespace LIMSAPI.Models.TransactionModal
 {
     public class SampleRegister
     {
 
-        public string SampleRegisterId { get; set; }
+        public int SampleRegisterId { get; set; }
 
         public DateTime Date { get; set; }
 
-        public int BranchId { get; set; }
 
-        public string BranchName { get; set; }
+        // BRANCH
+        public int? BranchId { get; set; }
+
+        public string? BranchName { get; set; }
+
+
 
         public int TotalAmount { get; set; }
 
-        public int B2BId { get; set; }
 
-        public string B2BName { get; set; }
+        // B2B 
+        public int? B2BId { get; set; }
+
+        public string? B2BName { get; set; }
+
+
+
 
         public string PhoneNumber { get; set; }
 
@@ -35,20 +47,36 @@
 
         public string Email { get; set; }
 
-        public int CityId { get; set; }
 
-        public string CityName { get; set; }
+        // CITY
+        public int? CityId { get; set; }
 
-        public int AreaId { get; set; }
+        public string? CityName { get; set; }
 
-        public string AreaName { get; set; }
+
+        // AREA
+        public int? AreaId { get; set; }
+
+        public string? AreaName { get; set; }
+
+
 
         public string Address { get; set; }
 
-        public int DoctorId { get; set; }
 
-        public string DoctorName { get; set; }
+        // DOCTOR
+        public int? DoctorId { get; set; }
+
+        public string? DoctorName { get; set; }
+
+
 
         public bool IsActive { get; set; }
+
+
+        // service
+
+        [ValidateNever]
+        public List<ServiceModal> service { get; set; } = new List<ServiceModal>();
     }
 }

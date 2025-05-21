@@ -1,13 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Formats.Tar;
+using System.Reflection;
 using Azure;
 using Azure.Core;
 using LIMSAPI.Helpers;
+using LIMSAPI.Models;
 using LIMSAPI.Models.FinanceModal;
 using LIMSAPI.Models.Master;
+using LIMSAPI.Models.TransactionModal;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace LIMSAPI.RepositryLayer
 {
@@ -361,7 +366,6 @@ namespace LIMSAPI.RepositryLayer
             return response;
         }
 
-
         public List<StateModal> GetAllStates(FilterModel filter)
         {
             try
@@ -553,7 +557,7 @@ namespace LIMSAPI.RepositryLayer
                 {
                     string query = $@"UPDATE city SET CityCode = @CityCode, CityName = @CityName, stateId = @StateId WHERE CityId = @CityId
 
-                                     SELECT c.CityId, c.CityCode, c.CityName, c.StateId, c.IsActive, c.StateName 
+                                     SELECT c.CityId, c.CityCode, c.CityName, s.StateId, c.IsActive, s.StateName 
                                      WHERE city c
                                      INNER JOIN state s ON c.StateId = s.StateId
                                      WHERE c.CityId = @CityId";
@@ -2651,5 +2655,296 @@ namespace LIMSAPI.RepositryLayer
 
 
 
+
+
+        // SAMPLEREGISTER
+
+        //public SampleRegister AddUpdateSampleRegister(SampleRegister sampleRegister, List<ServiceModal> serviceModals)
+        public SampleRegister AddUpdateSampleRegister(SampleRegister sampleRegister)
+        {
+            var response = new SampleRegister();
+
+            try
+            {
+                if(_sqlConnection.State != ConnectionState.Open)
+                {
+                    _sqlConnection.Open();
+                }
+
+                SqlCommand command;
+
+                if(sampleRegister.SampleRegisterId > 0)
+                {
+                    string query = @"UPDATE sampleregister
+                                    SET Date = @Date, BranchId = @BranchId, TotalAmount = @TotalAmount, B2BId = @B2BId , PhoneNumber = @PhoneNumber, Title = @Title, FirstName = @FirstName, MiddleName = @MiddleName, LastName =@LastName, DOB = @DOB, Age = @Age,
+                                        Gender = @Gender, Email = @Email, CityId = @CityId, AreaId = @AreaId, Address = @Address, DoctorId = @DoctorId,
+                                    WHERE SampleRegisterId = @SampleRegisterId
+                              
+                                    SELECT s.SampleRegisterId, s.Date, b.BranchId, b.BranchName, s.TotalAmount, k.B2BId, k.B2BName, s.PhoneNumber, s.Title, s.FirstName, s.MiddleName, s.LastName, s.DOB, s.Age, 
+                                           s.Gender, s.Email, c.CityId, c.CityName, a.AreaId, a.AreaName, s.Address, d.DoctorId, d.doctorName, s.IsActive
+                                    WHERE sampleregister s
+                                    INNER JOIN branch b ON s.BranchId = b.BranchId
+                                    INNER JOIN b2b k ON s.B2BId = k.B2BId
+                                    INNER JOIN city c ON s.CityId = c.CityId
+                                    INNER JOIN area a ON s.AreaId = a.AreaId
+                                    INNER JOIN doctor d ON s.DoctorId = d.DoctorId
+                                    WHERE s.sampleregisterId = @sampleregisterId";
+
+
+                    using var common = new SqlCommand(query, _sqlConnection);
+                    common.Parameters.AddWithValue("@SampleRegisterId", sampleRegister.SampleRegisterId);
+                    common.Parameters.AddWithValue("@Date", sampleRegister.Date);
+                    common.Parameters.AddWithValue("@BranchId", sampleRegister.BranchId);
+                    common.Parameters.AddWithValue("@TotalAmount", sampleRegister.TotalAmount);
+                    common.Parameters.AddWithValue("@B2BId", sampleRegister.B2BId);
+                    common.Parameters.AddWithValue("@PhoneNumber", sampleRegister.PhoneNumber);
+                    common.Parameters.AddWithValue("@Title", sampleRegister.Title);
+                    common.Parameters.AddWithValue("@FirstName", sampleRegister.FirstName);
+                    common.Parameters.AddWithValue("@MiddleName", sampleRegister.MiddleName);
+                    common.Parameters.AddWithValue("@LastName", sampleRegister.LastName);
+                    common.Parameters.AddWithValue("@DOB", sampleRegister.DOB);
+                    common.Parameters.AddWithValue("@Age", sampleRegister.Age);
+                    common.Parameters.AddWithValue("@Gender", sampleRegister.Gender);
+                    common.Parameters.AddWithValue("@Email", sampleRegister.Email);
+                    common.Parameters.AddWithValue("@CityId", sampleRegister.CityId);
+                    common.Parameters.AddWithValue("@AreaId", sampleRegister.AreaId);
+                    common.Parameters.AddWithValue("@Address", sampleRegister.Address);
+                    common.Parameters.AddWithValue("@DoctorId", sampleRegister.DoctorId);
+         
+
+                    using var reader = common.ExecuteReader();
+                    if (reader.Read())
+                    {
+                        response.SampleRegisterId = Convert.ToInt32(reader["SampleRegisterId"]);
+                        response.Date = Convert.ToDateTime(reader["Date"]);
+                        response.BranchId = Convert.ToInt32(reader["BranchId"]);
+                        response.BranchName = reader["BranchName"].ToString();
+                        response.TotalAmount = Convert.ToInt32(reader["TotalAmount"]);
+                        response.B2BId = Convert.ToInt32(reader["B2BId"]);
+                        response.B2BName = reader["B2BName"].ToString();
+                        response.PhoneNumber = reader["PhoneNumber"].ToString();
+                        response.Title = reader["Title"].ToString();
+                        response.FirstName = reader["FirstName"].ToString();
+                        response.MiddleName = reader["MiddleName"].ToString();
+                        response.LastName = reader["LastName"].ToString();  
+                        response.DOB = Convert.ToDateTime(reader["DOB"]);
+                        response.Age = Convert.ToInt32(reader["Age"]);
+                        response.Gender = reader["Gender"].ToString();
+                        response.Email = reader["Email"].ToString();
+                        response.CityId = Convert.ToInt32(reader["CityId"]);
+                        response.CityName = reader["CityName"].ToString();
+                        response.AreaId = Convert.ToInt32(reader["AreaId"]);
+                        response.AreaName = reader["AreaName"].ToString();
+                        response.Address = reader["Address"].ToString();
+                        response.DoctorId = Convert.ToInt32(reader["DoctorId"]);
+                        response.DoctorName = reader["DoctorName"].ToString();
+                        response.IsActive = Convert.ToBoolean(reader["IsActive"]);
+                    }
+                    else
+                    {
+                        throw new Exception("Update succcessed but not data returned.");
+                    }
+                }
+                else
+                {
+                    string query = $@"INSERT INTO sampleregister(Date, BranchId, TotalAmount, B2BId, PhoneNumber, Title, FirstName, MiddleName, LastName, DOB, Age, Gender, Email, CityId, AreaId, Address, DoctorId, IsActive ) OUTPUT INSERTED.SampleRegisterId 
+                                                        VALUES (@Date, @BranchId, @TotalAmount, @B2BId, @PhoneNumber, @Title, @FirstName, @MiddleName, @LastName, @DOB, @Age, @Gender, @Email, @CityId, @AreaId, @Address, @DoctorId, @IsActive ) ";
+
+                    using var common = new SqlCommand(query, _sqlConnection);
+                    common.Parameters.AddWithValue("@Date", sampleRegister.Date);
+                    common.Parameters.AddWithValue("@BranchId", sampleRegister.BranchId);
+                    common.Parameters.AddWithValue("@TotalAmount", sampleRegister.TotalAmount);
+                    common.Parameters.AddWithValue("@B2BId", sampleRegister.B2BId);
+                    common.Parameters.AddWithValue("@PhoneNumber", sampleRegister.PhoneNumber);
+                    common.Parameters.AddWithValue("@Title", sampleRegister.Title);
+                    common.Parameters.AddWithValue("@FirstName", sampleRegister.FirstName);
+                    common.Parameters.AddWithValue("@MiddleName", sampleRegister.MiddleName);
+                    common.Parameters.AddWithValue("@LastName", sampleRegister.LastName);
+                    common.Parameters.AddWithValue("@DOB", sampleRegister.DOB);
+                    common.Parameters.AddWithValue("@Age", sampleRegister.Age);
+                    common.Parameters.AddWithValue("@Gender", sampleRegister.Gender);
+                    common.Parameters.AddWithValue("@Email", sampleRegister.Email);
+                    common.Parameters.AddWithValue("@CityId", sampleRegister.CityId);
+                    common.Parameters.AddWithValue("@AreaId", sampleRegister.AreaId);
+                    common.Parameters.AddWithValue("@Address", sampleRegister.Address);
+                    common.Parameters.AddWithValue("@DoctorId", sampleRegister.DoctorId);
+                    common.Parameters.AddWithValue("@IsActive", sampleRegister.IsActive);
+
+                    int insertedId = (int)common.ExecuteScalar();
+
+
+                    // branch
+                    string branchQuery = "SELECT BranchName FROM branch WHERE BranchId = @BranchId";
+                    using var branchCommond = new SqlCommand(branchQuery, _sqlConnection);
+                    branchCommond.Parameters.AddWithValue("@BranchId", sampleRegister.BranchId);
+                    string branchName = (string?)branchCommond.ExecuteScalar() ?? "";
+
+
+                    // b2b
+                    string b2bQuery = "SELECT B2BName FROM b2b WHERE B2BId = @B2BId";
+                    using var b2bCommond = new SqlCommand(b2bQuery, _sqlConnection);
+                    b2bCommond.Parameters.AddWithValue("@B2BId", sampleRegister.B2BId);
+                    string b2bName = (string?)b2bCommond.ExecuteScalar() ?? "";
+
+
+                    // city
+                    string cityQuery = "SELECT CityName FROM city WHERE CityId = @CityId";
+                    using var cityCommond = new SqlCommand(cityQuery, _sqlConnection);
+                    cityCommond.Parameters.AddWithValue("@CityId", sampleRegister.CityId);
+                    string cityName = (string?)cityCommond.ExecuteScalar() ?? "";
+
+
+                    // area
+                    string areaQuery = "SELECT AreaName FROM area WHERE AreaId = @AreaId";
+                    using var areaCommond = new SqlCommand(areaQuery, _sqlConnection);
+                    areaCommond.Parameters.AddWithValue("@AreaId", sampleRegister.AreaId);
+                    string areaName = (string?)areaCommond.ExecuteScalar() ?? "";
+
+
+                    // doctor
+                    string doctorQuery = "SELECT DoctorName FROM doctor WHERE DoctorId = @DoctorId";
+                    using var doctorCommond = new SqlCommand(doctorQuery, _sqlConnection);
+                    doctorCommond.Parameters.AddWithValue("@DoctorId", sampleRegister.DoctorId);
+                    string doctorName = (string?)doctorCommond.ExecuteScalar() ?? "";
+
+
+
+                    response.SampleRegisterId = insertedId;
+                    response.Date = sampleRegister.Date;
+                    response.BranchId = sampleRegister.BranchId;
+                    response.BranchName = branchName;
+                    response.TotalAmount = sampleRegister.TotalAmount;
+                    response.B2BId = sampleRegister.B2BId;
+                    response.B2BName = b2bName;
+                    response.PhoneNumber = sampleRegister.PhoneNumber;
+                    response.Title = sampleRegister.Title;
+                    response.FirstName = sampleRegister.FirstName;
+                    response.MiddleName = sampleRegister.MiddleName;
+                    response.LastName = sampleRegister.LastName;
+                    response.DOB = sampleRegister.DOB;
+                    response.Age = sampleRegister.Age;
+                    response.Gender = sampleRegister.Gender;
+                    response.Email = sampleRegister.Email;
+                    response.CityId = sampleRegister.CityId;
+                    response.CityName = cityName;
+                    response.AreaId = sampleRegister.AreaId;
+                    response.AreaName = areaName;
+                    response.Address = sampleRegister.Address;
+                    response.DoctorId = sampleRegister.DoctorId;
+                    response.DoctorName = doctorName;
+                    response.IsActive = true;
+
+                    sampleRegister.SampleRegisterId = insertedId;
+                }
+
+                //if (sampleRegister.SampleRegisterId > 0 && serviceModals != null && serviceModals.Count > 0)
+                //{
+                //    foreach (var serviceModal in serviceModals)
+                //    {
+                //        if (serviceModal.ServiceId > 0)
+                //        {
+                //            var checkQuery = @"SELECT SampleServiceMapId FROM sampleServiceMap 
+                //               WHERE SampleRegisterId = @SampleRegisterId AND ServiceId = @ServiceId";
+
+                //            using (var checkCommand = new SqlCommand(checkQuery, _sqlConnection))
+                //            {
+                //                checkCommand.Parameters.AddWithValue("@SampleRegisterId", sampleRegister.SampleRegisterId);
+                //                checkCommand.Parameters.AddWithValue("@ServiceId", serviceModal.ServiceId);
+
+                //                object existingId = checkCommand.ExecuteScalar();
+
+                //                if (existingId == null)
+                //                {
+                //                    var insertTest = @"INSERT INTO sampleServiceMap (SampleRegisterId, ServiceId) 
+                //                       VALUES (@SampleRegisterId, @ServiceId)";
+                //                    using (var insertCommand = new SqlCommand(insertTest, _sqlConnection))
+                //                    {
+                //                        insertCommand.Parameters.AddWithValue("@SampleRegisterId", sampleRegister.SampleRegisterId);
+                //                        insertCommand.Parameters.AddWithValue("@ServiceId", serviceModal.ServiceId);
+                //                        insertCommand.ExecuteNonQuery();
+                //                    }
+                //                }
+                //                else
+                //                {
+                //                    var updateTest = @"UPDATE sampleServiceMap 
+                //                       SET IsActive = 1 
+                //                       WHERE SampleServiceMapId = @SampleServiceMapId";
+                //                    using (var updateCommand = new SqlCommand(updateTest, _sqlConnection))
+                //                    {
+                //                        updateCommand.Parameters.AddWithValue("@SampleServiceMapId", (int)existingId);
+                //                        updateCommand.ExecuteNonQuery();
+                //                    }
+                //                }
+                //            }
+                //        }
+                //    }
+                //}
+            }
+            catch(Exception ex)
+            {
+                throw new Exception("erroe fetching into sampleregister" + ex, ex);
+            }
+            finally
+            {
+                _sqlConnection.Close();
+            }
+            return response;
+        }
+
+        public List<SampleRegister> GetSampleByFilter(FilterModel filterModel)
+        {
+            try
+            {
+                string query = $@"sampleregister 
+                                    INNER JOIN branch ON sampleregister.BranchId = branch.BranchId
+                                    INNER JOIN b2b ON sampleregister.B2BId = b2b.B2BId
+                                    INNER JOIN city ON sampleregister.CityId = city.CityId
+                                    INNER JOIN area ON sampleregister.AreaId = area.AreaId
+                                    INNER JOIN doctor ON sampleregister.DoctorId = doctor.DoctorId";
+
+
+                return _addFilter.GetFilteredList<SampleRegister>(
+                    tableName: query,
+                    nameColumn: "MiddleName",
+                    idColumn: "SampleRegisterId",
+                    codeColumn: "MiddleName",
+                    filter: filterModel,
+                    mapFunc: reader => new SampleRegister
+                    {
+                        SampleRegisterId = Convert.ToInt32(reader["SampleRegisterId"]),
+                        Date = Convert.ToDateTime(reader["Date"]),
+                        BranchId = Convert.ToInt32(reader["BranchId"]),
+                        BranchName = reader["BranchName"].ToString(),
+                        TotalAmount = Convert.ToInt32(reader["TotalAmount"]),
+                        B2BId = Convert.ToInt32(reader["B2BId"]),
+                        B2BName = reader["B2BName"].ToString(),
+                        PhoneNumber = reader["PhoneNumber"].ToString(),
+                        Title = reader["Title"].ToString(),
+                        FirstName = reader["FirstName"].ToString(),
+                        MiddleName = reader["MiddleName"].ToString(),
+                        LastName = reader["LastName"].ToString(),
+                        DOB = Convert.ToDateTime(reader["DOB"]),
+                        Age = Convert.ToInt32(reader["Age"]),
+                        Gender = reader["Gender"].ToString(),
+                        Email = reader["Email"].ToString(),
+                        CityId = Convert.ToInt32(reader["CityId"]),
+                        CityName = reader["CityName"].ToString(),
+                        AreaId = Convert.ToInt32(reader["AreaId"]),
+                        AreaName = reader["AreaName"].ToString(),
+                        Address = reader["Address"].ToString(),
+                        DoctorId = Convert.ToInt32(reader["DoctorId"]),
+                        DoctorName = reader["DoctorName"].ToString(),
+                        IsActive = Convert.ToBoolean(reader["IsActive"]),
+                    },
+                    selectColumns: "sampleregister.SampleRegisterId, sampleregister.Date, branch.BranchId, branch.BranchName, sampleregister.TotalAmount, b2b.B2BId, b2b.B2BName, sampleregister.PhoneNumber, sampleregister.Title, sampleregister.FirstName, sampleregister.MiddleName, sampleregister.LastName, sampleregister.DOB, sampleregister.Age, sampleregister.Gender, sampleregister.Email, city.CityId, city.CityName, area.AreaId, area.AreaName, sampleregister.Address, doctor.DoctorId, doctor.doctorName, sampleregister.IsActive",
+                    isActiveColumn: "sampleregister.IsActive"
+
+                );
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while fetching sampleregister.", ex);
+            }
+        }
     }
 }

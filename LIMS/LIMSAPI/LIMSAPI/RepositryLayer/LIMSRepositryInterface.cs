@@ -1,5 +1,7 @@
-﻿using LIMSAPI.Models.FinanceModal;
+﻿using LIMSAPI.Models;
+using LIMSAPI.Models.FinanceModal;
 using LIMSAPI.Models.Master;
+using LIMSAPI.Models.TransactionModal;
 
 namespace LIMSAPI.RepositryLayer
 {
@@ -150,5 +152,12 @@ namespace LIMSAPI.RepositryLayer
         PaymentModal DeletePaymentById(int PaymentId);
 
         List<PaymentModal> GetPaymentIsActive();
+
+
+        // SAMPLE REGISTER
+
+        SampleRegister AddUpdateSampleRegister(SampleRegister sampleRegister);
+
+        List<SampleRegister> GetSampleByFilter(FilterModel filterModel);
     }
 }

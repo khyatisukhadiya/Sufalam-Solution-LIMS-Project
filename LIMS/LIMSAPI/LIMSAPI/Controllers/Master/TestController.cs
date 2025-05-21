@@ -3,6 +3,7 @@ using LIMSAPI.RepositryLayer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using LIMSAPI.Models.Master;
+using LIMSAPI.Models;
 
 namespace LIMSAPI.Controllers.MasterController
 {

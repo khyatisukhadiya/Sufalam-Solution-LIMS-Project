@@ -1,7 +1,6 @@
 ﻿using System.Net;
-using LIMSAPI.Controllers.MasterController;
+using LIMSAPI.Models;
 using LIMSAPI.Models.FinanceModal;
-using LIMSAPI.Models.Master;
 using LIMSAPI.RepositryLayer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

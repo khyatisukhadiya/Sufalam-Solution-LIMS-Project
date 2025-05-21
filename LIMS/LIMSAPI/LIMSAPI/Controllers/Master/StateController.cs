@@ -1,4 +1,5 @@
 ﻿using LIMSAPI.Helpers;
+using LIMSAPI.Models;
 using LIMSAPI.Models.Master;
 using LIMSAPI.ServiceLayer;
 using Microsoft.AspNetCore.Mvc;
