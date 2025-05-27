@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using LIMSAPI.ServiceLayer;
 using LIMSAPI.Models.TransactionModal;
+using Azure.Core;
 
 namespace LIMSAPI.Controllers.Transaction
 {
@@ -27,8 +28,9 @@ namespace LIMSAPI.Controllers.Transaction
         {
             if (sampleRegister == null)
             {
-                return Error("Invalid request payload.");
+                return Error("Invalid request payload");
             }
+
 
             if (!ModelState.IsValid)
             {
@@ -78,6 +80,13 @@ namespace LIMSAPI.Controllers.Transaction
 
         }
 
+        [HttpDelete]
+        public IActionResult DeleteSampleRegisterById(int SampleRegisterId)
+        {
+            var result = _sampleSL.DeleteSampleRegisterById(SampleRegisterId);
+            return Ok(new { data = result });
+        }
+
 
         [HttpGet]
         public IActionResult GetSampleByFilter([FromQuery] FilterModel filterModel)
@@ -85,6 +94,24 @@ namespace LIMSAPI.Controllers.Transaction
             var result = _sampleSL.GetSampleByFilter(filterModel);
             return Ok(new { data = result });
         }
+
+        [HttpGet]
+        public IActionResult GetSampleRegisterById(int SampleRegisterId)
+        {
+            var result = _sampleSL.GetSampleRegisterById(SampleRegisterId);
+            return Ok(result);
+        }
+
+
+    
+
+        [HttpDelete]
+        public IActionResult DeleteSampleServiceMapId(int SampleServiceMapId)
+        {
+            var result = _sampleSL.DeleteSampleServiceMapId(SampleServiceMapId);
+            return Ok(new { data = result });
+        }
+
 
     }
 }

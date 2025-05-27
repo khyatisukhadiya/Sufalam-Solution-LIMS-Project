@@ -1,6 +1,7 @@
 ﻿using LIMSAPI.Models;
 using LIMSAPI.Models.FinanceModal;
 using LIMSAPI.Models.Master;
+using LIMSAPI.Models.Transaction;
 using LIMSAPI.Models.TransactionModal;
 
 namespace LIMSAPI.RepositryLayer
@@ -159,5 +160,15 @@ namespace LIMSAPI.RepositryLayer
         SampleRegister AddUpdateSampleRegister(SampleRegister sampleRegister);
 
         List<SampleRegister> GetSampleByFilter(FilterModel filterModel);
+
+        SampleRegister GetSampleRegisterById(int SampleRegisterId);
+
+        SampleRegister DeleteSampleRegisterById(int SampleRegisterId);
+
+
+
+        // SAMPLE SERVICE MAP
+
+        SampleServiceMap DeleteSampleServiceMapId(int SampleServiceMapId);
     }
 }

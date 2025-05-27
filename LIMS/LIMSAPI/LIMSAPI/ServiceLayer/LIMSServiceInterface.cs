@@ -1,6 +1,7 @@
 ﻿using LIMSAPI.Models;
 using LIMSAPI.Models.FinanceModal;
 using LIMSAPI.Models.Master;
+using LIMSAPI.Models.Transaction;
 using LIMSAPI.Models.TransactionModal;
 
 namespace LIMSAPI.ServiceLayer
@@ -26,6 +27,7 @@ namespace LIMSAPI.ServiceLayer
 
  
 
+
         // STATE
         StateModal AddUpdatedState(StateModal stateModal);
 
@@ -39,7 +41,8 @@ namespace LIMSAPI.ServiceLayer
 
 
 
-        // City
+
+        // CITY
 
         CityModal AddUpdatedCity(CityModal cityModal);
 
@@ -53,7 +56,8 @@ namespace LIMSAPI.ServiceLayer
 
 
 
-        // CITY
+
+        // AREA
 
         AreaModal AddUpdatedArea(AreaModal areaModal);
 
@@ -81,6 +85,7 @@ namespace LIMSAPI.ServiceLayer
         BranchModal GetBranchById(int BranchId);
 
 
+
         // B2B
 
         B2BModal AddUpdatedB2B(B2BModal b2BModal);
@@ -94,6 +99,7 @@ namespace LIMSAPI.ServiceLayer
         B2BModal GetB2BById(int B2BId);
 
 
+
         // DOCTOR 
 
         DoctorModal AddUpdatedDoctor(DoctorModal doctorModal);
@@ -105,6 +111,7 @@ namespace LIMSAPI.ServiceLayer
         DoctorModal DeleteDoctorById(int DoctorId);
 
         List<DoctorModal> GetDoctorIsActive();
+
 
 
 
@@ -137,9 +144,11 @@ namespace LIMSAPI.ServiceLayer
 
 
 
+
         // SERVICETESTMAP 
 
         ServiceTestMap DeleteServiceMapTestById(int ServiceTestId);
+
 
 
 
@@ -163,5 +172,15 @@ namespace LIMSAPI.ServiceLayer
         SampleRegister AddUpdateSampleRegister(SampleRegister sampleRegister);
 
         List<SampleRegister> GetSampleByFilter(FilterModel filterModel);
+
+        SampleRegister GetSampleRegisterById(int SampleRegisterId);
+
+        SampleRegister DeleteSampleRegisterById(int SampleRegisterId);
+
+
+
+        // SAMPLE SERVICE MAP
+
+        SampleServiceMap DeleteSampleServiceMapId(int SampleServiceMapId);
     }
 }

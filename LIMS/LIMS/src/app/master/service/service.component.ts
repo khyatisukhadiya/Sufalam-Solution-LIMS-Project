@@ -17,7 +17,7 @@ import { SliderbarComponent } from "../../component/sliderbar/sliderbar.componen
   styleUrls: ['./service.component.css']
 })
 export class ServiceComponent implements OnInit {
-  @ViewChild('myModal') modal: ElementRef | undefined;
+@ViewChild('myModal') modal: ElementRef | undefined;
 @ViewChild('autofocus') autofocus!: ElementRef;
 
   serviceForm: FormGroup = new FormGroup({});
@@ -83,7 +83,7 @@ export class ServiceComponent implements OnInit {
 
   closeModal() {
     this.isEditModal = false;
-    (document.activeElement as HTMLElement)?.blur(); // Fix aria-hidden warning
+    (document.activeElement as HTMLElement)?.blur(); 
 
     if (this.modalInstance) {
       this.modalInstance.hide();

@@ -4,43 +4,39 @@
 <div class="container p-3" style="max-width: 96%;">
     <!-- Header with Add Button -->
     <div class="d-flex justify-content-between align-items-center pb-3">
-        <h5>Service List</h5>
+        <h5>Sample register</h5>
         <button class="btn btn-primary btn-sm" data-bs-target="#myModal" (click)="openModal()">ADD</button>
     </div>
 
     <!-- Search Filter Section -->
     <!-- search table -->
     <div class="border border-dark rounded-2 my-3 p-3">
-        <div class="row g-2">
-            <!-- City Id -->
-            <div class="col-md-3 col-sm-6">
-                <div class="d-flex align-items-center">
-                    <label class="form-label mb-0" style="min-width: 120px;">Sample Register Id</label>
-                    <input type="number" class="form-control" placeholder="Service Id">
+        <div class="row g-4">
+            <!-- Sample Register ID -->
+            <div class="col-md-4 col-sm-6">
+                <div class="d-flex align-items-center gap-2">
+                    <label class="form-label mb-0" style="min-width: 150px; white-space: nowrap;">SampleRegister
+                        Id</label>
+                    <input type="number" [(ngModel)]="searchCriteria.sampleRegisterId" class="form-control"
+                        placeholder="Enter SampleRegister Id">
                 </div>
             </div>
 
-            <!-- City Code -->
-            <div class="col-md-3 col-sm-6">
-                <div class="d-flex align-items-center">
-                    <label class="form-label mb-0" style="min-width: 120px;">Sample Register Code</label>
-                    <input type="text" class="form-control" placeholder="service Code">
-                </div>
-            </div>
-
-            <!-- City Name -->
-            <div class="col-md-3 col-sm-6">
-                <div class="d-flex align-items-center">
-                    <label class="form-label mb-0" style="min-width: 120px;">Sample register Name</label>
-                    <input type="text" class="form-control" placeholder="serviceName">
+            <!-- Sample Register Name -->
+            <div class="col-md-4 col-sm-6">
+                <div class="d-flex align-items-center gap-2">
+                    <label class="form-label mb-0" style="min-width: 150px; white-space: nowrap;">Middle
+                        Name</label>
+                    <input type="text" [(ngModel)]="searchCriteria.name" class="form-control"
+                        placeholder="Enter Middle Name">
                 </div>
             </div>
 
             <!-- Status -->
-            <div class="col-md-3 col-sm-6">
-                <div class="d-flex align-items-center">
-                    <label class="form-label mb-0" style="min-width: 120px;">Status</label>
-                    <select class="form-select">
+            <div class="col-md-4 col-sm-6">
+                <div class="d-flex align-items-center gap-2">
+                    <label class="form-label mb-0" style="min-width: 150px;">Status</label>
+                    <select class="form-select" [(ngModel)]="searchCriteria.isActive">
                         <option [ngValue]="null">All</option>
                         <option [ngValue]="true">Active</option>
                         <option [ngValue]="false">Inactive</option>
@@ -52,7 +48,7 @@
         <!-- Button Row -->
         <div class="row mt-3">
             <div class="col d-flex justify-content-end gap-2">
-                <button class="btn btn-primary">Search</button>
+                <button class="btn btn-primary" (click)="getSampleRegister()">Search</button>
                 <button class="btn btn-danger" (click)="clearSearch()">Clear</button>
             </div>
         </div>
@@ -61,41 +57,39 @@
 
 
 <!-- Add/Edit Sample Register Modal -->
-<div class="modal" id="sampleRegisterModal" #sampleRegisterModal tabindex="-1"
-    aria-labelledby="sampleRegisterModalLabel" aria-hidden="true">
-    <div class="modal-dialog" style="max-width: 1200px;">
+<div class="modal fade" id="myModal" #myModal tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 1100px;">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">{{ isEditModal ? 'Edit Sample Register' : 'Add Sample Register' }}</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <h5 class="modal-title">{{ isEditModal ? 'Edit' : 'Add' }}</h5>
+                <button type="button" class="btn-close" (click)="closeModal()" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <form [formGroup]="sampleRegisterForm">
+            <form [formGroup]="sampleRegisterForm" (ngSubmit)="onSubmit()">
+                <div class="modal-body">
                     <div class="row">
                         <!-- Left Side: Sample Register Form -->
                         <div class="col-md-8">
-                            <form [formGroup]="sampleRegisterForm">
+                            <!-- <form [formGroup]="sampleRegisterForm"> -->
                                 <table class="table table-borderless">
                                     <tbody>
                                         <tr>
                                             <td>
                                                 <label for="id">Sample Register ID</label>
-                                                <input type="text" class="form-control" id="id" formControlName="id"
-                                                    readonly>
+                                                <input type="text" class="form-control" id="SampleRegisterId"
+                                                    formControlName="SampleRegisterId" readonly>
                                             </td>
                                             <td>
                                                 <label for="date">Date</label>
-                                                <input type="date" class="form-control" id="date"
-                                                    formControlName="date">
+                                                <input type="date" class="form-control" formControlName="Date">
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>
                                                 <label for="branch">Branch</label>
-                                                <select class="form-select" id="branch" formControlName="branch">
-                                                    <!-- <option *ngFor="let branch of branches" [value]="branch.name">
-                                                        {{ branch.name }}
-                                                    </option> -->
+                                                <select class="form-select" id="branch" formControlName="BranchId">
+                                                    <option *ngFor="let branch of branches" [ngValue]="branch.branchId">
+                                                        {{ branch.branchName }}
+                                                    </option>
                                                 </select>
                                             </td>
 
@@ -103,37 +97,37 @@
                                                 <label for="b2b">B2B</label>
                                                 <div class="d-flex align-items-center">
                                                     <div class="form-check form-switch me-2">
-                                                        <input class="form-check-input" type="checkbox" id="b2bToggle"
-                                                            formControlName="isB2B"
-                                                            [checked]="sampleRegisterForm.value.isB2B">
+                                                        <input class="form-check-input" type="checkbox"
+                                                            formControlName="isB2B" id="b2bSwitch">
                                                     </div>
-                                                    <!-- <select class="form-select" id="b2b" formControlName="b2b">
-                                                        <option *ngFor="let b2b of b2bs" [value]="b2b.name">{{ b2b.name
+                                                    <select class="form-select" id="b2b" formControlName="B2BId">
+                                                        <option *ngFor="let b2b of b2bs" [ngValue]="b2b.b2BId">{{
+                                                            b2b.b2BName
                                                             }}</option>
-                                                    </select> -->
+                                                    </select>
                                                 </div>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>
-                                                <label for="mobile">Mobile Number</label>
-                                                <input type="text" class="form-control" id="mobile"
-                                                    formControlName="mobile">
-                                                <div *ngIf="sampleRegisterForm.get('mobile')?.invalid && submitted"
-                                                    class="text-danger small">
-                                                    <span
-                                                        *ngIf="sampleRegisterForm.get('mobile')?.errors?.['required']">Mobile
-                                                        Number is required</span>
-                                                    <span
-                                                        *ngIf="sampleRegisterForm.get('mobile')?.errors?.['pattern']">Enter
-                                                        a valid 10-digit number</span>
-                                                </div>
-
+                                                <label for="phone">Phone Number</label>
+                                                <input type="text" class="form-control" formControlName="PhoneNumber"
+                                                    placeholder="Phone Number" (input)="onInputChange()">
+                                                <small
+                                                    *ngIf="sampleRegisterForm.controls['PhoneNumber']?.errors?.['required'] && submitted"
+                                                    class="text-danger">
+                                                    PhoneNumberis required.
+                                                </small>
+                                                <ng-container *ngFor="let error of validationErrors">
+                                                    <small *ngIf="error.toLowerCase().includes('phone')"
+                                                        class="text-danger">
+                                                        {{ error }}
+                                                    </small>
+                                                </ng-container>
                                             </td>
                                             <td>
                                                 <label for="title">Title</label>
-                                                <select class="form-select" id="title" formControlName="title">
-                                                    <option>Select Title</option>
+                                                <select class="form-select" id="title" formControlName="Title">
                                                     <option>Mr.</option>
                                                     <option>Ms.</option>
                                                     <option>Dr.</option>
@@ -144,120 +138,156 @@
                                         <tr>
                                             <td>
                                                 <label for="firstName">First Name</label>
-                                                <input type="text" class="form-control" id="firstName"
-                                                    placeholder="Surname" formControlName="firstName">
-                                                <div *ngIf="sampleRegisterForm.get('firstName')?.invalid && submitted"
-                                                    class="text-danger small">
-                                                    First Name is required
-                                                </div>
+                                                <input type="text" class="form-control" placeholder="First Name"
+                                                    formControlName="FirstName" (input)="onInputChange()">
+                                                <small
+                                                    *ngIf="sampleRegisterForm.controls['FirstName']?.errors?.['required'] && submitted"
+                                                    class="text-danger">
+                                                    FirstName is required.
+                                                </small>
+                                                <ng-container *ngFor="let error of validationErrors">
+                                                    <small *ngIf="error.toLowerCase().includes('firstname')"
+                                                        class="text-danger">
+                                                        {{ error }}
+                                                    </small>
+                                                </ng-container>
                                             </td>
                                             <td>
                                                 <label for="middleName">Middle Name</label>
-                                                <input type="text" class="form-control" id="middleName"
-                                                    placeholder="User Name" formControlName="middleName">
-                                                <div *ngIf="sampleRegisterForm.get('middleName')?.invalid && submitted"
-                                                    class="text-danger small">
-                                                    Middle Name is required
-                                                </div>
+                                                <input type="text" class="form-control" placeholder="Middle Name"
+                                                    formControlName="MiddleName" (input)="onInputChange()">
+                                                <small
+                                                    *ngIf="sampleRegisterForm.controls['MiddleName']?.errors?.['required'] && submitted"
+                                                    class="text-danger">
+                                                    MiddleName is required.
+                                                </small>
+                                                <ng-container *ngFor="let error of validationErrors">
+                                                    <small *ngIf="error.toLowerCase().includes('middlename')"
+                                                        class="text-danger">
+                                                        {{ error }}
+                                                    </small>
+                                                </ng-container>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>
                                                 <label for="lastName">Last Name</label>
-                                                <input type="text" class="form-control" id="lastName"
-                                                    formControlName="lastName">
-                                                <div *ngIf="sampleRegisterForm.get('lastName')?.invalid && submitted"
-                                                    class="text-danger small">
-                                                    Last Name is required
-                                                </div>
+                                                <input type="text" class="form-control" formControlName="LastName"
+                                                    placeholder="Last Name" (input)="onInputChange()">
+                                                <small
+                                                    *ngIf="sampleRegisterForm.controls['LastName']?.errors?.['required'] && submitted"
+                                                    class="text-danger">
+                                                    LastName is required.
+                                                </small>
+                                                <ng-container *ngFor="let error of validationErrors">
+                                                    <small *ngIf="error.toLowerCase().includes('lastname')"
+                                                        class="text-danger">
+                                                        {{ error }}
+                                                    </small>
+                                                </ng-container>
                                             </td>
                                             <td>
                                                 <label for="dob">Date of Birth (DOB)</label>
-                                                <input type="date" class="form-control" id="dob" formControlName="dob">
-                                                <div *ngIf="sampleRegisterForm.get('dob')?.invalid && submitted"
-                                                    class="text-danger small">
-                                                    BirthDate is required
-                                                </div>
+                                                <input type="date" class="form-control" id="dob" formControlName="dOB"
+                                                    (input)="onInputChange()">
+                                                <small
+                                                    *ngIf="sampleRegisterForm.controls['dOB']?.errors?.['required'] && submitted"
+                                                    class="text-danger">
+                                                    DOB is required.
+                                                </small>
+                                                <ng-container *ngFor="let error of validationErrors">
+                                                    <small *ngIf="error.toLowerCase().includes('date of birth')"
+                                                        class="text-danger">
+                                                        {{ error }}
+                                                    </small>
+                                                </ng-container>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>
                                                 <label for="age">Age:</label>
-                                                <input type="number" id="age" formControlName="age"
+                                                <input type="number" id="age" formControlName="Age"
                                                     class="form-control">
                                             </td>
                                             <td>
                                                 <label for="gender">Gender</label>
-                                                <select class="form-select" id="gender" formControlName="gender">
-                                                    <option>Select Gender</option>
+                                                <select class="form-select" id="gender" formControlName="Gender"
+                                                    (input)="onInputChange()">
                                                     <option>Male</option>
                                                     <option>Female</option>
                                                     <option>Other</option>
                                                 </select>
-                                                <div *ngIf="sampleRegisterForm.get('gender')?.invalid && submitted"
-                                                    class="text-danger small">
-                                                    <span
-                                                        *ngIf="sampleRegisterForm.get('gender')?.hasError('required')">Gender
-                                                        is required.</span>
-                                                </div>
+                                                <small
+                                                    *ngIf="sampleRegisterForm.controls['Gender']?.errors?.['required'] && submitted"
+                                                    class="text-danger">
+                                                    Gender is required.
+                                                </small>
+                                                <ng-container *ngFor="let error of validationErrors">
+                                                    <small *ngIf="error.toLowerCase().includes('gender')"
+                                                        class="text-danger">
+                                                        {{ error }}
+                                                    </small>
+                                                </ng-container>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>
                                                 <label for="email">Email ID</label>
-                                                <input type="email" class="form-control" id="email"
-                                                    formControlName="email">
+                                                <input type="email" class="form-control" formControlName="Email"
+                                                    placeholder="abc@gmail.com">
+                                                <ng-container *ngFor="let error of validationErrors">
+                                                    <small *ngIf="error.toLowerCase().includes('email')"
+                                                        class="text-danger">
+                                                        {{ error }}
+                                                    </small>
+                                                </ng-container>
                                             </td>
                                             <td>
                                                 <label for="city">City</label>
-                                                <!-- <select class="form-select" id="city" formControlName="city"
-                                                    (change)="onCityChange()">
-                                                    <option *ngFor="let city of cities" [value]="city.name">{{ city.name
-                                                        }}</option>
-                                                </select> -->
+                                                <select class="form-select" id="city" formControlName="CityId">
+                                                    <option *ngFor="let city of cities" [ngValue]="city.cityId">{{
+                                                        city.cityName }}</option>
+                                                </select>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>
                                                 <label for="area">Area</label>
-                                                <!-- <select class="form-select" id="area" formControlName="area">
-                                                    <option *ngFor="let area of filteredAreas" [value]="area.name">{{
-                                                        area.name
-                                                        }}</option>
-                                                </select> -->
+                                                <select class="form-select" id="area" formControlName="AreaId">
+                                                    <option *ngFor="let area of areas" [ngValue]="area.areaId">{{
+                                                        area.areaName }}</option>
+                                                </select>
                                             </td>
                                             <td>
                                                 <label for="address">Address</label>
-                                                <textarea class="form-control" id="address"
-                                                    formControlName="address"></textarea>
+                                                <textarea class="form-control" formControlName="Address"></textarea>
                                             </td>
                                         </tr>
                                     </tbody>
                                 </table>
-                            </form>
+                            <!-- </form> -->
                         </div>
                         <!-- Right Side: Services & Payment -->
                         <div class="col-md-4">
-                            <form [formGroup]="sampleRegisterForm">
-                                <!-- Service Selection -->
-                                <div class="mb-3">
-                                    <label>Service</label>
-                                    <div class="d-flex">
-                                        <select class="form-select" formControlName="service">
-                                            <!-- <option value="">Select a service</option>
-                                            <option *ngFor="let service of services" [value]="service.name">{{
-                                                service.name }}</option> -->
-                                        </select>
-                                        <!-- <div *ngIf="sampleRegisterForm.get('service')?.invalid && submitted" class="text-danger small">
-                                            <span *ngIf="sampleRegisterForm.get('service')?.hasError('required')">Service is required.</span>
-                                        </div> -->
-                                        <button type="button" class="btn btn-success ms-2">
-                                            +
-                                        </button>
-                                    </div>
-                                </div>
+                            <!-- <form [formGroup]="sampleRegisterForm" (ngSubmit)="onSubmit()"> -->
+                            <!-- Service Selection -->
+                            <div class="mb-3">
+                                <label>Service</label>
+                                <div class="d-flex">
+                                    <select class="form-select" formControlName="ServiceId"
+                                        (change)="onServiceChange($event)" (input)="onInputChange()">
+                                        <option *ngFor="let service of services" [ngValue]="service.serviceId">{{
+                                            service.serviceName }}</option>
+                                    </select>
+                                    <button type="button" class="btn btn-success ms-2" (click)="addService()">
+                                        +
+                                    </button>
 
-                                <!-- Service Table -->
+                                </div>
+                            </div>
+
+                            <!-- Service Table -->
+                            <div class="table-responsive">
                                 <table class="table table-bordered mt-3">
                                     <thead>
                                         <tr>
@@ -269,166 +299,200 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <!-- <tr *ngFor="let service of selectedServices; let i = index; ">
-                                            <td>{{ service.id }}</td>
-                                            <td>{{ service.code }}</td>
-                                            <td>{{ service.name }}</td>
-                                            <td>{{ sampleRegisterForm.value.isB2B ? service.b2bamount :
-                                                service.b2camount }} </td>
+                                        <tr *ngFor="let service of selectedServices; let i = index; ">
+                                            <td>{{ service.serviceId }}</td>
+                                            <td>{{ service.serviceCode }}</td>
+                                            <td>{{ service.serviceName }}</td>
+                                            <td>{{ isB2B ? service.b2BAmount : service.b2CAmount }} </td>
                                             <td>
                                                 <button type="button" class="btn btn-danger btn-sm"
-                                                  ><i
+                                                    (click)="removeService(service.serviceId)"><i
                                                         class="fa-solid fa-trash-can"></i></button>
                                             </td>
-                                        </tr> -->
+                                        </tr>
                                     </tbody>
                                 </table>
+                            </div>
 
-                                <!-- Total Amount -->
-                                <div class="text-end fw-bold">Total: {{ sampleRegisterForm.value.totalAmount }}</div>
+                            <!-- Total Amount -->
+                            <div class="text-end fw-bold">Total: {{ sampleRegisterForm.value.TotalAmount }}</div>
 
-                                <!-- Payment Section -->
+                            <!-- Payment Section -->
+                            <div class="mb-3">
+                                <label for="payment">Payment Method</label>
+                                <select class="form-select" formControlName="PaymentId"
+                                (change)="onPaymentModeChange($event)" id="payment" (input)="onInputChange()">
+                                <option *ngFor="let payment of payments" [value]="payment.paymentId">
+                                    {{ payment.paymentName }}
+                                </option>
+                                </select>
+                                <small
+                                    *ngIf="sampleRegisterForm.controls['PaymentId']?.errors?.['required'] && submitted"
+                                    class="text-danger">
+                                    Payment is required.
+                                </small>
+                                <ng-container *ngFor="let error of validationErrors">
+                                    <small *ngIf="error.toLowerCase().includes('payment')" class="text-danger">
+                                        {{ error }}
+                                    </small>
+                                </ng-container>
+                            </div>
+
+                            <!-- Show Amount Input Field Only If Payment Mode is 'Cash' -->
+                            <div class="mb-3" *ngIf="selectedPayment === 'Cash'">
+                                <input type="number" class="form-control" formControlName="Amount"
+                                    placeholder="Enter amount">
+                                <div *ngIf="sampleRegisterForm.get('Amount')?.invalid && submitted"
+                                    class="text-danger small">
+                                    <span *ngIf="sampleRegisterForm.get('amount')?.hasError('required')">Amount is
+                                        required.
+                                    </span>
+                                    <ng-container *ngFor="let error of validationErrors">
+                                        <small *ngIf="error.toLowerCase().includes('amount is')" class="text-danger">
+                                            {{ error }}
+                                        </small>
+                                    </ng-container>
+                                </div>
+                            </div>
+
+                            <!-- Show Additional Fields for Cheque -->
+                            <div *ngIf="selectedPayment === 'Cheque'">
                                 <div class="mb-3">
-                                    <label>Payment Method</label>
-                                    <select class="form-select" id="paymentmode" formControlName="paymentmode">
-                                        <!-- <option *ngFor="let paymentmode of paymentModes" [value]="paymentmode.name">
-                                            {{ paymentmode.name }}
-                                        </option> -->
-                                    </select>
-                                    <div *ngIf="sampleRegisterForm.get('paymentmode')?.invalid && submitted"
+                                    <input type="number" class="form-control" formControlName="Amount"
+                                        placeholder="Enter amount">
+                                    <div *ngIf="sampleRegisterForm.get('Amount')?.invalid && submitted"
                                         class="text-danger small">
-                                        <span
-                                            *ngIf="sampleRegisterForm.get('paymentmode')?.hasError('required')">Payment
-                                            Method is required.</span>
+                                        <span *ngIf="sampleRegisterForm.get('Amount')?.hasError('required')">Amount
+                                            is required.</span>
+                                        <ng-container *ngFor="let error of validationErrors">
+                                            <small *ngIf="error.toLowerCase().includes('amount')" class="text-danger">
+                                                {{ error }}
+                                            </small>
+                                        </ng-container>
                                     </div>
                                 </div>
-
-                                <!-- Show Amount Input Field Only If Payment Mode is 'Cash' -->
-                                <!-- <div class="mb-3" *ngIf="selectedPaymentMode === 'Cash'">
-                                    <input type="number" class="form-control" formControlName="amount"
-                                        placeholder="Enter amount">
-                                    <div *ngIf="sampleRegisterForm.get('amount')?.invalid && submitted"
+                                <div class="mb-3">
+                                    <input type="text" class="form-control" placeholder="Cheque Number"
+                                        formControlName="ChequeNo">
+                                    <div *ngIf="sampleRegisterForm.get('ChequeNo')?.invalid && submitted"
                                         class="text-danger small">
-                                        <span *ngIf="sampleRegisterForm.get('amount')?.hasError('required')">Amount is
-                                            required.</span>
+                                        <span *ngIf="sampleRegisterForm.get('ChequeNo')?.hasError('required')">Cheque
+                                            No is required.
+                                        </span>
+                                        <ng-container *ngFor="let error of validationErrors">
+                                            <small *ngIf="error.toLowerCase().includes('chequeno')" class="text-danger">
+                                                {{ error }}
+                                            </small>
+                                        </ng-container>
                                     </div>
-                                </div> -->
+                                </div>
+                                <div class="mb-3">
+                                    <input type="date" class="form-control" placeholder="Cheque Date"
+                                        formControlName="ChequeDate">
+                                    <div *ngIf="sampleRegisterForm.get('ChequeDate')?.invalid && submitted"
+                                        class="text-danger small">
+                                        <span *ngIf="sampleRegisterForm.get('ChequeDate')?.hasError('required')">Cheque
+                                            Date is required.
+                                        </span>
+                                        <ng-container *ngFor="let error of validationErrors">
+                                            <small *ngIf="error.toLowerCase().includes('chequedate')"
+                                                class="text-danger">
+                                                {{ error }}
+                                            </small>
+                                        </ng-container>
+                                    </div>
+                                </div>
+                            </div>
 
-                                <!-- Show Additional Fields for Cheque -->
-                                <!-- <div *ngIf="selectedPaymentMode === 'Cheque'">
-                                    <div class="mb-3">
-                                        <input type="number" class="form-control" formControlName="amount"
-                                            placeholder="Enter amount">
-                                        <div *ngIf="sampleRegisterForm.get('amount')?.invalid && submitted"
-                                            class="text-danger small">
-                                            <span *ngIf="sampleRegisterForm.get('amount')?.hasError('required')">Amount
-                                                is required.</span>
-                                        </div>
+                            <!-- Show Additional Field for Credit Card -->
+                            <div *ngIf="selectedPayment === 'Scanner' || selectedPayment === 'Online'">
+                                <div class="mb-3">
+                                    <input type="number" class="form-control" formControlName="Amount"
+                                        placeholder="Enter amount">
+                                    <div *ngIf="sampleRegisterForm.get('Amount')?.invalid && submitted"
+                                        class="text-danger small">
+                                        <span *ngIf="sampleRegisterForm.get('Amount')?.hasError('required')">Amount
+                                            is required.
+                                        </span>
+                                        <ng-container *ngFor="let error of validationErrors">
+                                            <small *ngIf="error.toLowerCase().includes('amount')" class="text-danger">
+                                                {{ error }}
+                                            </small>
+                                        </ng-container>
                                     </div>
-                                    <div class="mb-3">
-                                        <input type="text" class="form-control" placeholder="Cheque Number"
-                                            formControlName="chequeNo">
-                                        <div *ngIf="sampleRegisterForm.get('chequeNo')?.invalid && submitted"
-                                            class="text-danger small">
-                                            <span
-                                                *ngIf="sampleRegisterForm.get('chequeNo')?.hasError('required')">Cheque
-                                                No is required.</span>
-                                        </div>
+                                </div>
+                                <div class="mb-3">
+                                    <input type="text" class="form-control" placeholder="Transaction ID"
+                                        formControlName="transactionId">
+                                    <div *ngIf="sampleRegisterForm.get('transactionId')?.invalid && submitted"
+                                        class="text-danger small">
+                                        <span
+                                            *ngIf="sampleRegisterForm.get('transactionId')?.hasError('required')">Transaction
+                                            ID is required.
+                                        </span>
                                     </div>
-                                    <div class="mb-3">
-                                        <input type="date" class="form-control" placeholder="Cheque Date"
-                                            formControlName="chequeDate">
-                                        <div *ngIf="sampleRegisterForm.get('chequeDate')?.invalid && submitted"
-                                            class="text-danger small">
-                                            <span
-                                                *ngIf="sampleRegisterForm.get('chequeDate')?.hasError('required')">Cheque
-                                                Date is required.</span>
-                                        </div>
-                                    </div>
-                                </div> -->
-
-                                <!-- Show Additional Field for Credit Card -->
-                                <!-- <div *ngIf="selectedPaymentMode === 'Credit Card'">
-                                    <div class="mb-3">
-                                        <input type="number" class="form-control" formControlName="amount"
-                                            placeholder="Enter amount">
-                                        <div *ngIf="sampleRegisterForm.get('amount')?.invalid && submitted"
-                                            class="text-danger small">
-                                            <span *ngIf="sampleRegisterForm.get('amount')?.hasError('required')">Amount
-                                                is required.</span>
-                                        </div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <input type="text" class="form-control" placeholder="Transaction ID"
-                                            formControlName="transactionId">
-                                        <div *ngIf="sampleRegisterForm.get('transactionId')?.invalid && submitted"
-                                            class="text-danger small">
-                                            <span
-                                                *ngIf="sampleRegisterForm.get('transactionId')?.hasError('required')">Transaction
-                                                ID is required.</span>
-                                        </div>
-                                    </div>
-                                </div> -->
-
-                            </form>
+                                </div>
+                            </div>
+                            <!-- </form> -->
                         </div>
-
                         <div class="modal-footer">
-                            <button class="btn btn-success">
+                            <button type="submit" class="btn btn-success">
                                 {{ isEditModal ? 'Update' : 'Save' }}
                             </button>
                             <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                         </div>
                     </div>
-                </form>
-            </div>
+                </div>
+            </form>
         </div>
     </div>
 </div>
 
 <!-- Sample Register List Table -->
-<div class="container mt-4" style="max-width: 100%;">
-    <div class="table-responsive border border-dark p-3 rounded">
-        <table class="table table-bordered table-striped table-hover text-center">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Sample Register ID</th>
-                    <th>Middle Name</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- <tr >
-                    <td>{{ i + 1 }}</td>
-                    <td>{{ sampleRegister.id }}</td>
-                    <td>{{sampleRegister.title}} {{ sampleRegister.middleName }} {{sampleRegister.firstName}}</td>
-                    <td>{{ sampleRegister.status }}</td>
-                    <td>
-                        <button class="btn btn-primary btn-sm" (click)="editSampleRegister(sampleRegister)"
-                            data-bs-toggle="modal" data-bs-target="#sampleRegisterModal">
-                            &#9998;
-                        </button> -->
+<div class="container my-3 p-3" style="max-width: 96%;">
+    <div class="border border-dark rounded-2" *ngIf="searchClick">
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped table-hover text-center"
+                *ngIf="sampleRegisterList.length > 0; else noData">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Sample Register ID</th>
+                        <th>Patient Name</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let sampleRegister of sampleRegisterList, let i = index">
+                        <td>{{ i + 1 }}</td>
+                        <td>{{ sampleRegister.sampleRegisterId }}</td>
+                        <td>{{sampleRegister.title}} {{ sampleRegister.firstName }} {{sampleRegister.middleName}} {{
+                            sampleRegister.lastName}}</td>
+                        <td>{{ sampleRegister.isActive ? 'Active' : 'Inactive' }}</td>
+                        <td>
+                            <button class="btn btn-primary btn-sm" (click)="onEdit(sampleRegister.sampleRegisterId)">
+                                &#9998;
+                            </button> ||
 
-                <!-- Delete Button: Shown when the sample register is active -->
-                <!-- <button *ngIf="sampleRegister.isActive" class="btn btn-danger btn-sm"
-                            (click)="toggleActive(sampleRegister)">
-                            <i class="fa-solid fa-trash-can"></i>
-                        </button> -->
+                            <!-- Delete Button: Shown when the sample register is active -->
+                            <button *ngIf="sampleRegister.isActive" class="btn btn-danger btn-sm"
+                                (click)="onDelete(sampleRegister.sampleRegisterId)">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
 
-                <!-- Check Button: Shown when the sample register is inactive -->
-                <!-- <button *ngIf="!sampleRegister.isActive" class="btn btn-success btn-sm"
-                            (click)="toggleActive(sampleRegister)">
-                            <i class="fa-solid fa-check"></i>
-                        </button>
-                    </td>
-                </tr> -->
-            </tbody>
-        </table>
+                            <!-- Check Button: Shown when the sample register is inactive -->
+                            <button *ngIf="!sampleRegister.isActive" class="btn btn-success btn-sm"
+                                (click)="onDelete(sampleRegister.sampleRegisterId)">
+                                <i class="fa-solid fa-check"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
-    <!-- <div class="border border-dark p-3 rounded bg-danger text-center mt-3 fw-bold text-white"
-        *ngIf="searchClicked && filteredSampleRegisters.length === 0">
-        No data found
-    </div> -->
+    <ng-template #noData>
+        <div class="text-center text-danger fw-bold p-3" style="background-color: #f1f1f1">No data found.</div>
+    </ng-template>
 </div>

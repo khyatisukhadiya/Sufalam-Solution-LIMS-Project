@@ -1,4 +1,6 @@
-﻿using LIMSAPI.Models.Master;
+﻿using System.ComponentModel.DataAnnotations;
+using LIMSAPI.Models.FinanceModal;
+using LIMSAPI.Models.Master;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace LIMSAPI.Models.TransactionModal
@@ -20,6 +22,7 @@ namespace LIMSAPI.Models.TransactionModal
 
         public int TotalAmount { get; set; }
 
+        public bool IsB2B { get; set; }
 
         // B2B 
         public int? B2BId { get; set; }
@@ -28,23 +31,42 @@ namespace LIMSAPI.Models.TransactionModal
 
 
 
-
+        [Required(ErrorMessage = "A phone number is required")]
+        [DataType(DataType.PhoneNumber, ErrorMessage = "Invalid Phone Number")]
+        [RegularExpression(@"^([0-9]{10})$", ErrorMessage = "Invalid Phone Number.")]
         public string PhoneNumber { get; set; }
 
-        public string Title { get; set; }
+        public  string Title { get; set; }
 
+
+
+        [Required(ErrorMessage = "FirstName is required.")]
+        [StringLength(25, MinimumLength = 1, ErrorMessage = "FirstName must be between 1 and 25 characters.")]
         public string FirstName { get; set; }
 
+
+        [Required(ErrorMessage = "MiddleName is required.")]
+        [StringLength(25, MinimumLength = 1, ErrorMessage = "MiddleName must be between 1 and 25 characters.")]
         public string MiddleName { get; set; }
 
+
+        [Required(ErrorMessage = "LastName is required.")]
+        [StringLength(25, MinimumLength = 1, ErrorMessage = "LastName must be between 1 and 25 characters.")]
         public string LastName { get; set; }
 
+
+        [Required(ErrorMessage = "Date of Birth is required.")]
         public DateTime DOB { get; set; }
 
         public int Age { get; set; }
 
+
+        [Required(ErrorMessage = "Gender is required.")]
         public string Gender { get; set; }
 
+
+        [Required(ErrorMessage = "Email is required.")]
+        [EmailAddress(ErrorMessage = "The email address is not valid.")]
         public string Email { get; set; }
 
 
@@ -61,15 +83,23 @@ namespace LIMSAPI.Models.TransactionModal
 
 
 
-        public string Address { get; set; }
+        public  string Address { get; set; }
 
 
         // DOCTOR
-        public int? DoctorId { get; set; }
+        //public int? DoctorId { get; set; }
 
-        public string? DoctorName { get; set; }
+        //public string? DoctorName { get; set; }
+
+        [Required(ErrorMessage ="Amount is required.")]
+        public int Amount { get; set; }
+
+        public string? ChequeNo { get; set; }
 
 
+        public DateTime? ChequeDate { get; set; }
+
+        public string? TransactionId { get; set; }
 
         public bool IsActive { get; set; }
 
@@ -77,6 +107,45 @@ namespace LIMSAPI.Models.TransactionModal
         // service
 
         [ValidateNever]
-        public List<ServiceModal> service { get; set; } = new List<ServiceModal>();
+        //[Required(ErrorMessage = "Service is required.")]
+        public List<ServiceMapping> ServiceMapping { get; set; } = new();
+
+
+        [ValidateNever]
+        //[Required(ErrorMessage = "Payment is required.")]
+        public List<PaymentMapping> PaymentMapping { get; set; } = new();
     }
+
+    public class ServiceMapping
+    {
+        public int ServiceId { get; set; }
+
+        public string ServiceCode { get; set; }
+
+        public string ServiceName { get; set; }
+
+        public int B2BAmount { get; set; }
+
+        public int B2CAmount { get; set; }
+
+        public bool IsActive { get; set; }
+    }
+
+
+    public class PaymentMapping
+    {
+        public int PaymentId { get; set; }
+
+        public string PaymentName { get; set; }
+
+
+        public bool IsCash { get; set; }
+
+        public bool IsCheque { get; set; }
+
+        public bool IsOnline { get; set; }
+
+        public bool IsActive { get; set; }
+    }
+
 }

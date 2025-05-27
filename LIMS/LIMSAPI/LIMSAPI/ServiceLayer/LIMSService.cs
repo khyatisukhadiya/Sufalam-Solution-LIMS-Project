@@ -2,6 +2,7 @@
 using LIMSAPI.Models;
 using LIMSAPI.Models.FinanceModal;
 using LIMSAPI.Models.Master;
+using LIMSAPI.Models.Transaction;
 using LIMSAPI.Models.TransactionModal;
 using LIMSAPI.RepositryLayer;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
@@ -331,6 +332,21 @@ namespace LIMSAPI.ServiceLayer
         public List<SampleRegister> GetSampleByFilter(FilterModel filterModel)
         {
             return _lIMSRepositryInterface.GetSampleByFilter(filterModel);
+        }
+
+        public SampleRegister GetSampleRegisterById(int SampleRegisterId)
+        {
+            return _lIMSRepositryInterface.GetSampleRegisterById(SampleRegisterId);
+        }
+
+        public SampleRegister DeleteSampleRegisterById(int SampleRegisterId)
+        {
+            return _lIMSRepositryInterface.DeleteSampleRegisterById(SampleRegisterId);
+        }
+
+        public SampleServiceMap DeleteSampleServiceMapId(int SampleServiceMapId)
+        {
+            return _lIMSRepositryInterface.DeleteSampleServiceMapId(SampleServiceMapId);
         }
     }
 }
