@@ -78,7 +78,8 @@ export class SampleRegisterComponent implements OnInit {
   }
 
   openModal() {
-    // this.isEditModal = false;
+    this.submitted = false;
+    this.validationErrors = [];
     const modalEl = document.getElementById('myModal');
     if (modalEl != null) {
       modalEl.style.display = "block";
@@ -106,7 +107,7 @@ export class SampleRegisterComponent implements OnInit {
       this.modalInstance.hide();
     }
 
-   if (this.modal != null) {
+    if (this.modal != null) {
       this.modal.nativeElement.style.display = "none";
     }
 
@@ -118,7 +119,7 @@ export class SampleRegisterComponent implements OnInit {
 
     this.sampleRegisterForm.reset({
       SampleRegisterId: 0,
-      date : '',
+      date: '',
       BranchId: null,
       AreaId: null,
       TotalAmount: 0,
@@ -135,8 +136,8 @@ export class SampleRegisterComponent implements OnInit {
       Email: '',
       Address: '',
       CityId: null,
-      ServiceId : null,
-      IsActive : true,
+      ServiceId: null,
+      IsActive: true,
     });
 
 
@@ -261,18 +262,22 @@ export class SampleRegisterComponent implements OnInit {
   }
 
   addService() {
-    const selectedServiceId = this.sampleRegisterForm.value.ServiceId;
-    const selectedService = this.services.find(s => s.serviceId === selectedServiceId);
+    const serviceId = this.sampleRegisterForm.value.ServiceId;
+    const selectedService = this.services.find(s => s.serviceId === serviceId);
     if (!selectedService) return;
-    const alreadyExists = this.selectedServices.some(service => service.serviceId === selectedService.serviceId);
+
+    const alreadyExists = this.selectedServices.some(s => s.serviceId === serviceId);
     if (!alreadyExists) {
       this.selectedServices.push(selectedService);
       this.calculateTotalAmount();
     } else {
-      console.log('Service already exists in the list');
+      this.showSuccess('Service already exists in the list');
     }
+
     this.sampleRegisterForm.patchValue({ ServiceId: null });
   }
+
+
 
   calculateTotalAmount() {
     const isB2B = this.sampleRegisterForm.get('isB2B')?.value;
@@ -309,9 +314,8 @@ export class SampleRegisterComponent implements OnInit {
     });
   }
 
-  onEdit(sampleRegisterId: number) {
+  onEdit(sampleRegisterId: number): void {
     this.sampleRegisterService.getSampleRegisterById(sampleRegisterId).subscribe({
-      
       next: (res) => {
         this.sampleRegisterForm.patchValue({
           SampleRegisterId: res.sampleRegisterId,
@@ -333,37 +337,34 @@ export class SampleRegisterComponent implements OnInit {
           AreaId: res.areaId,
           Address: res.address,
           DoctorId: res.doctorId,
-          isActive: res.isActive,
-          ServiceId: res.serviceId,
-          PaymentId: res.paymentId,
+          PaymentId: res.paymentMapping?.[0]?.paymentId || null,
           Amount: res.amount,
-          ChequeNo: res.chequeNo ?? '',
+          ChequeNo: res.chequeNo || '',
           ChequeDate: res.chequeDate ? formatDate(res.chequeDate, 'yyyy-MM-dd', 'en-US') : '',
-          transactionId: res.transactionId ?? '',
+          transactionId: res.transactionId || '',
+          isActive: res.isActive,
         });
-        
-        this.onPaymentModeChange({target: { value: res.paymentId } } as unknown as Event);
 
-       
-
-        const selectedPayment = this.payments.find(p => p.paymentId === res.paymentId);
-        if (selectedPayment) {
-          this.selectedPayment = selectedPayment.paymentName;
-        }
-
+        // Set services and total
         this.selectedServices = res.serviceMapping || [];
         this.calculateTotalAmount();
 
+        // Handle payment mode UI
+        const payment = res.paymentMapping?.[0];
+        if (payment) {
+          this.selectedPayment = payment.paymentName;
+          this.onPaymentModeChange({ target: { value: payment.paymentId } });
+        }
 
         this.isEditModal = true;
         this.openModal();
-        this.getSampleRegister();
       },
       error: (err) => {
         console.error('Error loading sample:', err);
       }
     });
   }
+
 
 
   // Toast messages
@@ -391,92 +392,98 @@ export class SampleRegisterComponent implements OnInit {
   }
 
   removeService(service: any): void {
-    this.sampleRegisterService.deleteSampleServiceMapId(service.selectedServiceId).subscribe(() => {
-      this.selectedServices = this.selectedServices.filter(s => s.SampleServiceMapId !== service.SampleServiceMapId);
-      const message = 'Service removed successfully';
-      this.showSuccess(message);
+    this.sampleRegisterService.deleteSampleServiceMapId(service.serviceId).subscribe(() => {
+      this.selectedServices = this.selectedServices.filter(s => s.serviceId !== service.serviceId);
+      this.showSuccess('Service removed successfully');
+      this.sampleRegisterForm.patchValue({ ServiceId: null });
+      this.calculateTotalAmount();
     });
   }
 
 
- onSubmit(): void {
-  this.submitted = true;
-  this.errorMessage = '';
-  this.validationErrors = [];
 
-  if (this.sampleRegisterForm.invalid) {
-    return;
-  }
+  onSubmit(): void {
+    this.submitted = true;
+    this.errorMessage = '';
+    this.validationErrors = [];
 
-  const formValues = this.sampleRegisterForm.getRawValue();
-
-  console.log('Form value after patch:', this.sampleRegisterForm.getRawValue());
-
-  const selectedPayment = this.payments.find(p => p.paymentId === formValues.PaymentId);
-
-  const payload = {
-    SampleRegisterId: formValues.SampleRegisterId,
-    Date: formValues.Date,
-    BranchId: formValues.BranchId,
-    TotalAmount: formValues.TotalAmount,
-    isB2B: formValues.isB2B,
-    B2BId: formValues.B2BId,
-    PhoneNumber: formValues.PhoneNumber,
-    Title: formValues.Title,
-    FirstName: formValues.FirstName,
-    MiddleName: formValues.MiddleName,
-    LastName: formValues.LastName,
-    dOB: formValues.dOB,
-    Age: formValues.Age,
-    Gender: formValues.Gender,
-    Email: formValues.Email,
-    CityId: formValues.CityId,
-    AreaId: formValues.AreaId,
-    Address: formValues.Address,
-    Amount: formValues.Amount,
-    ChequeNo: formValues.ChequeNo ?? null,
-    ChequeDate: formValues.ChequeDate ?? null,
-    transactionId: formValues.transactionId ?? null,
-    isActive: formValues.isActive,
-    paymentMapping: selectedPayment ? [{
-      paymentId: selectedPayment.paymentId,
-      paymentName: selectedPayment.paymentName,
-      isCash: selectedPayment.isCash,
-      isCheque: selectedPayment.isCheque,
-      isOnline: selectedPayment.isOnline,
-    }] : [],
-    serviceMapping: this.selectedServices.length > 0 ? this.selectedServices.map(s => ({
-      serviceId: s.serviceId,
-      serviceCode: s.serviceCode,
-      serviceName: s.serviceName,
-      b2BAmount: s.b2BAmount,
-      b2CAmount: s.b2CAmount,
-      isActive: s.isActive,
-    })) : [],
-  };
-
-  this.sampleRegisterService.addUpdatedSampleRegister(payload).subscribe({
-    next: (res) => {
-      if (res.success) {
-        this.showSuccess(res.message);
-        this.closeModal();
-        this.searchClick = true;
-        this.getSampleRegister();
-        this.isEditModal = false;
-      } else if (res.errors) {
-        this.validationErrors = res.errors;
-      }
-    },
-    error: (err) => {
-      if (err.status === 400 && err.error?.errors) {
-        this.validationErrors = err.error.errors;
-      } else {
-        this.errorMessage = 'An unexpected error occurred.';
-        this.showError(this.errorMessage);
-      }
+    if (this.sampleRegisterForm.invalid) {
+      return;
     }
-  });
-}
+
+    if (this.sampleRegisterForm.invalid) {
+      this.showError('Please fix validation errors before submitting.');
+      return;
+    }
+    const formValues = this.sampleRegisterForm.getRawValue();
+
+    // console.log('Form value after patch:', this.sampleRegisterForm.getRawValue());
+
+    const selectedPayment = this.payments.find(p => p.paymentId === formValues.PaymentId);
+
+    const payload = {
+      SampleRegisterId: formValues.SampleRegisterId,
+      Date: formValues.Date,
+      BranchId: formValues.BranchId,
+      TotalAmount: formValues.TotalAmount,
+      isB2B: formValues.isB2B,
+      B2BId: formValues.B2BId,
+      PhoneNumber: formValues.PhoneNumber,
+      Title: formValues.Title,
+      FirstName: formValues.FirstName,
+      MiddleName: formValues.MiddleName,
+      LastName: formValues.LastName,
+      dOB: formValues.dOB,
+      Age: formValues.Age,
+      Gender: formValues.Gender,
+      Email: formValues.Email,
+      CityId: formValues.CityId,
+      AreaId: formValues.AreaId,
+      Address: formValues.Address,
+      Amount: formValues.Amount,
+      ChequeNo: formValues.ChequeNo ?? null,
+      ChequeDate: formValues.ChequeDate ?? null,
+      transactionId: formValues.transactionId ?? null,
+      isActive: formValues.isActive,
+      paymentMapping: selectedPayment ? [{
+        paymentId: selectedPayment.paymentId,
+        paymentName: selectedPayment.paymentName,
+        isCash: selectedPayment.isCash,
+        isCheque: selectedPayment.isCheque,
+        isOnline: selectedPayment.isOnline,
+      }] : [],
+      serviceMapping: this.selectedServices.length > 0 ? this.selectedServices.map(s => ({
+        serviceId: s.serviceId,
+        serviceCode: s.serviceCode,
+        serviceName: s.serviceName,
+        b2BAmount: s.b2BAmount,
+        b2CAmount: s.b2CAmount,
+        isActive: s.isActive,
+      })) : [],
+    };
+
+    this.sampleRegisterService.addUpdatedSampleRegister(payload).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.showSuccess(res.message);
+          this.closeModal();
+          this.searchClick = true;
+          this.getSampleRegister();
+          this.isEditModal = false;
+        } else if (res.errors) {
+          this.validationErrors = res.errors;
+        }
+      },
+      error: (err) => {
+        if (err.status === 400 && err.error?.errors) {
+          this.validationErrors = err.error.errors;
+        } else {
+          this.errorMessage = 'An unexpected error occurred.';
+          this.showError(this.errorMessage);
+        }
+      }
+    });
+  }
 
   onInputChange(): void {
     Object.keys(this.sampleRegisterForm.controls).forEach((field) => {
@@ -506,55 +513,59 @@ export class SampleRegisterComponent implements OnInit {
   }
 
 
- onPaymentModeChange(event: any): void {
-  const selectedPaymentMode = +(event.target as HTMLSelectElement).value;
-  const selectedPayment = this.payments.find(p => p.paymentId === selectedPaymentMode);
-  this.selectedPayment = selectedPayment?.paymentName || '';
-  this.resetField();
+  onPaymentModeChange(event: any): void {
+    const selectedPaymentMode = +(event.target as HTMLSelectElement).value;
+    const selectedPayment = this.payments.find(p => p.paymentId === selectedPaymentMode);
+    this.selectedPayment = selectedPayment?.paymentName || '';
+    this.resetField();
+
+    if (!selectedPayment) return;
+
+    const form = this.sampleRegisterForm;
+
+    form.get('PaymentId')?.patchValue(selectedPaymentMode);
 
 
-  if (!selectedPayment) return;
+    if (!this.isEditModal) {
+      form.get('ChequeNo')?.reset();
+      form.get('ChequeDate')?.reset();
+      form.get('transactionId')?.reset();
+    }
 
-  const form = this.sampleRegisterForm;
+
+    form.get('ChequeNo')?.disable();
+    form.get('ChequeDate')?.disable();
+    form.get('transactionId')?.disable();
 
 
-  form.get('PaymentId')?.patchValue(selectedPaymentMode);
-
- 
-  form.get('ChequeNo')?.reset();
-  form.get('ChequeDate')?.reset();
-  form.get('transactionId')?.reset();
-
-  form.get('ChequeNo')?.disable();
-  form.get('ChequeDate')?.disable();
-  form.get('transactionId')?.disable();
-
- 
-  if (this.selectedPayment === 'Cash') {
-    form.get('Amount')?.enable();
-  } else if (this.selectedPayment === 'Cheque') {
-    form.get('Amount')?.enable();
-    form.get('ChequeNo')?.enable();
-    form.get('ChequeDate')?.enable();
-  } else if (this.selectedPayment === 'Scanner' || this.selectedPayment === 'Online') {
-    form.get('Amount')?.enable();
-    form.get('transactionId')?.enable();
+    if (this.selectedPayment === 'Cash') {
+      form.get('Amount')?.enable();
+    } else if (this.selectedPayment === 'Cheque') {
+      form.get('Amount')?.enable();
+      form.get('ChequeNo')?.enable();
+      form.get('ChequeDate')?.enable();
+    } else if (this.selectedPayment === 'Scanner' || this.selectedPayment === 'Online') {
+      form.get('Amount')?.enable();
+      form.get('transactionId')?.enable();
+    }
   }
-}
 
-resetField() : void {
-  this.sampleRegisterForm.get('Amount')?.disable();
-  this.sampleRegisterForm.get('ChequeNo')?.disable();
-  this.sampleRegisterForm.get('ChequeDate')?.disable(); 
-  this.sampleRegisterForm.get('transactionId')?.disable();
+  resetField(): void {
+    this.sampleRegisterForm.get('Amount')?.disable();
+    this.sampleRegisterForm.get('ChequeNo')?.disable();
+    this.sampleRegisterForm.get('ChequeDate')?.disable();
+    this.sampleRegisterForm.get('transactionId')?.disable();
 
-  this.sampleRegisterForm.patchValue({
-    amount: '',
-    chequeNo: '',
-    chequeDate: '',
-    transactionId: ''
-  });
-}
+    if (!this.isEditModal) {
+      this.sampleRegisterForm.patchValue({
+        amount: '',
+        chequeNo: '',
+        chequeDate: '',
+        transactionId: ''
+      });
+    }
+  }
+
 
 
 }

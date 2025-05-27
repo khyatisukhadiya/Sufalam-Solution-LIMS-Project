@@ -58,7 +58,7 @@
 
 <!-- Add/Edit Sample Register Modal -->
 <div class="modal fade" id="myModal" #myModal tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered" style="max-width: 1100px;">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 1000px;">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">{{ isEditModal ? 'Edit' : 'Add' }}</h5>
@@ -306,7 +306,7 @@
                                             <td>{{ isB2B ? service.b2BAmount : service.b2CAmount }} </td>
                                             <td>
                                                 <button type="button" class="btn btn-danger btn-sm"
-                                                    (click)="removeService(service.serviceId)"><i
+                                                    (click)="removeService(service)"><i
                                                         class="fa-solid fa-trash-can"></i></button>
                                             </td>
                                         </tr>
@@ -439,7 +439,7 @@
                             <button type="submit" class="btn btn-success">
                                 {{ isEditModal ? 'Update' : 'Save' }}
                             </button>
-                            <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button class="btn btn-secondary" (click)="closeModal()">Cancel</button>
                         </div>
                     </div>
                 </div>
