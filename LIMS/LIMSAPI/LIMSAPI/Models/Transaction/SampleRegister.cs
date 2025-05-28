@@ -91,16 +91,13 @@ namespace LIMSAPI.Models.TransactionModal
 
         //public string? DoctorName { get; set; }
 
-        [Required(ErrorMessage ="Amount is required.")]
-        public int Amount { get; set; }
+        [Required(ErrorMessage = "Amount is required.")]
+        public int? Amount { get; set; }
 
-        //[Required]
         public string? ChequeNo { get; set; }
 
-        //[Required]
         public DateTime? ChequeDate { get; set; }
 
-        //[Required]
         public string? TransactionId { get; set; }
 
         public bool IsActive { get; set; }
@@ -109,12 +106,10 @@ namespace LIMSAPI.Models.TransactionModal
         // service
 
         [ValidateNever]
-        //[Required(ErrorMessage = "Service is required.")]
         public List<ServiceMapping> ServiceMapping { get; set; } = new();
 
 
         [ValidateNever]
-        //[Required(ErrorMessage = "Payment is required.")]
         public List<PaymentMapping> PaymentMapping { get; set; } = new();
     }
 

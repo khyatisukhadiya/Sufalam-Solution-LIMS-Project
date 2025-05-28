@@ -322,7 +322,7 @@
                                 <select class="form-select" formControlName="PaymentId"
                                     (change)="onPaymentModeChange($event)" id="payment" (input)="onInputChange()">
                                     <option *ngFor="let payment of payments" [value]="payment.paymentId">
-                                        {{ payment.paymentName }}
+                                        {{ payment?.paymentName }}
                                     </option>
                                 </select>
                                 <small
@@ -330,11 +330,11 @@
                                     class="text-danger">
                                     Payment is required.
                                 </small>
-                                <ng-container *ngFor="let error of validationErrors">
+                                <!-- <ng-container *ngFor="let error of validationErrors">
                                     <small *ngIf="error.toLowerCase().includes('payment')" class="text-danger">
                                         {{ error }}
                                     </small>
-                                </ng-container>
+                                </ng-container> -->
                             </div>
 
                             <!-- Show Amount Input Field Only If Payment Mode is 'Cash' -->
@@ -343,64 +343,64 @@
                                     placeholder="Enter amount" (input)="onInputChange()">
                                 <div *ngIf="sampleRegisterForm.get('Amount')?.invalid && submitted"
                                     class="text-danger small">
-                                    <span *ngIf="sampleRegisterForm.get('amount')?.hasError('required')">Amount is
-                                        required.
+                                    <span *ngIf="sampleRegisterForm.get('Amount')?.hasError('required')">Amount
+                                        is required.
                                     </span>
-                                    <ng-container *ngFor="let error of validationErrors">
-                                        <small *ngIf="error.toLowerCase().includes('amount is')" class="text-danger">
-                                            {{ error }}
-                                        </small>
-                                    </ng-container>
                                 </div>
+                                <ng-container *ngFor="let error of validationErrors">
+                                    <small *ngIf="error.toLowerCase().includes('amount')" class="text-danger">
+                                        {{ error }}
+                                    </small>
+                                </ng-container>
                             </div>
 
                             <!-- Show Additional Fields for Cheque -->
                             <div *ngIf="selectedPayment === 'Cheque'">
                                 <div class="mb-3">
                                     <input type="number" class="form-control" formControlName="Amount"
-                                        placeholder="Enter amount" (input)="onInputChange()" >
+                                        placeholder="Enter amount" (input)="onInputChange()">
                                     <div *ngIf="sampleRegisterForm.get('Amount')?.invalid && submitted"
                                         class="text-danger small">
                                         <span *ngIf="sampleRegisterForm.get('Amount')?.hasError('required')">Amount
                                             is required.</span>
-                                        <ng-container *ngFor="let error of validationErrors">
-                                            <small *ngIf="error.toLowerCase().includes('amount')" class="text-danger">
-                                                {{ error }}
-                                            </small>
-                                        </ng-container>
                                     </div>
+                                    <ng-container *ngFor="let error of validationErrors">
+                                        <small *ngIf="error.toLowerCase().includes('amount')" class="text-danger">
+                                            {{ error }}
+                                        </small>
+                                    </ng-container>
                                 </div>
                                 <div class="mb-3">
-                                    <input type="text" class="form-control" placeholder="Cheque Number"
-                                        formControlName="chequeNo" (input)="onInputChange()">
-                                    <div *ngIf="sampleRegisterForm.get('chequeNo')?.invalid && submitted"
+                                     <input type="text" class="form-control" formControlName="chequeno"
+                                                placeholder="Cheque Number" (input)="onInputChange()">
+                                    <!-- <input type="text" class="form-control" placeholder="Cheque Number"
+                                        formControlName="chequeNo" (input)="onInputChange()" > -->
+                                    <div *ngIf="sampleRegisterForm.get('chequeno')?.invalid && submitted"
                                         class="text-danger small">
-                                        <span *ngIf="sampleRegisterForm.get('chequeNo')?.hasError('required')">Cheque
+                                        <span *ngIf="sampleRegisterForm.get('chequeno')?.hasError('required')">Cheque
                                             No is required.
                                         </span>
                                     </div>
                                     <ng-container *ngFor="let error of validationErrors">
-                                     <small *ngIf="error.toLowerCase().includes('chequeno')"
-                                         class="text-danger">
-                                         {{ error }}
-                                     </small>
-                                 </ng-container>
+                                        <small *ngIf="error.toLowerCase().includes('chequeno')" class="text-danger">
+                                            {{ error }}
+                                        </small>
+                                    </ng-container>
                                 </div>
                                 <div class="mb-3">
                                     <input type="date" class="form-control" placeholder="Cheque Date"
-                                        formControlName="chequeDate" (input)="onInputChange()">
-                                    <div *ngIf="sampleRegisterForm.get('chequeDate')?.invalid && submitted"
+                                        formControlName="chequedate" (input)="onInputChange()">
+                                    <div *ngIf="sampleRegisterForm.get('chequedate')?.invalid && submitted"
                                         class="text-danger small">
-                                        <span *ngIf="sampleRegisterForm.get('chequeDate')?.hasError('required')">Cheque
+                                        <span *ngIf="sampleRegisterForm.get('chequedate')?.hasError('required')">Cheque
                                             Date is required.
                                         </span>
                                     </div>
                                     <ng-container *ngFor="let error of validationErrors">
-                                     <small *ngIf="error.toLowerCase().includes('chequedate')"
-                                         class="text-danger">
-                                         {{ error }}
-                                     </small>
-                                 </ng-container>
+                                        <small *ngIf="error.toLowerCase().includes('chequedate')" class="text-danger">
+                                            {{ error }}
+                                        </small>
+                                    </ng-container>
                                 </div>
                             </div>
 
@@ -408,18 +408,18 @@
                             <div *ngIf="selectedPayment === 'Scanner' || selectedPayment === 'Online'">
                                 <div class="mb-3">
                                     <input type="number" class="form-control" formControlName="Amount"
-                                        placeholder="Enter amount">
+                                        placeholder="Enter amount" (input)="onInputChange()">
                                     <div *ngIf="sampleRegisterForm.get('Amount')?.invalid && submitted"
-                                        class="text-danger small" (input)="onInputChange()">
+                                        class="text-danger small">
                                         <span *ngIf="sampleRegisterForm.get('Amount')?.hasError('required')">Amount
                                             is required.
                                         </span>
-                                        <ng-container *ngFor="let error of validationErrors">
-                                            <small *ngIf="error.toLowerCase().includes('amount')" class="text-danger">
-                                                {{ error }}
-                                            </small>
-                                        </ng-container>
                                     </div>
+                                    <ng-container *ngFor="let error of validationErrors">
+                                        <small *ngIf="error.toLowerCase().includes('amount')" class="text-danger">
+                                            {{ error }}
+                                        </small>
+                                    </ng-container>
                                 </div>
                                 <div class="mb-3">
                                     <input type="text" class="form-control" placeholder="Transaction ID"
