@@ -138,6 +138,11 @@ export class SampleRegisterComponent implements OnInit {
       CityId: null,
       ServiceId: null,
       IsActive: true,
+      paymentMapping: [],
+      Amount: '', 
+      chequeNo: '',
+      chequeDate: '',
+      transactionId: ''
     });
 
 
@@ -166,11 +171,11 @@ export class SampleRegisterComponent implements OnInit {
       Address: ['', Validators.required],
       DoctorId: [null, Validators.required],
       ServiceId: [null, Validators.required],
-      PaymentId: [null, Validators.required],
-      Amount: [{ value: '', disabled: true }],
-      ChequeNo: [{ value: '', disabled: true }],
-      ChequeDate: [{ value: '', disabled: true }],
-      transactionId: [{ value: '', disabled: true }],
+      PaymentId: ['', Validators.required],
+      Amount: [{ value: '', disabled: true },Validators.required],
+      chequeNo: [{ value: '', disabled: true },Validators.required],
+      chequeDate: [{ value: '', disabled: true }, Validators.required],
+      transactionId: [{ value: '', disabled: true }, Validators.required],
       isActive: [true],
     });
   }
@@ -317,6 +322,11 @@ export class SampleRegisterComponent implements OnInit {
   onEdit(sampleRegisterId: number): void {
     this.sampleRegisterService.getSampleRegisterById(sampleRegisterId).subscribe({
       next: (res) => {
+
+        // this.sampleRegisterForm.get('chequeNo')?.enable();
+        // this.sampleRegisterForm.get('chequeDate')?.enable();
+        // this.sampleRegisterForm.get('transactionId')?.enable();
+
         this.sampleRegisterForm.patchValue({
           SampleRegisterId: res.sampleRegisterId,
           Date: res.date ? formatDate(res.date, 'yyyy-MM-dd', 'en-US') : '',
@@ -339,25 +349,32 @@ export class SampleRegisterComponent implements OnInit {
           DoctorId: res.doctorId,
           PaymentId: res.paymentMapping?.[0]?.paymentId || null,
           Amount: res.amount,
-          ChequeNo: res.chequeNo || '',
-          ChequeDate: res.chequeDate ? formatDate(res.chequeDate, 'yyyy-MM-dd', 'en-US') : '',
-          transactionId: res.transactionId || '',
+          chequeNo: res.chequeNo,
+          chequeDate: res.chequeDate ? formatDate(res.chequeDate, 'yyyy-MM-dd', 'en-US') : '',
+          transactionId: res.transactionId,
           isActive: res.isActive,
         });
+        
+        
+        console.log('transactionId:', res.transactionId);
+        console.log('chequeDate:', res.chequeDate);
+        console.log('chequeNo:', res.chequeNo);
 
-        // Set services and total
         this.selectedServices = res.serviceMapping || [];
         this.calculateTotalAmount();
 
-        // Handle payment mode UI
+
         const payment = res.paymentMapping?.[0];
         if (payment) {
           this.selectedPayment = payment.paymentName;
           this.onPaymentModeChange({ target: { value: payment.paymentId } });
         }
 
+
         this.isEditModal = true;
         this.openModal();
+        this.getSampleRegister();
+
       },
       error: (err) => {
         console.error('Error loading sample:', err);
@@ -407,19 +424,32 @@ export class SampleRegisterComponent implements OnInit {
     this.errorMessage = '';
     this.validationErrors = [];
 
+
     if (this.sampleRegisterForm.invalid) {
+      this.sampleRegisterForm.markAllAsTouched();
+      this.showError('Please fix the validation errors before submitting.');
       return;
     }
 
-    if (this.sampleRegisterForm.invalid) {
-      this.showError('Please fix validation errors before submitting.');
-      return;
-    }
     const formValues = this.sampleRegisterForm.getRawValue();
 
-    // console.log('Form value after patch:', this.sampleRegisterForm.getRawValue());
 
-    const selectedPayment = this.payments.find(p => p.paymentId === formValues.PaymentId);
+    console.log('Form Values:', formValues);
+
+
+    const selectedPayment = this.payments.find(p =>
+      p.paymentId === +formValues.PaymentId
+    );
+
+    if (!selectedPayment) {
+      this.showError('Invalid or missing payment selection.');
+      return;
+    }
+
+    if (!this.selectedServices || this.selectedServices.length === 0) {
+      this.showError('Please select at least one service.');
+      return;
+    }
 
     const payload = {
       SampleRegisterId: formValues.SampleRegisterId,
@@ -441,26 +471,29 @@ export class SampleRegisterComponent implements OnInit {
       AreaId: formValues.AreaId,
       Address: formValues.Address,
       Amount: formValues.Amount,
-      ChequeNo: formValues.ChequeNo ?? null,
-      ChequeDate: formValues.ChequeDate ?? null,
+      chequeNo: formValues.chequeNo ?? null,
+      chequeDate: formValues.chequeDate ?? null,
       transactionId: formValues.transactionId ?? null,
       isActive: formValues.isActive,
-      paymentMapping: selectedPayment ? [{
+      paymentMapping: [{
         paymentId: selectedPayment.paymentId,
         paymentName: selectedPayment.paymentName,
         isCash: selectedPayment.isCash,
         isCheque: selectedPayment.isCheque,
         isOnline: selectedPayment.isOnline,
-      }] : [],
-      serviceMapping: this.selectedServices.length > 0 ? this.selectedServices.map(s => ({
+      }],
+      serviceMapping: this.selectedServices.map(s => ({
         serviceId: s.serviceId,
         serviceCode: s.serviceCode,
         serviceName: s.serviceName,
         b2BAmount: s.b2BAmount,
         b2CAmount: s.b2CAmount,
         isActive: s.isActive,
-      })) : [],
+      }))
     };
+
+
+    console.log('Final Payload:', payload);
 
     this.sampleRegisterService.addUpdatedSampleRegister(payload).subscribe({
       next: (res) => {
@@ -475,6 +508,7 @@ export class SampleRegisterComponent implements OnInit {
         }
       },
       error: (err) => {
+        console.error('API error:', err);
         if (err.status === 400 && err.error?.errors) {
           this.validationErrors = err.error.errors;
         } else {
@@ -484,6 +518,7 @@ export class SampleRegisterComponent implements OnInit {
       }
     });
   }
+
 
   onInputChange(): void {
     Object.keys(this.sampleRegisterForm.controls).forEach((field) => {
@@ -527,14 +562,14 @@ export class SampleRegisterComponent implements OnInit {
 
 
     if (!this.isEditModal) {
-      form.get('ChequeNo')?.reset();
-      form.get('ChequeDate')?.reset();
+      form.get('chequeNo')?.reset();
+      form.get('chequeDate')?.reset();
       form.get('transactionId')?.reset();
     }
 
 
-    form.get('ChequeNo')?.disable();
-    form.get('ChequeDate')?.disable();
+    form.get('chequeNo')?.disable();
+    form.get('chequeDate')?.disable();
     form.get('transactionId')?.disable();
 
 
@@ -542,8 +577,8 @@ export class SampleRegisterComponent implements OnInit {
       form.get('Amount')?.enable();
     } else if (this.selectedPayment === 'Cheque') {
       form.get('Amount')?.enable();
-      form.get('ChequeNo')?.enable();
-      form.get('ChequeDate')?.enable();
+      form.get('chequeNo')?.enable();
+      form.get('chequeDate')?.enable();
     } else if (this.selectedPayment === 'Scanner' || this.selectedPayment === 'Online') {
       form.get('Amount')?.enable();
       form.get('transactionId')?.enable();
@@ -552,8 +587,8 @@ export class SampleRegisterComponent implements OnInit {
 
   resetField(): void {
     this.sampleRegisterForm.get('Amount')?.disable();
-    this.sampleRegisterForm.get('ChequeNo')?.disable();
-    this.sampleRegisterForm.get('ChequeDate')?.disable();
+    this.sampleRegisterForm.get('chequeNo')?.disable();
+    this.sampleRegisterForm.get('chequeDate')?.disable();
     this.sampleRegisterForm.get('transactionId')?.disable();
 
     if (!this.isEditModal) {

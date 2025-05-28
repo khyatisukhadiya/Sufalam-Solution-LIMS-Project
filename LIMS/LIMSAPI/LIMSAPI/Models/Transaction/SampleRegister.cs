@@ -94,11 +94,13 @@ namespace LIMSAPI.Models.TransactionModal
         [Required(ErrorMessage ="Amount is required.")]
         public int Amount { get; set; }
 
+        //[Required]
         public string? ChequeNo { get; set; }
 
-
+        //[Required]
         public DateTime? ChequeDate { get; set; }
 
+        //[Required]
         public string? TransactionId { get; set; }
 
         public bool IsActive { get; set; }
