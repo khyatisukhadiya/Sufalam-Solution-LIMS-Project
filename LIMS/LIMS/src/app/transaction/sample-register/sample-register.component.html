@@ -76,17 +76,18 @@
                                         <td>
                                             <label for="id">Sample Register ID</label>
                                             <input type="text" class="form-control" id="SampleRegisterId"
-                                                formControlName="SampleRegisterId" readonly>
+                                                formControlName="sampleRegisterId" readonly>
                                         </td>
                                         <td>
                                             <label for="date">Date</label>
-                                            <input type="date" class="form-control" formControlName="Date">
+                                            <input type="date" class="form-control" formControlName="date">
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>
                                             <label for="branch">Branch</label>
-                                            <select class="form-select" id="branch" formControlName="BranchId" #autofocus>
+                                            <select class="form-select" id="branch" formControlName="branchId"
+                                                #autofocus>
                                                 <option *ngFor="let branch of branches" [ngValue]="branch.branchId">
                                                     {{ branch.branchName }}
                                                 </option>
@@ -100,7 +101,7 @@
                                                     <input class="form-check-input" type="checkbox"
                                                         formControlName="isB2B" id="b2bSwitch">
                                                 </div>
-                                                <select class="form-select" id="b2b" formControlName="B2BId">
+                                                <select class="form-select" id="b2b" formControlName="b2BId">
                                                     <option *ngFor="let b2b of b2bs" [ngValue]="b2b.b2BId">{{
                                                         b2b.b2BName
                                                         }}</option>
@@ -111,10 +112,10 @@
                                     <tr>
                                         <td>
                                             <label for="phone">Phone Number</label>
-                                            <input type="text" class="form-control" formControlName="PhoneNumber"
+                                            <input type="text" class="form-control" formControlName="phoneNumber"
                                                 placeholder="Phone Number" (input)="onInputChange()">
                                             <small
-                                                *ngIf="sampleRegisterForm.controls['PhoneNumber']?.errors?.['required'] && submitted"
+                                                *ngIf="sampleRegisterForm.controls['phoneNumber']?.errors?.['required'] && submitted"
                                                 class="text-danger">
                                                 PhoneNumberis required.
                                             </small>
@@ -127,7 +128,7 @@
                                         </td>
                                         <td>
                                             <label for="title">Title</label>
-                                            <select class="form-select" id="title" formControlName="Title">
+                                            <select class="form-select" id="title" formControlName="title">
                                                 <option>Mr.</option>
                                                 <option>Ms.</option>
                                                 <option>Dr.</option>
@@ -139,9 +140,9 @@
                                         <td>
                                             <label for="firstName">First Name</label>
                                             <input type="text" class="form-control" placeholder="First Name"
-                                                formControlName="FirstName" (input)="onInputChange()">
+                                                formControlName="firstName" (input)="onInputChange()">
                                             <small
-                                                *ngIf="sampleRegisterForm.controls['FirstName']?.errors?.['required'] && submitted"
+                                                *ngIf="sampleRegisterForm.controls['firstName']?.errors?.['required'] && submitted"
                                                 class="text-danger">
                                                 First name is required.
                                             </small>
@@ -155,9 +156,9 @@
                                         <td>
                                             <label for="middleName">Middle Name</label>
                                             <input type="text" class="form-control" placeholder="Middle Name"
-                                                formControlName="MiddleName" (input)="onInputChange()">
+                                                formControlName="middleName" (input)="onInputChange()">
                                             <small
-                                                *ngIf="sampleRegisterForm.controls['MiddleName']?.errors?.['required'] && submitted"
+                                                *ngIf="sampleRegisterForm.controls['middleName']?.errors?.['required'] && submitted"
                                                 class="text-danger">
                                                 MiddleName is required.
                                             </small>
@@ -172,10 +173,10 @@
                                     <tr>
                                         <td>
                                             <label for="lastName">Last Name</label>
-                                            <input type="text" class="form-control" formControlName="LastName"
+                                            <input type="text" class="form-control" formControlName="lastName"
                                                 placeholder="Last Name" (input)="onInputChange()">
                                             <small
-                                                *ngIf="sampleRegisterForm.controls['LastName']?.errors?.['required'] && submitted"
+                                                *ngIf="sampleRegisterForm.controls['lastName']?.errors?.['required'] && submitted"
                                                 class="text-danger">
                                                 LastName is required.
                                             </small>
@@ -188,7 +189,7 @@
                                         </td>
                                         <td>
                                             <label for="dob">Date of Birth (DOB)</label>
-                                            <input type="date" class="form-control" id="dob" formControlName="dOB"
+                                            <input type="date" class="form-control" id="dob" formControlName="dob"
                                                 (input)="onInputChange()">
                                             <small
                                                 *ngIf="sampleRegisterForm.controls['dOB']?.errors?.['required'] && submitted"
@@ -206,18 +207,18 @@
                                     <tr>
                                         <td>
                                             <label for="age">Age:</label>
-                                            <input type="number" id="age" formControlName="Age" class="form-control">
+                                            <input type="number" id="age" formControlName="age" class="form-control">
                                         </td>
                                         <td>
                                             <label for="gender">Gender</label>
-                                            <select class="form-select" id="gender" formControlName="Gender"
+                                            <select class="form-select" id="gender" formControlName="gender"
                                                 (input)="onInputChange()">
                                                 <option>Male</option>
                                                 <option>Female</option>
                                                 <option>Other</option>
                                             </select>
                                             <small
-                                                *ngIf="sampleRegisterForm.controls['Gender']?.errors?.['required'] && submitted"
+                                                *ngIf="sampleRegisterForm.controls['gender']?.errors?.['required'] && submitted"
                                                 class="text-danger">
                                                 Gender is required.
                                             </small>
@@ -232,7 +233,7 @@
                                     <tr>
                                         <td>
                                             <label for="email">Email ID</label>
-                                            <input type="email" class="form-control" formControlName="Email"
+                                            <input type="email" class="form-control" formControlName="email"
                                                 placeholder="abc@gmail.com">
                                             <ng-container *ngFor="let error of validationErrors">
                                                 <small *ngIf="error.toLowerCase().includes('email')"
@@ -243,7 +244,7 @@
                                         </td>
                                         <td>
                                             <label for="city">City</label>
-                                            <select class="form-select" id="city" formControlName="CityId">
+                                            <select class="form-select" id="city" formControlName="cityId">
                                                 <option *ngFor="let city of cities" [ngValue]="city.cityId">{{
                                                     city.cityName }}</option>
                                             </select>
@@ -252,14 +253,14 @@
                                     <tr>
                                         <td>
                                             <label for="area">Area</label>
-                                            <select class="form-select" id="area" formControlName="AreaId">
+                                            <select class="form-select" id="area" formControlName="areaId">
                                                 <option *ngFor="let area of areas" [ngValue]="area.areaId">{{
                                                     area.areaName }}</option>
                                             </select>
                                         </td>
                                         <td>
                                             <label for="address">Address</label>
-                                            <textarea class="form-control" formControlName="Address"></textarea>
+                                            <textarea class="form-control" formControlName="address"></textarea>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -273,7 +274,7 @@
                             <div class="mb-3">
                                 <label>Service</label>
                                 <div class="d-flex">
-                                    <select class="form-select" formControlName="ServiceId"
+                                    <select class="form-select" formControlName="serviceId"
                                         (change)="onServiceChange($event)" (input)="onInputChange()">
                                         <option *ngFor="let service of services" [ngValue]="service.serviceId">{{
                                             service.serviceName }}</option>
@@ -314,19 +315,19 @@
                             </div>
 
                             <!-- Total Amount -->
-                            <div class="text-end fw-bold">Total: {{ sampleRegisterForm.value.TotalAmount }}</div>
+                            <div class="text-end fw-bold">Total: {{ sampleRegisterForm.value.totalAmount }}</div>
 
                             <!-- Payment Section -->
                             <div class="mb-3">
                                 <label for="payment">Payment Method</label>
-                                <select class="form-select" formControlName="PaymentId"
+                                <select class="form-select" formControlName="paymentId"
                                     (change)="onPaymentModeChange($event)" id="payment" (input)="onInputChange()">
                                     <option *ngFor="let payment of payments" [value]="payment.paymentId">
                                         {{ payment?.paymentName }}
                                     </option>
                                 </select>
                                 <small
-                                    *ngIf="sampleRegisterForm.controls['PaymentId']?.errors?.['required'] && submitted"
+                                    *ngIf="sampleRegisterForm.controls['paymentId']?.errors?.['required'] && submitted"
                                     class="text-danger">
                                     Payment is required.
                                 </small>
@@ -339,11 +340,11 @@
 
                             <!-- Show Amount Input Field Only If Payment Mode is 'Cash' -->
                             <div class="mb-3" *ngIf="selectedPayment === 'Cash'">
-                                <input type="number" class="form-control" formControlName="Amount"
+                                <input type="number" class="form-control" formControlName="amount"
                                     placeholder="Enter amount" (input)="onInputChange()">
-                                <div *ngIf="sampleRegisterForm.get('Amount')?.invalid && submitted"
+                                <div *ngIf="sampleRegisterForm.get('amount')?.invalid && submitted"
                                     class="text-danger small">
-                                    <span *ngIf="sampleRegisterForm.get('Amount')?.hasError('required')">Amount
+                                    <span *ngIf="sampleRegisterForm.get('amount')?.hasError('required')">Amount
                                         is required.
                                     </span>
                                 </div>
@@ -357,11 +358,11 @@
                             <!-- Show Additional Fields for Cheque -->
                             <div *ngIf="selectedPayment === 'Cheque'">
                                 <div class="mb-3">
-                                    <input type="number" class="form-control" formControlName="Amount"
+                                    <input type="number" class="form-control" formControlName="amount"
                                         placeholder="Enter amount" (input)="onInputChange()">
-                                    <div *ngIf="sampleRegisterForm.get('Amount')?.invalid && submitted"
+                                    <div *ngIf="sampleRegisterForm.get('amount')?.invalid && submitted"
                                         class="text-danger small">
-                                        <span *ngIf="sampleRegisterForm.get('Amount')?.hasError('required')">Amount
+                                        <span *ngIf="sampleRegisterForm.get('amount')?.hasError('required')">Amount
                                             is required.</span>
                                     </div>
                                     <ng-container *ngFor="let error of validationErrors">
@@ -371,8 +372,8 @@
                                     </ng-container>
                                 </div>
                                 <div class="mb-3">
-                                     <input type="text" class="form-control" formControlName="chequeno"
-                                                placeholder="Cheque Number" (input)="onInputChange()">
+                                    <input type="text" class="form-control" formControlName="chequeno"
+                                        placeholder="Cheque Number" (input)="onInputChange()">
                                     <!-- <input type="text" class="form-control" placeholder="Cheque Number"
                                         formControlName="chequeNo" (input)="onInputChange()" > -->
                                     <div *ngIf="sampleRegisterForm.get('chequeno')?.invalid && submitted"
@@ -407,11 +408,11 @@
                             <!-- Show Additional Field for Credit Card -->
                             <div *ngIf="selectedPayment === 'Scanner' || selectedPayment === 'Online'">
                                 <div class="mb-3">
-                                    <input type="number" class="form-control" formControlName="Amount"
+                                    <input type="number" class="form-control" formControlName="amount"
                                         placeholder="Enter amount" (input)="onInputChange()">
-                                    <div *ngIf="sampleRegisterForm.get('Amount')?.invalid && submitted"
+                                    <div *ngIf="sampleRegisterForm.get('amount')?.invalid && submitted"
                                         class="text-danger small">
-                                        <span *ngIf="sampleRegisterForm.get('Amount')?.hasError('required')">Amount
+                                        <span *ngIf="sampleRegisterForm.get('amount')?.hasError('required')">Amount
                                             is required.
                                         </span>
                                     </div>
@@ -470,7 +471,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let sampleRegister of sampleRegisterList, let i = index">
+                    <tr *ngFor="let sampleRegister of sampleRegisterList; let i = index">
                         <td>{{ i + 1 }}</td>
                         <td>{{ sampleRegister.sampleRegisterId }}</td>
                         <td>{{sampleRegister.title}} {{ sampleRegister.firstName }} {{sampleRegister.middleName}} {{

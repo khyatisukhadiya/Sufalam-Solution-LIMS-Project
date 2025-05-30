@@ -71,8 +71,10 @@ namespace LIMSAPI.Controllers.Transaction
 
             try
             {
+                bool isUpdate = sampleRegister.SampleRegisterId > 0;
+
                 var result = _sampleSL.AddUpdateSampleRegister(sampleRegister);
-                var message = sampleRegister.SampleRegisterId > 0 ? "SampleRegister Update Successfully" : "SampleRegister Add Successfully.";
+                var message = isUpdate ? "SampleRegister Update Successfully" : "SampleRegister Add Successfully.";
                 return Success(message, result);
             }
             catch (Exception ex)
