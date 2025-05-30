@@ -488,28 +488,28 @@ export class SampleRegisterComponent implements OnInit {
     console.log("sampleregister", this.sampleRegisterForm);
 
     const payload = {
-      sampleRegisterId: formValues.SampleRegisterId,
-      date: formValues.Date,
-      branchId: formValues.BranchId,
-      totalAmount: formValues.TotalAmount,
+      sampleRegisterId: formValues.sampleRegisterId,
+      date: formValues.date,
+      branchId: formValues.branchId,
+      totalAmount: formValues.totalAmount,
       isB2B: formValues.isB2B,
-      b2BId: formValues.B2BId ?? null,
-      phoneNumber: formValues.PhoneNumber,
-      title: formValues.Title,
-      firstName: formValues.FirstName,
-      middleName: formValues.MiddleName,
-      lastName: formValues.LastName,
-      dob: formValues.dOB,
-      age: formValues.Age,
-      gender: formValues.Gender,
-      email: formValues.Email,
-      cityId: formValues.CityId,
-      areaId: formValues.AreaId,
-      address: formValues.Address,
-      amount: formValues.Amount,
-      chequeNo: formValues.chequeno ?? null,
-      chequeDate: formValues.chequedate ?? null,
-      transactionId: formValues.transactionid ?? null,
+      b2BId: formValues.b2BId ?? null,
+      phoneNumber: formValues.phoneNumber,
+      title: formValues.title,
+      firstName: formValues.firstName,
+      middleName: formValues.middleName,
+      lastName: formValues.lastName,
+      dob: formValues.dob,
+      age: formValues.age,
+      gender: formValues.gender,
+      email: formValues.email,
+      cityId: formValues.cityId,
+      areaId: formValues.areaId,
+      address: formValues.address,
+      amount: formValues.amount,
+      chequeNo: formValues.chequeNo ?? null,
+      chequeDate: formValues.chequeDate ?? null,
+      transactionId: formValues.transactionId ?? null,
       isActive: true,
       paymentMapping: [{
         paymentId: selectedPayment.paymentId,
@@ -614,11 +614,11 @@ export class SampleRegisterComponent implements OnInit {
       form.get('amount')?.enable();
     } else if (this.selectedPayment === 'Cheque') {
       form.get('amount')?.enable();
-      form.get('chequeno')?.enable();
-      form.get('chequedate')?.enable();
+      form.get('chequeNo')?.enable();
+      form.get('chequeDate')?.enable();
     } else if (this.selectedPayment === 'Scanner' || this.selectedPayment === 'Online') {
       form.get('amount')?.enable();
-      form.get('transactionid')?.enable();
+      form.get('transactionId')?.enable();
     }
   }
 

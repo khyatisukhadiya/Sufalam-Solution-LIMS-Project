@@ -117,7 +117,7 @@
                                             <small
                                                 *ngIf="sampleRegisterForm.controls['phoneNumber']?.errors?.['required'] && submitted"
                                                 class="text-danger">
-                                                PhoneNumberis required.
+                                                Phone Number is required.
                                             </small>
                                             <ng-container *ngFor="let error of validationErrors">
                                                 <small *ngIf="error.toLowerCase().includes('phone')"
@@ -144,7 +144,7 @@
                                             <small
                                                 *ngIf="sampleRegisterForm.controls['firstName']?.errors?.['required'] && submitted"
                                                 class="text-danger">
-                                                First name is required.
+                                                First Name is required.
                                             </small>
                                             <ng-container *ngFor="let error of validationErrors">
                                                 <small *ngIf="error.toLowerCase().includes('firstname')"
@@ -160,7 +160,7 @@
                                             <small
                                                 *ngIf="sampleRegisterForm.controls['middleName']?.errors?.['required'] && submitted"
                                                 class="text-danger">
-                                                MiddleName is required.
+                                                Middle Name is required.
                                             </small>
                                             <ng-container *ngFor="let error of validationErrors">
                                                 <small *ngIf="error.toLowerCase().includes('middlename')"
@@ -178,7 +178,7 @@
                                             <small
                                                 *ngIf="sampleRegisterForm.controls['lastName']?.errors?.['required'] && submitted"
                                                 class="text-danger">
-                                                LastName is required.
+                                                Last Name is required.
                                             </small>
                                             <ng-container *ngFor="let error of validationErrors">
                                                 <small *ngIf="error.toLowerCase().includes('lastname')"
@@ -192,7 +192,7 @@
                                             <input type="date" class="form-control" id="dob" formControlName="dob"
                                                 (input)="onInputChange()">
                                             <small
-                                                *ngIf="sampleRegisterForm.controls['dOB']?.errors?.['required'] && submitted"
+                                                *ngIf="sampleRegisterForm.controls['dob']?.errors?.['required'] && submitted"
                                                 class="text-danger">
                                                 DOB is required.
                                             </small>
@@ -261,6 +261,17 @@
                                         <td>
                                             <label for="address">Address</label>
                                             <textarea class="form-control" formControlName="address"></textarea>
+                                            <small
+                                                *ngIf="sampleRegisterForm.controls['address']?.errors?.['required'] && submitted"
+                                                class="text-danger">
+                                                Address is required.
+                                            </small>
+                                            <ng-container *ngFor="let error of validationErrors">
+                                                <small *ngIf="error.toLowerCase().includes('address')"
+                                                    class="text-danger">
+                                                    {{ error }}
+                                                </small>
+                                            </ng-container>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -331,11 +342,6 @@
                                     class="text-danger">
                                     Payment is required.
                                 </small>
-                                <!-- <ng-container *ngFor="let error of validationErrors">
-                                    <small *ngIf="error.toLowerCase().includes('payment')" class="text-danger">
-                                        {{ error }}
-                                    </small>
-                                </ng-container> -->
                             </div>
 
                             <!-- Show Amount Input Field Only If Payment Mode is 'Cash' -->
@@ -372,13 +378,11 @@
                                     </ng-container>
                                 </div>
                                 <div class="mb-3">
-                                    <input type="text" class="form-control" formControlName="chequeno"
+                                    <input type="text" class="form-control" formControlName="chequeNo"
                                         placeholder="Cheque Number" (input)="onInputChange()">
-                                    <!-- <input type="text" class="form-control" placeholder="Cheque Number"
-                                        formControlName="chequeNo" (input)="onInputChange()" > -->
-                                    <div *ngIf="sampleRegisterForm.get('chequeno')?.invalid && submitted"
+                                    <div *ngIf="sampleRegisterForm.get('chequeNo')?.invalid && submitted"
                                         class="text-danger small">
-                                        <span *ngIf="sampleRegisterForm.get('chequeno')?.hasError('required')">Cheque
+                                        <span *ngIf="sampleRegisterForm.get('chequeNo')?.hasError('required')">Cheque
                                             No is required.
                                         </span>
                                     </div>
@@ -390,10 +394,10 @@
                                 </div>
                                 <div class="mb-3">
                                     <input type="date" class="form-control" placeholder="Cheque Date"
-                                        formControlName="chequedate" (input)="onInputChange()">
-                                    <div *ngIf="sampleRegisterForm.get('chequedate')?.invalid && submitted"
+                                        formControlName="chequeDate" (input)="onInputChange()">
+                                    <div *ngIf="sampleRegisterForm.get('chequeDate')?.invalid && submitted"
                                         class="text-danger small">
-                                        <span *ngIf="sampleRegisterForm.get('chequedate')?.hasError('required')">Cheque
+                                        <span *ngIf="sampleRegisterForm.get('chequeDate')?.hasError('required')">Cheque
                                             Date is required.
                                         </span>
                                     </div>
@@ -423,7 +427,7 @@
                                     </ng-container>
                                 </div>
                                 <div class="mb-3">
-                                    <input type="text" class="form-control" formControlName="transactionid"
+                                    <input type="text" class="form-control" formControlName="transactionId"
                                         placeholder="Enter TransactionId" (input)="onInputChange()">
                                     <div *ngIf="sampleRegisterForm.get('transactionId')?.invalid && submitted"
                                         class="text-danger small">
