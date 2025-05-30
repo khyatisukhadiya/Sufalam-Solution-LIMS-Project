@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using LIMSAPI.ServiceLayer;
 using LIMSAPI.Models.TransactionModal;
 using Azure.Core;
+using System.Reflection;
 
 namespace LIMSAPI.Controllers.Transaction
 {
@@ -24,11 +25,12 @@ namespace LIMSAPI.Controllers.Transaction
 
         [HttpPost]
 
-        public IActionResult AddUpdateSampleRegister([FromBody] SampleRegister sampleRegister)
+        public IActionResult AddUpdateSampleRegister([FromBody]SampleRegister sampleRegister)
         {
+
             if (sampleRegister == null)
             {
-                return Error("Invalid request payload");
+                return Error("Invalid request payload input");
             }
 
 

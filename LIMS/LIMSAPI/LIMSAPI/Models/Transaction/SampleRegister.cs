@@ -126,6 +126,8 @@ namespace LIMSAPI.Models.TransactionModal
         public int B2CAmount { get; set; }
 
         public bool IsActive { get; set; }
+
+        public int SampleServiceMapId { get; set; }
     }
 
 

@@ -86,7 +86,7 @@
                                     <tr>
                                         <td>
                                             <label for="branch">Branch</label>
-                                            <select class="form-select" id="branch" formControlName="BranchId">
+                                            <select class="form-select" id="branch" formControlName="BranchId" #autofocus>
                                                 <option *ngFor="let branch of branches" [ngValue]="branch.branchId">
                                                     {{ branch.branchName }}
                                                 </option>
@@ -422,8 +422,8 @@
                                     </ng-container>
                                 </div>
                                 <div class="mb-3">
-                                    <input type="text" class="form-control" placeholder="Transaction ID"
-                                        formControlName="transactionId" (input)="onInputChange()">
+                                    <input type="text" class="form-control" formControlName="transactionid"
+                                        placeholder="Enter TransactionId" (input)="onInputChange()">
                                     <div *ngIf="sampleRegisterForm.get('transactionId')?.invalid && submitted"
                                         class="text-danger small">
                                         <span

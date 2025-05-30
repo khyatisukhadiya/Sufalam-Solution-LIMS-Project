@@ -2668,7 +2668,7 @@ namespace LIMSAPI.RepositryLayer
                 {
                     while (reader.Read())
                     {
-                        response.Add(new PaymentModal
+                        response.Add(new PaymentModal()
                         {
                             PaymentId = Convert.ToInt32(reader["PaymentId"]),
                             PaymentName = reader["PaymentName"].ToString(),
@@ -2725,10 +2725,10 @@ namespace LIMSAPI.RepositryLayer
                                       s.Gender, s.Email, c.CityId, c.CityName, a.AreaId, a.AreaName, s.Address, s.Amount, s.ChequeNo, s.ChequeDate, s.transactionId, s.IsActive
                                       FROM sampleregister s
                                       INNER JOIN branch b ON s.BranchId = b.BranchId
-                                        INNER JOIN b2b k ON s.B2BId = k.B2BId
-                                        INNER JOIN city c ON s.CityId = c.CityId
-                                        INNER JOIN area a ON s.AreaId = a.AreaId
-                                        WHERE s.SampleRegisterId = @SampleRegisterId;";
+                                      LEFT JOIN b2b k ON s.B2BId = k.B2BId
+                                      INNER JOIN city c ON s.CityId = c.CityId
+                                      INNER JOIN area a ON s.AreaId = a.AreaId
+                                      WHERE s.SampleRegisterId = @SampleRegisterId;";
                                         //INNER JOIN doctor d ON s.DoctorId = d.DoctorId
 
 
@@ -2738,8 +2738,8 @@ namespace LIMSAPI.RepositryLayer
                     common.Parameters.AddWithValue("@Date", sampleRegister.Date);
                     common.Parameters.AddWithValue("@BranchId", sampleRegister.BranchId);
                     common.Parameters.AddWithValue("@TotalAmount", sampleRegister.TotalAmount);
-                    common.Parameters.AddWithValue("IsB2B", sampleRegister.IsB2B);
-                    common.Parameters.AddWithValue("@B2BId", sampleRegister.B2BId);
+                    common.Parameters.AddWithValue("@IsB2B", sampleRegister.IsB2B);
+                    common.Parameters.AddWithValue("@B2BId", sampleRegister.B2BId ?? (object)DBNull.Value);
                     common.Parameters.AddWithValue("@PhoneNumber", sampleRegister.PhoneNumber);
                     common.Parameters.AddWithValue("@Title", sampleRegister.Title);
                     common.Parameters.AddWithValue("@FirstName", sampleRegister.FirstName);
@@ -2768,7 +2768,7 @@ namespace LIMSAPI.RepositryLayer
                         response.BranchName = reader["BranchName"].ToString();
                         response.TotalAmount = Convert.ToInt32(reader["TotalAmount"]);
                         response.IsB2B = Convert.ToBoolean(reader["IsB2B"]);
-                        response.B2BId = Convert.ToInt32(reader["B2BId"]);
+                        response.B2BId = reader["B2BId"] != DBNull.Value ? Convert.ToInt32(reader["B2BId"]) : null;
                         response.B2BName = reader["B2BName"].ToString();
                         response.PhoneNumber = reader["PhoneNumber"].ToString();
                         response.Title = reader["Title"].ToString();
@@ -2809,7 +2809,7 @@ namespace LIMSAPI.RepositryLayer
                     common.Parameters.AddWithValue("@BranchId", sampleRegister.BranchId);
                     common.Parameters.AddWithValue("@TotalAmount", sampleRegister.TotalAmount);
                     common.Parameters.AddWithValue("@IsB2B", sampleRegister.IsB2B);
-                    common.Parameters.AddWithValue("@B2BId", sampleRegister.B2BId);
+                    common.Parameters.AddWithValue("@B2BId", sampleRegister.B2BId ?? (object)DBNull.Value);
                     common.Parameters.AddWithValue("@PhoneNumber", sampleRegister.PhoneNumber);
                     common.Parameters.AddWithValue("@Title", sampleRegister.Title);
                     common.Parameters.AddWithValue("@FirstName", sampleRegister.FirstName);
@@ -2843,7 +2843,7 @@ namespace LIMSAPI.RepositryLayer
                     // b2b
                     string b2bQuery = "SELECT B2BName FROM b2b WHERE B2BId = @B2BId";
                     using var b2bCommond = new SqlCommand(b2bQuery, _sqlConnection);
-                    b2bCommond.Parameters.AddWithValue("@B2BId", sampleRegister.B2BId);
+                    b2bCommond.Parameters.AddWithValue("@B2BId", sampleRegister.B2BId == null ? DBNull.Value : (object)sampleRegister.B2BId);
                     string b2bName = (string?)b2bCommond.ExecuteScalar() ?? "";
 
 
@@ -3013,7 +3013,7 @@ namespace LIMSAPI.RepositryLayer
             {
                 string query = $@"sampleregister 
                             INNER JOIN branch ON sampleregister.BranchId = branch.BranchId
-                            INNER JOIN b2b ON sampleregister.B2BId = b2b.B2BId
+                            LEFT JOIN  b2b ON sampleregister.B2BId = b2b.B2BId
                             INNER JOIN city ON sampleregister.CityId = city.CityId
                             INNER JOIN area ON sampleregister.AreaId = area.AreaId";
                 //INNER JOIN doctor ON sampleregister.DoctorId = doctor.DoctorId
@@ -3033,7 +3033,7 @@ namespace LIMSAPI.RepositryLayer
                         BranchName = reader["BranchName"].ToString(),
                         TotalAmount = Convert.ToInt32(reader["TotalAmount"]),
                         IsB2B = reader["IsB2B"] != DBNull.Value ? Convert.ToBoolean(reader["IsB2B"]) : false,
-                        B2BId = Convert.ToInt32(reader["B2BId"]),
+                        B2BId = reader["B2BId"] != DBNull.Value ? Convert.ToInt32(reader["B2BId"]) : null,
                         B2BName = reader["B2BName"].ToString(),
                         PhoneNumber = reader["PhoneNumber"].ToString(),
                         Title = reader["Title"].ToString(),
@@ -3073,7 +3073,7 @@ namespace LIMSAPI.RepositryLayer
                     foreach (var service in sampleRegisters)
                     {
                         string testQuery = @"
-                    SELECT s.ServiceId, s.ServiceCode, s.ServiceName, s.B2BAmount, s.B2CAmount,
+                    SELECT s.ServiceId, s.ServiceCode, s.ServiceName, s.B2BAmount, s.B2CAmount, 
                            stm.SampleServiceMapId, stm.IsActive, stm.SampleRegisterId
                     FROM sampleServiceMap stm
                     INNER JOIN service s ON stm.ServiceId = s.ServiceId
@@ -3095,6 +3095,7 @@ namespace LIMSAPI.RepositryLayer
                                         B2BAmount = Convert.ToInt32(reader["B2BAmount"]),
                                         B2CAmount = Convert.ToInt32(reader["B2CAmount"]),
                                         IsActive = Convert.ToBoolean(reader["IsActive"]),
+                                        SampleServiceMapId = Convert.ToInt32(reader["SampleServiceMapId"]),
                                     });
                                 }
                             }
@@ -3162,7 +3163,7 @@ namespace LIMSAPI.RepositryLayer
 
                 string query = @"SELECT * FROM sampleregister
                                  INNER JOIN branch ON sampleregister.BranchId = branch.BranchId
-                                 INNER JOIN b2b ON sampleregister.B2BId = b2b.B2BId
+                                 LEFT JOIN b2b ON sampleregister.B2BId = b2b.B2BId
                                  INNER JOIN city ON sampleregister.CityId = city.CityId
                                  INNER JOIN area ON sampleregister.AreaId = area.AreaId
                                  WHERE SampleRegisterId = @SampleRegisterId";
@@ -3181,7 +3182,7 @@ namespace LIMSAPI.RepositryLayer
                             response.BranchName = reader["BranchName"].ToString();
                             response.TotalAmount = Convert.ToInt32(reader["TotalAmount"]);
                             response.IsB2B = reader["IsB2B"] != DBNull.Value ? Convert.ToBoolean(reader["IsB2B"]) : false;
-                            response.B2BId = Convert.ToInt32(reader["B2BId"]);
+                            response.B2BId = reader["B2BId"] != DBNull.Value ? Convert.ToInt32(reader["B2BId"]) : null;
                             response.B2BName = reader["B2BName"].ToString();
                             response.PhoneNumber = reader["PhoneNumber"].ToString();
                             response.Title = reader["Title"].ToString();
@@ -3218,7 +3219,7 @@ namespace LIMSAPI.RepositryLayer
                 response.ServiceMapping = new List<ServiceMapping>();
 
                 string testQuery = @"
-                    SELECT s.ServiceId, s.ServiceCode, s.ServiceName, s.B2BAmount, s.B2CAmount,
+                    SELECT s.ServiceId, s.ServiceCode, s.ServiceName, s.B2BAmount, s.B2CAmount, 
                            stm.SampleServiceMapId, stm.IsActive, stm.SampleRegisterId
                     FROM sampleServiceMap stm
                     INNER JOIN service s ON stm.ServiceId = s.ServiceId
@@ -3240,7 +3241,8 @@ namespace LIMSAPI.RepositryLayer
                                 B2BAmount = Convert.ToInt32(reader["B2BAmount"]),
                                 B2CAmount = Convert.ToInt32(reader["B2CAmount"]),
                                 IsActive = Convert.ToBoolean(reader["IsActive"]),
-                            });
+                                SampleServiceMapId = Convert.ToInt32(reader["SampleServiceMapId"]),
+                             });
                         }
                     }
                 }
@@ -3308,7 +3310,7 @@ namespace LIMSAPI.RepositryLayer
                                    a.AreaId, a.AreaName, s.Address, s.Amount, s.ChequeNo, s.ChequeDate, s.TransactionId, s.IsActive
                                    FROM sampleregister s
                                   INNER JOIN branch b ON s.BranchId = b.BranchId
-                                  INNER JOIN b2b k ON s.B2BId = k.B2BId
+                                 LEFT JOIN b2b k ON s.B2BId = k.B2BId
                                   INNER JOIN city c ON s.CityId = c.CityId
                                   INNER JOIN area a ON s.AreaId = a.AreaId
                                  WHERE s.SampleRegisterId = @SampleRegisterId;";
@@ -3327,7 +3329,7 @@ namespace LIMSAPI.RepositryLayer
                     response.BranchName = reader["BranchName"].ToString();
                     response.TotalAmount = Convert.ToInt32(reader["TotalAmount"]);
                     response.IsB2B = Convert.ToBoolean(reader["IsB2B"]);
-                    response.B2BId = Convert.ToInt32(reader["B2BId"]);
+                    response.B2BId = reader["B2BId"] != DBNull.Value ? Convert.ToInt32(reader["B2BId"]) : null;
                     response.B2BName = reader["B2BName"].ToString();
                     response.PhoneNumber = reader["PhoneNumber"].ToString();
                     response.Title = reader["Title"].ToString();

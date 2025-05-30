@@ -20,6 +20,8 @@ import { ToastrService } from 'ngx-toastr';
 })
 export class SampleRegisterComponent implements OnInit {
   @ViewChild('myModal') modal: ElementRef | undefined;
+@ViewChild('autofocus') autofocus!: ElementRef;
+
   sampleRegisterForm: FormGroup = new FormGroup({});
   isEditModal: boolean = false;
   modalInstance: any;
@@ -83,6 +85,11 @@ export class SampleRegisterComponent implements OnInit {
     const modalEl = document.getElementById('myModal');
     if (modalEl != null) {
       modalEl.style.display = "block";
+      modalEl.addEventListener('shown.bs.modal', () => {
+        if (this.autofocus) {
+          this.autofocus.nativeElement.focus();
+        } 
+      }); 
     }
 
     if (!this.isEditModal) {
@@ -156,7 +163,7 @@ export class SampleRegisterComponent implements OnInit {
       BranchId: [null, Validators.required],
       TotalAmount: [0, Validators.required],
       isB2B: [false],
-      B2BId: [null, Validators.required],
+      B2BId: [null],
       PhoneNumber: ['', Validators.required],
       Title: ['', Validators.required],
       FirstName: ['', Validators.required],
@@ -175,7 +182,7 @@ export class SampleRegisterComponent implements OnInit {
       Amount: [{ value: '', disabled: true },Validators.required],
       chequeno: [{ value: '', disabled: true }, Validators.required],
       chequedate: [{ value: '', disabled: true }, Validators.required],
-      transactionId: [{ value: '', disabled: true }, Validators.required],
+      transactionid: [{ value: '', disabled: true }, Validators.required],
       isActive: [true],
     });
   }
@@ -320,6 +327,7 @@ export class SampleRegisterComponent implements OnInit {
   }
 
   onEdit(sampleRegisterId: number): void {
+
     this.sampleRegisterService.getSampleRegisterById(sampleRegisterId).subscribe({
       next: (res) => {
       
@@ -331,7 +339,7 @@ export class SampleRegisterComponent implements OnInit {
           BranchId: res.branchId,
           TotalAmount: res.totalAmount,
           isB2B: res.isB2B,
-          B2BId: res.b2BId,
+          B2BId: res.b2BId ? res.b2BId : null, // if b2BId is null, then it is B2C
           PhoneNumber: res.phoneNumber,
           Title: res.title,
           FirstName: res.firstName,
@@ -348,7 +356,7 @@ export class SampleRegisterComponent implements OnInit {
           Amount: res.amount,
           chequeno: res.chequeNo,  
           chequedate: res.chequeDate ? formatDate(res.chequeDate, 'yyyy-MM-dd', 'en-US') : null,
-          TransactionId: res.transactionId,
+          transactionid: res.transactionId,
           PaymentId: res.paymentMapping?.[0]?.paymentId,
         }
         
@@ -413,10 +421,10 @@ export class SampleRegisterComponent implements OnInit {
   }
 
   removeService(service: any): void {
-    this.sampleRegisterService.deleteSampleServiceMapId(service.serviceId).subscribe(() => {
-      this.selectedServices = this.selectedServices.filter(s => s.serviceId !== service.serviceId);
+    this.sampleRegisterService.deleteSampleServiceMapId(service.sampleServiceMapId).subscribe(() => {
+      this.selectedServices = this.selectedServices.filter(s => s.sampleServiceMapId !== service.sampleServiceMapId);
       this.showSuccess('Service removed successfully');
-      this.sampleRegisterForm.patchValue({ ServiceId: null });
+      this.sampleRegisterForm.patchValue({ sampleServiceMapId: null });
       this.calculateTotalAmount();
     });
   }
@@ -446,15 +454,17 @@ export class SampleRegisterComponent implements OnInit {
       p.paymentId === +formValues.PaymentId
     );
 
-    // if (!selectedPayment) {
-    //   this.showError('Invalid or missing payment selection.');
-    //   return;
-    // }
+    if (!selectedPayment) {
+      this.showError('Invalid or missing payment selection.');
+      return;
+    }
 
-    // if (!this.selectedServices || this.selectedServices.length === 0) {
-    //   this.showError('Please select at least one service.');
-    //   return;
-    // }
+    if (!this.selectedServices || this.selectedServices.length === 0) {
+      this.showError('Please select at least one service.');
+      return;
+    }
+
+    console.log("sampleregister",this.sampleRegisterForm);
 
     const payload = {
       SampleRegisterId: formValues.SampleRegisterId,
@@ -462,7 +472,7 @@ export class SampleRegisterComponent implements OnInit {
       BranchId: formValues.BranchId,
       TotalAmount: formValues.TotalAmount,
       isB2B: formValues.isB2B,
-      B2BId: formValues.B2BId,
+      B2BId: formValues.B2BId ?? null,
       PhoneNumber: formValues.PhoneNumber,
       Title: formValues.Title,
       FirstName: formValues.FirstName,
@@ -476,10 +486,10 @@ export class SampleRegisterComponent implements OnInit {
       AreaId: formValues.AreaId,
       Address: formValues.Address,
       Amount: formValues.Amount,
-      chequeNo: formValues.chequeNo ?? null,
-      chequeDate: formValues.chequeDate ?? null,
-      transactionId: formValues.transactionId ?? null,
-      isActive: formValues.isActive,
+      chequeno: formValues.chequeno ?? null,
+      chequedate: formValues.chequedate ?? null,
+      transactionid: formValues.transactionid ?? null,
+      isActive: true,
       paymentMapping: [{
         paymentId: selectedPayment.paymentId,
         paymentName: selectedPayment.paymentName,
@@ -494,10 +504,11 @@ export class SampleRegisterComponent implements OnInit {
         b2BAmount: s.b2BAmount,
         b2CAmount: s.b2CAmount,
         isActive: s.isActive,
+        // sampleServiceMapId : s.sampleServiceMapId,
       }))
     };
 
-
+console.log("before sampleregister", this.sampleRegisterForm)
     console.log('Final Payload:', payload);
 
     this.sampleRegisterService.addUpdatedSampleRegister(payload).subscribe({
@@ -586,7 +597,7 @@ export class SampleRegisterComponent implements OnInit {
       form.get('chequedate')?.enable();
     } else if (this.selectedPayment === 'Scanner' || this.selectedPayment === 'Online') {
       form.get('Amount')?.enable();
-      form.get('transactionId')?.enable();
+      form.get('transactionid')?.enable();
     }
   }
 

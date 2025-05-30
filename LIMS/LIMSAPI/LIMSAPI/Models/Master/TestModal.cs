@@ -18,6 +18,7 @@ namespace LIMSAPI.Models.Master
         public string TestCode { get; set; }
 
         public int ServiceTestId { get; set; }
+
         public bool IsActive { get; set; }
     }
 }

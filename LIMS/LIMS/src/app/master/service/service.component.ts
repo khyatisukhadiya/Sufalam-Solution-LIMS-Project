@@ -242,16 +242,6 @@ export class ServiceComponent implements OnInit {
     });
   }
 
-
-  // onDeleteSetviceTestById(ServiceTestId : number){
-  //   this.serviceService.deleteServiceTestId(ServiceTestId).subscribe(() =>
-  //     {
-  //       const message = 'Service Test Deleted';
-  //       this.showSuccess(message);
-  //       this.getService();
-  //       });
-  // }
-
   clearSearch() {
     this.searchClick = false;
     this.searchCriteria = {

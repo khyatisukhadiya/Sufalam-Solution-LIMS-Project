@@ -19,8 +19,18 @@ builder.Services.AddScoped<SqlConnection>(sp =>
 
 
 // Add services to the container.
+//builder.Services.AddControllers().AddJsonOptions(x =>
+//    x.JsonSerializerOptions.PropertyNameCaseInsensitive = true);
 
-builder.Services.AddControllers();  
+
+//builder.Services.AddControllers().AddJsonOptions(opts => opts.JsonSerializerOptions.PropertyNamingPolicy = null); response capital
+
+builder.Services.AddControllers();
+    //.ConfigureApiBehaviorOptions(options =>
+    //{
+    //    options.SuppressModelStateInvalidFilter = true;
+    //});
+
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
     options.SuppressModelStateInvalidFilter = true;

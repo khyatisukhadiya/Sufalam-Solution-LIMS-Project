@@ -16,25 +16,26 @@ export interface SampleRegister {
     email: string;
     cityId: number;
     areaId: number;
-    address: string;    
+    address: string;
     // doctorId: number;
-    isActive : boolean;
+    isActive: boolean;
     amount: number;
     chequeNo: string;
     chequeDate: string;
     transactionId: string;
-    serviceId: number;  
+    serviceId: number;
     paymentId: number;
     paymentName: string;
-    serviceMapping : [{
+    serviceMapping: [{
         serviceId: number;
-        serviceCode : string;
+        serviceCode: string;
         serviceName: string;
         b2BAmount: number;
         b2CAmount: number;
         isActive: boolean;
+        sampleServiceMapId: number;
     }],
-    paymentMapping : [{
+    paymentMapping: [{
         paymentId: number;
         paymentName: string;
         isCash: boolean;
