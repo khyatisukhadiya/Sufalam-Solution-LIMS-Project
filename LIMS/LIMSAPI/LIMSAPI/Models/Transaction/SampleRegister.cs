@@ -36,6 +36,8 @@ namespace LIMSAPI.Models.TransactionModal
         [RegularExpression(@"^([0-9]{10})$", ErrorMessage = "Invalid Phone Number.")]
         public string PhoneNumber { get; set; }
 
+
+        [Required(ErrorMessage = "Title is required.")]
         public  string Title { get; set; }
 
 
@@ -106,7 +108,7 @@ namespace LIMSAPI.Models.TransactionModal
 
         public string? CreatedBy { get; set; }
 
-        //public DateTime CreatedDate { get; set; }
+        //public DateTime CreatedOn { get; set; }
         //public bool IsActive { get; set; }
 
 
@@ -132,9 +134,12 @@ namespace LIMSAPI.Models.TransactionModal
 
         public int B2CAmount { get; set; }
 
-        public bool IsActive { get; set; }
+        //public bool IsActive { get; set; }
 
         public int SampleServiceMapId { get; set; }
+
+        //public DateTime CreatedOn { get; set; }
+
     }
 
 

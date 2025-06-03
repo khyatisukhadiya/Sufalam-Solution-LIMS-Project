@@ -2956,7 +2956,7 @@ namespace LIMSAPI.RepositryLayer
 
                 }
 
-                if (sampleRegister.SampleRegisterId > 0 && sampleRegister.PaymentMapping != null)
+                if (sampleRegister.SampleRegisterId > 0 && sampleRegister.PaymentMapping != null && sampleRegister.PaymentMapping.Count == 1)
                 {
                     foreach (var paymentModal in sampleRegister.PaymentMapping)
                     {
@@ -3232,11 +3232,11 @@ namespace LIMSAPI.RepositryLayer
 
                 string testQuery = @"
                     SELECT s.ServiceId, s.ServiceCode, s.ServiceName, s.B2BAmount, s.B2CAmount, 
-                           stm.SampleServiceMapId, stm.SampleRegisterId,  stm.IsActive
+                           stm.SampleServiceMapId, stm.SampleRegisterId
                     FROM sampleServiceMap stm
                     INNER JOIN service s ON stm.ServiceId = s.ServiceId
-                    WHERE stm.SampleRegisterId = @SampleRegisterId 
-                    AND stm.IsActive = 1";
+                    WHERE stm.SampleRegisterId = @SampleRegisterId ";
+                    //AND stm.IsActive = 1";,  stm.IsActive
 
                 using (var testCmd = new SqlCommand(testQuery, _sqlConnection))
                 {
@@ -3253,8 +3253,9 @@ namespace LIMSAPI.RepositryLayer
                                 ServiceName = reader["ServiceName"].ToString(),
                                 B2BAmount = Convert.ToInt32(reader["B2BAmount"]),
                                 B2CAmount = Convert.ToInt32(reader["B2CAmount"]),
-                                IsActive = Convert.ToBoolean(reader["IsActive"]),
+                                //IsActive = Convert.ToBoolean(reader["IsActive"]),
                                 SampleServiceMapId = Convert.ToInt32(reader["SampleServiceMapId"]),
+                                //CreatedDate = Convert.ToDateTime(reader["CreatedDate"]),
                              });
                         }
                     }
@@ -3265,11 +3266,11 @@ namespace LIMSAPI.RepositryLayer
 
                 string paymentQuery = @"
                     SELECT p.PaymentId, p.PaymentName, p.IsCash, p.IsCheque, p.IsOnline,
-                           stm.SamplePaymentMapId,  stm.SampleRegisterId,  stm.IsActive
+                           stm.SamplePaymentMapId,  stm.SampleRegisterId
                     FROM samplepaymentmap stm
                     INNER JOIN payment p ON stm.PaymentId = p.PaymentId
-                    WHERE stm.SampleRegisterId = @SampleRegisterId 
-                    AND stm.IsActive = 1";
+                    WHERE stm.SampleRegisterId = @SampleRegisterId"; 
+                    //AND stm.IsActive = 1";,  stm.IsActive
 
                 using (var testCmd = new SqlCommand(paymentQuery, _sqlConnection))
                 {
@@ -3286,7 +3287,7 @@ namespace LIMSAPI.RepositryLayer
                                 IsCash = Convert.ToBoolean(reader["IsCash"]),
                                 IsCheque = Convert.ToBoolean(reader["IsCheque"]),
                                 IsOnline = Convert.ToBoolean(reader["IsOnline"]),
-                                IsActive = Convert.ToBoolean(reader["IsActive"]),
+                                //IsActive = Convert.ToBoolean(reader["IsActive"]),
                             });
                         }
                     }
@@ -3386,8 +3387,6 @@ namespace LIMSAPI.RepositryLayer
 
 
         // SAMPLE SERVICE MAP
-
-
 
         public List<SampleRegister> GetSampleByFilter()
         {

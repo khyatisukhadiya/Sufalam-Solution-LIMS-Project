@@ -96,8 +96,8 @@
                                         <td>
                                             <label for="branch">Branch</label>
                                             <select class="form-select" id="branch" formControlName="branchId"
-                                                #autofocus>
-                                                <option *ngFor="let branch of branches" [ngValue]="branch.branchId">
+                                                #autofocus (change)="onBranchChange($event)" (input)="onInputChange()">
+                                                <option *ngFor="let branch of branches" [value]="branch.branchId">
                                                     {{ branch.branchName }}
                                                 </option>
                                             </select>
@@ -128,7 +128,7 @@
                                                     class="form-control" id="b2bInput" formControlName="b2bId"
                                                     placeholder="Select B2B" /> -->
                                                 <select *ngIf="!sampleRegisterForm.get('isB2B')?.value" type="text"
-                                                    class="form-control" id="b2bInput" formControlName="b2bId">
+                                                    class="form-control" id="b2bInput" formControlName="b2BId">
                                                     <option value=""></option>
                                                 </select>
                                             </div>
@@ -154,12 +154,24 @@
                                     <tr>
                                         <td>
                                             <label for="title">Title</label>
-                                            <select class="form-select" id="title" formControlName="title">
+                                            <select class="form-select" id="title" formControlName="title"
+                                                (input)="onInputChange()">
                                                 <option>Mr.</option>
                                                 <option>Ms.</option>
                                                 <option>Dr.</option>
                                                 <option>Miss.</option>
                                             </select>
+                                            <small
+                                                *ngIf="sampleRegisterForm.controls['title']?.errors?.['required'] && submitted"
+                                                class="text-danger">
+                                                Title is required.
+                                            </small>
+                                            <ng-container *ngFor="let error of validationErrors">
+                                                <small *ngIf="error.toLowerCase().includes('title is required')"
+                                                    class="text-danger">
+                                                    {{ error }}
+                                                </small>
+                                            </ng-container>
                                         </td>
                                         <td>
                                             <label for="firstName">First Name</label>
@@ -249,7 +261,7 @@
                                                 Gender is required.
                                             </small>
                                             <ng-container *ngFor="let error of validationErrors">
-                                                <small *ngIf="error.toLowerCase().includes('gender')"
+                                                <small *ngIf="error.toLowerCase().includes('gender is required')"
                                                     class="text-danger">
                                                     {{ error }}
                                                 </small>
@@ -270,15 +282,17 @@
                                     <tr>
                                         <td>
                                             <label for="city">City</label>
-                                            <select class="form-select" id="city" formControlName="cityId">
-                                                <option *ngFor="let city of cities" [ngValue]="city.cityId">{{
+                                            <select class="form-select" id="city" formControlName="cityId"
+                                                (change)="onCityChange($event)" (input)="onInputChange()">
+                                                <option *ngFor="let city of cities" [value]="city.cityId">{{
                                                     city.cityName }}</option>
                                             </select>
                                         </td>
                                         <td>
                                             <label for="area">Area</label>
-                                            <select class="form-select" id="area" formControlName="areaId">
-                                                <option *ngFor="let area of areas" [ngValue]="area.areaId">{{
+                                            <select class="form-select" id="area" formControlName="areaId"
+                                                (change)="onAreaChange($event)" (input)="onInputChange()">
+                                                <option *ngFor="let area of areas" [value]="area.areaId">{{
                                                     area.areaName }}</option>
                                             </select>
                                         </td>
@@ -301,8 +315,9 @@
                                         </td>
                                         <td>
                                             <label for="doctor">Reference By</label>
-                                            <select class="form-select" id="doctor" formControlName="doctorId">
-                                                <option *ngFor="let doctor of doctors" [ngValue]="doctor.doctorId">{{
+                                            <select class="form-select" id="doctor" formControlName="doctorId"
+                                                (change)="onDoctorChange($event)" (input)="onInputChange()">
+                                                <option *ngFor="let doctor of doctors" [value]="doctor.doctorId">{{
                                                     doctor.doctorName }}</option>
                                             </select>
                                         </td>
@@ -389,7 +404,8 @@
                                     </span>
                                 </div> -->
                                 <ng-container *ngFor="let error of validationErrors">
-                                    <small *ngIf="error.toLowerCase().includes('amount')" class="text-danger">
+                                    <small *ngIf="error.toLowerCase().includes('amount is required')"
+                                        class="text-danger">
                                         {{ error }}
                                     </small>
                                 </ng-container>
@@ -443,7 +459,7 @@
                                 </div>
                             </div>
 
-                            <!-- Show Additional Field for Credit Card -->
+                            <!-- Show Additional Field for online  -->
                             <div *ngIf="selectedPayment === 'Scanner' || selectedPayment === 'Online'">
                                 <div class="mb-3">
                                     <input type="number" class="form-control" formControlName="Amount"
