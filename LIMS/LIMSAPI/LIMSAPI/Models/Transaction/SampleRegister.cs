@@ -87,7 +87,9 @@ namespace LIMSAPI.Models.TransactionModal
 
         public  string? Address { get; set; }
 
+        public int PaymentId { get; set; }
 
+        public string PaymentName { get; set; }
 
         [Required(ErrorMessage = "Amount is required.")]
         public int? Amount { get; set; }
@@ -118,8 +120,8 @@ namespace LIMSAPI.Models.TransactionModal
         public List<ServiceMapping> ServiceMapping { get; set; } = new();
 
 
-        [ValidateNever]
-        public List<PaymentMapping> PaymentMapping { get; set; } = new();
+        //[ValidateNever]
+        //public List<PaymentMapping> PaymentMapping { get; set; } = new();
     }
 
     public class ServiceMapping
@@ -143,21 +145,21 @@ namespace LIMSAPI.Models.TransactionModal
     }
 
 
-    public class PaymentMapping
-    {
-        public int PaymentId { get; set; }
+    //public class PaymentMapping
+    //{
+    //    public int PaymentId { get; set; }
 
 
-        public string PaymentName { get; set; }
+    //    public string PaymentName { get; set; }
 
 
-        public bool IsCash { get; set; }
+    //    public bool IsCash { get; set; }
 
-        public bool IsCheque { get; set; }
+    //    public bool IsCheque { get; set; }
 
-        public bool IsOnline { get; set; }
+    //    public bool IsOnline { get; set; }
 
-        public bool IsActive { get; set; }
-    }
+    //    public bool IsActive { get; set; }
+    //}
 
 }

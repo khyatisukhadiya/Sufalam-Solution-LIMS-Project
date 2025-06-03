@@ -151,10 +151,11 @@ export class SampleRegisterComponent implements OnInit {
       email: '',
       address: '',
       cityId: null,
-      doctorId : null,
+      doctorId: null,
       isActive: true,
-      paymentMapping: [],
-      selectedPayment : [],
+      paymentId: '',
+      // paymentMapping: [],
+      selectedPayment: [],
       amount: '',
       chequeNo: '',
       chequeDate: '',
@@ -274,6 +275,7 @@ export class SampleRegisterComponent implements OnInit {
   loadPayments() {
     this.sampleRegisterService.getPayments().subscribe({
       next: (res) => {
+        console.log('Payments response:', res);
         this.payments = res || [];
       },
       error: (err) => {
@@ -293,7 +295,7 @@ export class SampleRegisterComponent implements OnInit {
     });
   }
 
-    addService() {
+  addService() {
     const serviceId = this.sampleRegisterForm.value.serviceId;
     const selectedService = this.services.find(s => s.serviceId === serviceId);
     if (!selectedService) return;
@@ -381,9 +383,10 @@ export class SampleRegisterComponent implements OnInit {
             ChequeNo: res.chequeNo,
             ChequeDate: res.chequeDate ? formatDate(res.chequeDate, 'yyyy-MM-dd', 'en-US') : null,
             TransactionId: res.transactionId,
-            paymentId: res.paymentMapping?.[0]?.paymentId,
+            // paymentId: res.paymentMapping?.[0]?.paymentId,
             regBy: res.createdBy,
             doctorId: res.doctorId,
+            paymentId: res.paymentId,
           }
 
         );
@@ -403,10 +406,13 @@ export class SampleRegisterComponent implements OnInit {
         this.calculateTotalAmount();
 
 
-        const payment = res.paymentMapping?.[0];
-        if (payment) {
-          this.selectedPayment = payment.paymentName;
-          this.onPaymentModeChange({ target: { value: payment.paymentId } });
+        if (res.paymentId) {
+          const payment = this.payments.find(p => p.paymentId === res.paymentId);
+          if (payment) {
+            this.selectedPayment = payment.paymentName;
+            // Directly pass the value, not an event
+            this.onPaymentModeChange({ target: { value: payment.paymentId.toString() } });
+          }
         }
 
 
@@ -537,15 +543,17 @@ export class SampleRegisterComponent implements OnInit {
       regBy: formValues.regBy || null,
       doctorId: formValues.doctorId,
       doctorName: this.doctors.find(d => d.doctorId === formValues.doctorId)?.doctorName || '',
+      paymentId: selectedPayment.paymentId,
+      paymentName: selectedPayment.paymentName,
       // isActive: true,
-      paymentMapping: [{
-        paymentId: selectedPayment.paymentId,
-        paymentName: selectedPayment.paymentName,
-        isCash: selectedPayment.isCash,
-        isCheque: selectedPayment.isCheque,
-        isOnline: selectedPayment.isOnline,
-        isActive: true
-      }],
+      // paymentMapping: [{
+      //   paymentId: selectedPayment.paymentId,
+      //   paymentName: selectedPayment.paymentName,
+      //   isCash: selectedPayment.isCash,
+      //   isCheque: selectedPayment.isCheque,
+      //   isOnline: selectedPayment.isOnline,
+      //   isActive: true
+      // }],
       serviceMapping: this.selectedServices.map(s => ({
         serviceId: s.serviceId,
         serviceCode: s.serviceCode,
@@ -613,7 +621,7 @@ export class SampleRegisterComponent implements OnInit {
     this.sampleRegisterForm.patchValue({ age: age });
   }
 
-   onServiceChange(event: any): void {
+  onServiceChange(event: any): void {
     const selectedServices = event.target.value;
     this.sampleRegisterForm.patchValue({ services: selectedServices });
     this.onInputChange();
@@ -695,6 +703,7 @@ export class SampleRegisterComponent implements OnInit {
         chequeDate: '',
         transactionId: ''
       });
+
     }
   }
 

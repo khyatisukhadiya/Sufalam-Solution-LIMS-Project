@@ -2719,18 +2719,20 @@ namespace LIMSAPI.RepositryLayer
                     string query = @"
                                      UPDATE sampleregister
                                      SET Date = @Date, BranchId = @BranchId, TotalAmount = @TotalAmount,IsB2B = @IsB2B, B2BId = @B2BId, PhoneNumber = @PhoneNumber, Title = @Title, FirstName = @FirstName, MiddleName = @MiddleName, LastName = @LastName, DOB = @DOB, Age = @Age,
-                                     Gender = @Gender, Email = @Email, CityId = @CityId, AreaId = @AreaId, Address = @Address, Amount = @Amount, ChequeNo = @ChequeNo, ChequeDate = @ChequeDate, TransactionId = @TransactionId, DoctorId = @DoctorId, CreatedBy = @CreatedBy
+                                     Gender = @Gender, Email = @Email, CityId = @CityId, AreaId = @AreaId, Address = @Address, Amount = @Amount, ChequeNo = @ChequeNo, ChequeDate = @ChequeDate, TransactionId = @TransactionId, DoctorId = @DoctorId, CreatedBy = @CreatedBy, PaymentId = @PaymentId
                                      WHERE SampleRegisterId = @SampleRegisterId;
 
                                       SELECT s.SampleRegisterId, s.Date, b.BranchId, b.BranchName, s.TotalAmount, s.IsB2B, k.B2BId, k.B2BName, s.PhoneNumber, s.Title, s.FirstName, s.MiddleName, s.LastName, s.DOB, s.Age, 
-                                      s.Gender, s.Email, c.CityId, c.CityName, a.AreaId, a.AreaName, s.Address, s.Amount, s.ChequeNo, s.ChequeDate, s.transactionId, d.DoctorId, d.DoctorName, s.CreatedBy
+                                      s.Gender, s.Email, c.CityId, c.CityName, a.AreaId, a.AreaName, s.Address, s.Amount,s.ChequeNo, s.ChequeDate, s.transactionId, d.DoctorId, d.DoctorName, s.CreatedBy, p.PaymentId, p.PaymentName
                                       FROM sampleregister s
                                       INNER JOIN branch b ON s.BranchId = b.BranchId
                                       LEFT JOIN b2b k ON s.B2BId = k.B2BId
                                       LEFT JOIN city c ON s.CityId = c.CityId
                                       LEFT JOIN area a ON s.AreaId = a.AreaId
                                       LEFT JOIN doctor d ON s.DoctorId = d.DoctorId
+                                      INNER JOIN payment p ON s.PaymentId = p.PaymentId
                                       WHERE s.SampleRegisterId = @SampleRegisterId;";
+                    
                                        
 
                     using var common = new SqlCommand(query, _sqlConnection);
@@ -2758,6 +2760,7 @@ namespace LIMSAPI.RepositryLayer
                     common.Parameters.AddWithValue("@TransactionId", sampleRegister.TransactionId ?? (object)DBNull.Value);
                     common.Parameters.AddWithValue("@DoctorId", sampleRegister.DoctorId ?? (object)DBNull.Value);
                     common.Parameters.AddWithValue("@CreatedBy", sampleRegister.CreatedBy ?? (object)DBNull.Value);
+                    common.Parameters.AddWithValue("@PaymentId", sampleRegister.PaymentId);
                     //common.Parameters.AddWithValue("@CreatedDate", sampleRegister.CreatedDate);
 
 
@@ -2793,10 +2796,12 @@ namespace LIMSAPI.RepositryLayer
                         response.DoctorId = reader["DoctorId"] != DBNull.Value ? Convert.ToInt32(reader["DoctorId"]) : null;
                         response.DoctorName = reader["DoctorName"].ToString();
                         response.CreatedBy = reader["CreatedBy"] != DBNull.Value ? reader["CreatedBy"].ToString() : null;
+                        response.PaymentId = Convert.ToInt32(reader["PaymentId"]);
+                        response.PaymentName = reader["PaymentName"].ToString();
                         //response.CreatedDate = reader["ChequeDate"] != DBNull.Value ? Convert.ToDateTime(reader["ChequeDate"]) : null;
                         //response.IsActive = Convert.ToBoolean(reader["IsActive"]);
                         response.ServiceMapping = new List<ServiceMapping>();
-                        response.PaymentMapping = new List<PaymentMapping>();
+                        //response.PaymentMapping = new List<PaymentMapping>();
                     }
                     else
                     {
@@ -2805,8 +2810,8 @@ namespace LIMSAPI.RepositryLayer
                 }
                 else
                 {
-                    string query = $@"INSERT INTO sampleregister(Date, BranchId, TotalAmount,IsB2B, B2BId, PhoneNumber, Title, FirstName, MiddleName, LastName, DOB, Age, Gender, Email, CityId, AreaId, Address, Amount, ChequeNo, ChequeDate, TransactionId, DoctorId, CreatedBy) OUTPUT INSERTED.SampleRegisterId 
-                                                        VALUES (@Date, @BranchId, @TotalAmount, @IsB2B, @B2BId, @PhoneNumber, @Title, @FirstName, @MiddleName, @LastName, @DOB, @Age, @Gender, @Email, @CityId, @AreaId, @Address, @Amount, @ChequeNo, @ChequeDate, @TransactionId, @DoctorId, @CreatedBy) ";
+                    string query = $@"INSERT INTO sampleregister(Date, BranchId, TotalAmount,IsB2B, B2BId, PhoneNumber, Title, FirstName, MiddleName, LastName, DOB, Age, Gender, Email, CityId, AreaId, Address, Amount, ChequeNo, ChequeDate, TransactionId, DoctorId, CreatedBy, PaymentId) OUTPUT INSERTED.SampleRegisterId 
+                                                        VALUES (@Date, @BranchId, @TotalAmount, @IsB2B, @B2BId, @PhoneNumber, @Title, @FirstName, @MiddleName, @LastName, @DOB, @Age, @Gender, @Email, @CityId, @AreaId, @Address, @Amount, @ChequeNo, @ChequeDate, @TransactionId, @DoctorId, @CreatedBy, @PaymentId) ";
 
                     using var common = new SqlCommand(query, _sqlConnection);
                     common.Parameters.AddWithValue("@Date", sampleRegister.Date);
@@ -2831,7 +2836,9 @@ namespace LIMSAPI.RepositryLayer
                     common.Parameters.AddWithValue("@ChequeDate", sampleRegister.ChequeDate ?? (object)DBNull.Value);
                     common.Parameters.AddWithValue("@TransactionId", sampleRegister.TransactionId ?? (object)DBNull.Value);
                     common.Parameters.AddWithValue("@DoctorId", sampleRegister.DoctorId ?? (object)DBNull.Value);
-                    common.Parameters.AddWithValue("@CreatedBy", sampleRegister.CreatedBy ?? (object)DBNull.Value);
+                    common.Parameters.AddWithValue("@CreatedBy", sampleRegister.CreatedBy ?? (object)DBNull.Value); 
+                    common.Parameters.AddWithValue("@PaymentId", sampleRegister.PaymentId);
+
                     //common.Parameters.AddWithValue("@CreatdeDate", sampleRegister.CreatedDate);
                     //common.Parameters.AddWithValue("@IsActive", sampleRegister.IsActive);
 
@@ -2874,6 +2881,12 @@ namespace LIMSAPI.RepositryLayer
                     string doctorName = (string?)doctorCommond.ExecuteScalar() ?? "";
 
 
+                    // payment
+                    string paymentQuery = "SELECT PaymentName FROM payment WHERE PaymentId = @PaymentId";
+                    using var paymentCommond = new SqlCommand(paymentQuery, _sqlConnection);
+                    paymentCommond.Parameters.AddWithValue("@PaymentId", sampleRegister.PaymentId);
+                    string paymentName = (string?)paymentCommond.ExecuteScalar() ?? "";
+
 
                     response.SampleRegisterId = insertedId;
                     response.Date = sampleRegister.Date;
@@ -2904,9 +2917,10 @@ namespace LIMSAPI.RepositryLayer
                     response.DoctorId = sampleRegister.DoctorId;
                     response.DoctorName = doctorName;
                     response.CreatedBy = sampleRegister.CreatedBy;
+                    response.PaymentId = sampleRegister.PaymentId;
                     //response.IsActive = true;
                     response.ServiceMapping = new List<ServiceMapping>();
-                    response.PaymentMapping = new List<PaymentMapping>();
+                    //response.PaymentMapping = new List<PaymentMapping>();
 
 
                     sampleRegister.SampleRegisterId = insertedId;
@@ -2928,7 +2942,7 @@ namespace LIMSAPI.RepositryLayer
 
                                 object existingId = checkCommand.ExecuteScalar();
 
-                                if (existingId == null)
+                                if (existingId == null )
                                 {
                                     var insertTest = @"INSERT INTO sampleServiceMap (SampleRegisterId, ServiceId) 
                                        VALUES (@SampleRegisterId, @ServiceId)";
@@ -2956,49 +2970,49 @@ namespace LIMSAPI.RepositryLayer
 
                 }
 
-                if (sampleRegister.SampleRegisterId > 0 && sampleRegister.PaymentMapping != null && sampleRegister.PaymentMapping.Count == 1)
-                {
-                    foreach (var paymentModal in sampleRegister.PaymentMapping)
-                    {
-                        if (paymentModal.PaymentId > 0)
-                        {
-                            var checkQuery = @"SELECT SamplePaymentMapId FROM samplepaymentmap 
-                               WHERE SampleRegisterId = @SampleRegisterId AND PaymentId = @PaymentId";
+                //if (sampleRegister.SampleRegisterId > 0 && sampleRegister.PaymentMapping != null)
+                //{
+                //    foreach (var paymentModal in sampleRegister.PaymentMapping)
+                //    {
+                //        if (paymentModal.PaymentId > 0)
+                //        {
+                //            var checkQuery = @"SELECT SamplePaymentMapId FROM samplepaymentmap 
+                //               WHERE SampleRegisterId = @SampleRegisterId AND PaymentId = @PaymentId";
 
-                            using (var checkCommand = new SqlCommand(checkQuery, _sqlConnection))
-                            {
-                                checkCommand.Parameters.AddWithValue("@SampleRegisterId", sampleRegister.SampleRegisterId);
-                                checkCommand.Parameters.AddWithValue("@PaymentId", paymentModal.PaymentId);
+                //            using (var checkCommand = new SqlCommand(checkQuery, _sqlConnection))
+                //            {
+                //                checkCommand.Parameters.AddWithValue("@SampleRegisterId", sampleRegister.SampleRegisterId);
+                //                checkCommand.Parameters.AddWithValue("@PaymentId", paymentModal.PaymentId);
+                                
+                //                object existingId = checkCommand.ExecuteScalar();
 
-                                object existingId = checkCommand.ExecuteScalar();
+                //                if (existingId == null)
+                //                {
+                //                    var insertTest = @"INSERT INTO samplepaymentmap (SampleRegisterId, PaymentId) 
+                //                       VALUES (@SampleRegisterId, @PaymentId)";
+                //                    using (var insertCommand = new SqlCommand(insertTest, _sqlConnection))
+                //                    {
+                //                        insertCommand.Parameters.AddWithValue("@SampleRegisterId", sampleRegister.SampleRegisterId);
+                //                        insertCommand.Parameters.AddWithValue("@PaymentId", paymentModal.PaymentId);
+                //                        insertCommand.ExecuteNonQuery();
 
-                                if (existingId == null)
-                                {
-                                    var insertTest = @"INSERT INTO samplepaymentmap (SampleRegisterId, PaymentId) 
-                                       VALUES (@SampleRegisterId, @PaymentId)";
-                                    using (var insertCommand = new SqlCommand(insertTest, _sqlConnection))
-                                    {
-                                        insertCommand.Parameters.AddWithValue("@SampleRegisterId", sampleRegister.SampleRegisterId);
-                                        insertCommand.Parameters.AddWithValue("@PaymentId", paymentModal.PaymentId);
-                                        insertCommand.ExecuteNonQuery();
-
-                                    }
-                                }
-                                //else
-                                //{
-                                //    var updateTest = @"UPDATE samplepaymentmap 
-                                //       SET IsActive = 1 
-                                //       WHERE SamplePaymentMapId = @SamplePaymentMapId";
-                                //    using (var updateCommand = new SqlCommand(updateTest, _sqlConnection))
-                                //    {
-                                //        updateCommand.Parameters.AddWithValue("@SamplePaymentMapId", (int)existingId);
-                                //        updateCommand.ExecuteNonQuery();
-                                //    }
-                                //}                               
-                            }
-                        }
-                    }
-                }
+                //                    }
+                //                }
+                //                //else
+                //                //{
+                //                //    var updateTest = @"UPDATE samplepaymentmap 
+                //                //       SET IsActive = 1 
+                //                //       WHERE SamplePaymentMapId = @SamplePaymentMapId";
+                //                //    using (var updateCommand = new SqlCommand(updateTest, _sqlConnection))
+                //                //    {
+                //                //        updateCommand.Parameters.AddWithValue("@SamplePaymentMapId", (int)existingId);
+                //                //        updateCommand.ExecuteNonQuery();
+                //                //    }
+                //                //}                               
+                //            }
+                //        }
+                //    }
+                //}
 
             }
             catch (Exception ex)
@@ -3028,7 +3042,7 @@ namespace LIMSAPI.RepositryLayer
         //            tableName: query,
         //            nameColumn: "MiddleName",
         //            idColumn: "SampleRegisterId",
-        //            codeColumn: "MiddleName",
+        //            codeColumn: "PhoneNumber",
         //            filter: filterModel,
 
         //            mapFunc: reader => new SampleRegister
@@ -3081,11 +3095,11 @@ namespace LIMSAPI.RepositryLayer
         //            {
         //                string testQuery = @"
         //                   SELECT s.ServiceId, s.ServiceCode, s.ServiceName, s.B2BAmount, s.B2CAmount, 
-        //                   stm.SampleServiceMapId, stm.SampleRegisterId, stm.IsActive
+        //                   stm.SampleServiceMapId, stm.SampleRegisterId
         //                   FROM sampleServiceMap stm
         //                   INNER JOIN service s ON stm.ServiceId = s.ServiceId
-        //                   WHERE stm.SampleRegisterId = @SampleRegisterId
-        //                   AND stm.IsActive = 1";
+        //                   WHERE stm.SampleRegisterId = @SampleRegisterId ";
+        //                //AND stm.IsActive = 1";, stm.IsActive
 
         //                using (var testCmd = new SqlCommand(testQuery, _sqlConnection))
         //                {
@@ -3102,7 +3116,7 @@ namespace LIMSAPI.RepositryLayer
         //                                ServiceName = reader["ServiceName"].ToString(),
         //                                B2BAmount = Convert.ToInt32(reader["B2BAmount"]),
         //                                B2CAmount = Convert.ToInt32(reader["B2CAmount"]),
-        //                                IsActive = Convert.ToBoolean(reader["IsActive"]),
+        //                                //IsActive = Convert.ToBoolean(reader["IsActive"]),
         //                                SampleServiceMapId = Convert.ToInt32(reader["SampleServiceMapId"]),
         //                            });
         //                        }
@@ -3122,11 +3136,11 @@ namespace LIMSAPI.RepositryLayer
         //            {
         //                string paymentQuery = @"
         //            SELECT p.PaymentId, p.PaymentName, p.IsCash, p.IsCheque, p.IsOnline,
-        //                   stm.SamplePaymentMapId, stm.SampleRegisterId, stm.IsActive
+        //                   stm.SamplePaymentMapId, stm.SampleRegisterId
         //            FROM samplepaymentmap stm
         //            INNER JOIN payment p ON stm.PaymentId = p.PaymentId
-        //            WHERE stm.SampleRegisterId = @SampleRegisterId 
-        //              AND stm.IsActive = 1";
+        //            WHERE stm.SampleRegisterId = @SampleRegisterId";
+        //              //AND stm.IsActive = 1";, stm.IsActive
 
         //                using (var testCmd = new SqlCommand(paymentQuery, _sqlConnection))
         //                {
@@ -3143,7 +3157,7 @@ namespace LIMSAPI.RepositryLayer
         //                                IsCash = Convert.ToBoolean(reader["IsCash"]),
         //                                IsCheque = Convert.ToBoolean(reader["IsCheque"]),
         //                                IsOnline = Convert.ToBoolean(reader["IsOnline"]),
-        //                                IsActive = Convert.ToBoolean(reader["IsActive"]),
+        //                                //IsActive = Convert.ToBoolean(reader["IsActive"]),
         //                            });
         //                        }
         //                    }
@@ -3177,6 +3191,7 @@ namespace LIMSAPI.RepositryLayer
                                  LEFT JOIN city ON sampleregister.CityId = city.CityId
                                  LEFT JOIN area ON sampleregister.AreaId = area.AreaId
                                  LEFT JOIN doctor ON sampleregister.DoctorId = doctor.DoctorId 
+                                 INNER JOIN payment ON sampleregister.PaymentId = payment.PaymentId
                                  WHERE SampleRegisterId = @SampleRegisterId";
 
                 using (var command = new SqlCommand(query, _sqlConnection))
@@ -3216,9 +3231,11 @@ namespace LIMSAPI.RepositryLayer
                             response.DoctorId = reader["DoctorId"] != DBNull.Value ? Convert.ToInt32(reader["DoctorId"]) : null;
                             response.DoctorName = reader["DoctorName"].ToString();
                             response.CreatedBy = reader["CreatedBy"] != DBNull.Value ? reader["CreatedBy"].ToString() : null;
+                            response.PaymentId = Convert.ToInt32(reader["PaymentId"]);
+                            response.PaymentName = reader["PaymentName"].ToString();
                             //response.IsActive = Convert.ToBoolean(reader["IsActive"]);
                             response.ServiceMapping = new List<ServiceMapping>();
-                            response.PaymentMapping = new List<PaymentMapping>(); 
+                            //response.PaymentMapping = new List<PaymentMapping>(); 
                         }
                         else
                         {
@@ -3262,36 +3279,36 @@ namespace LIMSAPI.RepositryLayer
                 }
 
 
-                response.PaymentMapping = new List<PaymentMapping>();
+                //response.PaymentMapping = new List<PaymentMapping>();
 
-                string paymentQuery = @"
-                    SELECT p.PaymentId, p.PaymentName, p.IsCash, p.IsCheque, p.IsOnline,
-                           stm.SamplePaymentMapId,  stm.SampleRegisterId
-                    FROM samplepaymentmap stm
-                    INNER JOIN payment p ON stm.PaymentId = p.PaymentId
-                    WHERE stm.SampleRegisterId = @SampleRegisterId"; 
-                    //AND stm.IsActive = 1";,  stm.IsActive
+                //string paymentQuery = @"
+                //    SELECT p.PaymentId, p.PaymentName, p.IsCash, p.IsCheque, p.IsOnline,
+                //           stm.SamplePaymentMapId,  stm.SampleRegisterId
+                //    FROM samplepaymentmap stm
+                //    INNER JOIN payment p ON stm.PaymentId = p.PaymentId
+                //    WHERE stm.SampleRegisterId = @SampleRegisterId"; 
+                //    //AND stm.IsActive = 1";,  stm.IsActive
 
-                using (var testCmd = new SqlCommand(paymentQuery, _sqlConnection))
-                {
-                    testCmd.Parameters.AddWithValue("@SampleRegisterId", SampleRegisterId);
+                //using (var testCmd = new SqlCommand(paymentQuery, _sqlConnection))
+                //{
+                //    testCmd.Parameters.AddWithValue("@SampleRegisterId", SampleRegisterId);
 
-                    using (var reader = testCmd.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            response.PaymentMapping.Add(new PaymentMapping 
-                            {
-                                PaymentId = Convert.ToInt32(reader["PaymentId"]),
-                                PaymentName = reader["PaymentName"].ToString(),
-                                IsCash = Convert.ToBoolean(reader["IsCash"]),
-                                IsCheque = Convert.ToBoolean(reader["IsCheque"]),
-                                IsOnline = Convert.ToBoolean(reader["IsOnline"]),
-                                //IsActive = Convert.ToBoolean(reader["IsActive"]),
-                            });
-                        }
-                    }
-                }
+                //    using (var reader = testCmd.ExecuteReader())
+                //    {
+                //        while (reader.Read())
+                //        {
+                //            response.PaymentMapping.Add(new PaymentMapping 
+                //            {
+                //                PaymentId = Convert.ToInt32(reader["PaymentId"]),
+                //                PaymentName = reader["PaymentName"].ToString(),
+                //                IsCash = Convert.ToBoolean(reader["IsCash"]),
+                //                IsCheque = Convert.ToBoolean(reader["IsCheque"]),
+                //                IsOnline = Convert.ToBoolean(reader["IsOnline"]),
+                //                //IsActive = Convert.ToBoolean(reader["IsActive"]),
+                //            });
+                //        }
+                //    }
+                //}
 
             }
             catch (Exception ex)
@@ -3388,7 +3405,7 @@ namespace LIMSAPI.RepositryLayer
 
         // SAMPLE SERVICE MAP
 
-        public List<SampleRegister> GetSampleByFilter()
+        public List<SampleRegister> GetSampleByIsActive()
         {
 
             var response = new List<SampleRegister>();
@@ -3405,7 +3422,8 @@ namespace LIMSAPI.RepositryLayer
                                  LEFT JOIN b2b ON sampleregister.B2BId = b2b.B2BId
                                  LEFT JOIN city ON sampleregister.CityId = city.CityId
                                  LEFT JOIN area ON sampleregister.AreaId = area.AreaId
-                                 LEFT JOIN doctor ON sampleregister.DoctorId = doctor.DoctorId";
+                                 LEFT JOIN doctor ON sampleregister.DoctorId = doctor.DoctorId
+                                 INNER JOIN payment ON sampleregister.PaymentId = payment.PaymentId";
 
                 SqlCommand command = new SqlCommand(query, _sqlConnection);
 
@@ -3444,9 +3462,11 @@ namespace LIMSAPI.RepositryLayer
                             DoctorId = reader["DoctorId"] != DBNull.Value ? Convert.ToInt32(reader["DoctorId"]) : null,
                             DoctorName = reader["DoctorName"].ToString(),
                             CreatedBy = reader["CreatedBy"] != DBNull.Value ? reader["CreatedBy"].ToString() : null,
+                            PaymentId = Convert.ToInt32(reader["PaymentId"]),
+                            PaymentName = reader["PaymentName"].ToString(),
                             //response.IsActive = Convert.ToBoolean(reader["IsActive"]);
                             ServiceMapping = new List<ServiceMapping>(),
-                            PaymentMapping = new List<PaymentMapping>(),
+                            //PaymentMapping = new List<PaymentMapping>(),
                         });
                     }
                 }

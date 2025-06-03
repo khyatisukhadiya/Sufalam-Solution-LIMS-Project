@@ -333,10 +333,10 @@ namespace LIMSAPI.ServiceLayer
         //{
         //    return _lIMSRepositryInterface.GetSampleByFilter(filterModel);
         //}
-        
-        public List<SampleRegister> GetSampleByFilter()
+
+        public List<SampleRegister> GetSampleByIsActive()
         {
-            return _lIMSRepositryInterface.GetSampleByFilter();
+            return _lIMSRepositryInterface.GetSampleByIsActive();
         }
 
         public SampleRegister GetSampleRegisterById(int SampleRegisterId)

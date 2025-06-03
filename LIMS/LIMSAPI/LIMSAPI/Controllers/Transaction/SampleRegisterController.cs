@@ -97,12 +97,12 @@ namespace LIMSAPI.Controllers.Transaction
         //{
         //    var result = _sampleSL.GetSampleByFilter(filterModel);
         //    return Ok(new { data = result });
-        //} 
-        
+        //}
+
         [HttpGet]
-        public IActionResult GetSampleByFilter()
+        public IActionResult GetSampleByIsActive()
         {
-            var result = _sampleSL.GetSampleByFilter();
+            var result = _sampleSL.GetSampleByIsActive();
             return Ok(new { data = result });
         }
 

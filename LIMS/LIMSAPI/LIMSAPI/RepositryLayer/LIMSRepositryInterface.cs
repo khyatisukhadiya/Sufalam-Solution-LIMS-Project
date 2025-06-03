@@ -161,7 +161,7 @@ namespace LIMSAPI.RepositryLayer
 
         //List<SampleRegister> GetSampleByFilter(FilterModel filterModel);
 
-        List<SampleRegister> GetSampleByFilter();
+        List<SampleRegister> GetSampleByIsActive();
 
         SampleRegister GetSampleRegisterById(int SampleRegisterId);
 

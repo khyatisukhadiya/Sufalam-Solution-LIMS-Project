@@ -58,7 +58,7 @@ export class SampleRegisterService {
       params = params.set('isActive', filter.isActive.toString());
     }
 
-    return this.http.get<any>('https://localhost:7161/api/SampleRegister/GetSampleByFilter', { params });
+    return this.http.get<any>('https://localhost:7161/api/SampleRegister/GetSampleByIsActive', { params });
   }
 
 

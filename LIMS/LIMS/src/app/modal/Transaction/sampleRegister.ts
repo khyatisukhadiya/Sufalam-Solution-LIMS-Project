@@ -35,11 +35,11 @@ export interface SampleRegister {
         isActive: boolean;
         sampleServiceMapId: number;
     }],
-    paymentMapping: [{
-        paymentId: number;
-        paymentName: string;
-        isCash: boolean;
-        isCheque: boolean;
-        isOnline: boolean;
-    }]
+    // paymentMapping: [{
+    //     paymentId: number;
+    //     paymentName: string;
+    //     isCash: boolean;
+    //     isCheque: boolean;
+    //     isOnline: boolean;
+    // }]
 }
