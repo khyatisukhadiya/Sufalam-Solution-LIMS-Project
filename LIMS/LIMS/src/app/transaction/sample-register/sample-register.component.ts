@@ -130,37 +130,38 @@ export class SampleRegisterComponent implements OnInit {
     this.errorMessage = '';
     this.validationErrors = [];
     this.submitted = false;
-    this.selectedServices = [];
+     this.selectedServices = [];
+   this.selectedPayment = '';
 
     this.sampleRegisterForm.reset({
-      sampleRegisterId: 0,
-      date: '',
-      branchId: null,
-      areaId: null,
-      totalAmount: 0,
-      isB2B: false,
-      b2BId: null,
-      phoneNumber: '',
-      title: '',
-      firstName: '',
-      middleName: '',
-      lastName: '',
-      dob: '',
-      age: 0,
-      gender: '',
-      email: '',
-      address: '',
-      cityId: null,
-      doctorId: null,
-      isActive: true,
-      paymentId: '',
-      // paymentMapping: [],
-      selectedPayment: [],
-      amount: '',
-      chequeNo: '',
-      chequeDate: '',
-      transactionId: ''
-    });
+    sampleRegisterId: 0,
+    date: '',
+    branchId: null,
+    areaId: null,
+    totalAmount: 0,
+    isB2B: false,
+    b2BId: null,
+    phoneNumber: '',
+    title: '',
+    firstName: '',
+    middleName: '',
+    lastName: '',
+    dob: '',
+    age: 0,
+    gender: '',
+    email: '',
+    address: '',
+    cityId: null,
+    doctorId: null,
+    isActive: true,
+    paymentId: '',
+    selectedPayment: [],
+    amount: '',
+    chequeNo: '',
+    chequeDate: '',
+    transactionId: '',
+    regBy: ''
+  });
 
 
   }

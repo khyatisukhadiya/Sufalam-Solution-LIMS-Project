@@ -68,7 +68,7 @@ namespace LIMSAPI.Models.TransactionModal
 
 
         //[Required(ErrorMessage = "Email is required.")]
-        [EmailAddress(ErrorMessage = "The email address is not valid.")]
+        //[EmailAddress(ErrorMessage = "The email address is not valid.")]
         public string? Email { get; set; }
 
 
