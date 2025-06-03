@@ -84,20 +84,28 @@ namespace LIMSAPI.Controllers.Transaction
 
         }
 
-        [HttpDelete]
-        public IActionResult DeleteSampleRegisterById(int SampleRegisterId)
-        {
-            var result = _sampleSL.DeleteSampleRegisterById(SampleRegisterId);
-            return Ok(new { data = result });
-        }
+        //[HttpDelete]
+        //public IActionResult DeleteSampleRegisterById(int SampleRegisterId)
+        //{
+        //    var result = _sampleSL.DeleteSampleRegisterById(SampleRegisterId);
+        //    return Ok(new { data = result });
+        //}
 
 
+        //[HttpGet]
+        //public IActionResult GetSampleByFilter([FromQuery] FilterModel filterModel)
+        //{
+        //    var result = _sampleSL.GetSampleByFilter(filterModel);
+        //    return Ok(new { data = result });
+        //} 
+        
         [HttpGet]
-        public IActionResult GetSampleByFilter([FromQuery] FilterModel filterModel)
+        public IActionResult GetSampleByFilter()
         {
-            var result = _sampleSL.GetSampleByFilter(filterModel);
+            var result = _sampleSL.GetSampleByFilter();
             return Ok(new { data = result });
         }
+
 
         [HttpGet]
         public IActionResult GetSampleRegisterById(int SampleRegisterId)

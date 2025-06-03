@@ -65,9 +65,9 @@ namespace LIMSAPI.Models.TransactionModal
         public string Gender { get; set; }
 
 
-        [Required(ErrorMessage = "Email is required.")]
+        //[Required(ErrorMessage = "Email is required.")]
         [EmailAddress(ErrorMessage = "The email address is not valid.")]
-        public string Email { get; set; }
+        public string? Email { get; set; }
 
 
         // CITY
@@ -83,13 +83,9 @@ namespace LIMSAPI.Models.TransactionModal
 
 
 
-        public  string Address { get; set; }
+        public  string? Address { get; set; }
 
 
-        // DOCTOR
-        //public int? DoctorId { get; set; }
-
-        //public string? DoctorName { get; set; }
 
         [Required(ErrorMessage = "Amount is required.")]
         public int? Amount { get; set; }
@@ -100,7 +96,18 @@ namespace LIMSAPI.Models.TransactionModal
 
         public string? TransactionId { get; set; }
 
-        public bool IsActive { get; set; }
+
+        // DOCTOR
+        public int? DoctorId { get; set; }
+
+        public string? DoctorName { get; set; }
+
+
+
+        public string? CreatedBy { get; set; }
+
+        //public DateTime CreatedDate { get; set; }
+        //public bool IsActive { get; set; }
 
 
         // service
@@ -134,6 +141,7 @@ namespace LIMSAPI.Models.TransactionModal
     public class PaymentMapping
     {
         public int PaymentId { get; set; }
+
 
         public string PaymentName { get; set; }
 

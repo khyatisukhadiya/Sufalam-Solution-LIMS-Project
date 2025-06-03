@@ -329,9 +329,14 @@ namespace LIMSAPI.ServiceLayer
             return _lIMSRepositryInterface.AddUpdateSampleRegister(sampleRegister);
         }
 
-        public List<SampleRegister> GetSampleByFilter(FilterModel filterModel)
+        //public List<SampleRegister> GetSampleByFilter(FilterModel filterModel)
+        //{
+        //    return _lIMSRepositryInterface.GetSampleByFilter(filterModel);
+        //}
+        
+        public List<SampleRegister> GetSampleByFilter()
         {
-            return _lIMSRepositryInterface.GetSampleByFilter(filterModel);
+            return _lIMSRepositryInterface.GetSampleByFilter();
         }
 
         public SampleRegister GetSampleRegisterById(int SampleRegisterId)
@@ -339,10 +344,10 @@ namespace LIMSAPI.ServiceLayer
             return _lIMSRepositryInterface.GetSampleRegisterById(SampleRegisterId);
         }
 
-        public SampleRegister DeleteSampleRegisterById(int SampleRegisterId)
-        {
-            return _lIMSRepositryInterface.DeleteSampleRegisterById(SampleRegisterId);
-        }
+        //public SampleRegister DeleteSampleRegisterById(int SampleRegisterId)
+        //{
+        //    return _lIMSRepositryInterface.DeleteSampleRegisterById(SampleRegisterId);
+        //}
 
         public SampleServiceMap DeleteSampleServiceMapId(int SampleServiceMapId)
         {

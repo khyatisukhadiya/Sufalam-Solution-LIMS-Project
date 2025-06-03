@@ -35,6 +35,10 @@ export class SampleRegisterService {
     return this.http.get<any>('https://localhost:7161/api/Payment/GetPaymentIsActive');
   }
 
+  getDoctors(){
+    return this.http.get<any>('https://localhost:7161/api/Doctor/GetDoctorIsActive');
+  }
+
   fetchSampleRegister(filter: any) {
     let params = new HttpParams();
 
@@ -73,6 +77,8 @@ export class SampleRegisterService {
   deleteSampleServiceMapId(SampleServiceMapId: number) {
     return this.http.delete<any>('https://localhost:7161/api/SampleRegister/DeleteSampleServiceMapId?SampleServiceMapId=' + SampleServiceMapId);      
   }
+
+
 
 
 }

@@ -15,7 +15,7 @@ namespace LIMSAPI.Helpers
 
         internal List<T> GetFilteredList<T>(
         string tableName, string nameColumn, string idColumn, string codeColumn,
-        FilterModel filter, Func<SqlDataReader, T> mapFunc, string? selectColumns = null, string isActiveColumn = "IsActive")
+        FilterModel filter, Func<SqlDataReader, T> mapFunc, string? selectColumns = null, string? isActiveColumn = "IsActive")
         {
             var resultList = new List<T>();
 

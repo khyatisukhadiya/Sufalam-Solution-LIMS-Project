@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Formats.Tar;
+using System.Linq;
 using System.Reflection;
 using System.Transactions;
 using Azure;
@@ -2718,20 +2719,19 @@ namespace LIMSAPI.RepositryLayer
                     string query = @"
                                      UPDATE sampleregister
                                      SET Date = @Date, BranchId = @BranchId, TotalAmount = @TotalAmount,IsB2B = @IsB2B, B2BId = @B2BId, PhoneNumber = @PhoneNumber, Title = @Title, FirstName = @FirstName, MiddleName = @MiddleName, LastName = @LastName, DOB = @DOB, Age = @Age,
-                                     Gender = @Gender, Email = @Email, CityId = @CityId, AreaId = @AreaId, Address = @Address, Amount = @Amount, ChequeNo = @ChequeNo, ChequeDate = @ChequeDate, TransactionId = @TransactionId 
+                                     Gender = @Gender, Email = @Email, CityId = @CityId, AreaId = @AreaId, Address = @Address, Amount = @Amount, ChequeNo = @ChequeNo, ChequeDate = @ChequeDate, TransactionId = @TransactionId, DoctorId = @DoctorId, CreatedBy = @CreatedBy
                                      WHERE SampleRegisterId = @SampleRegisterId;
 
-                                      SELECT s.SampleRegisterId, s.Date, b.BranchId, b.BranchName, s.TotalAmount,s.IsB2B, k.B2BId, k.B2BName, s.PhoneNumber, s.Title, s.FirstName, s.MiddleName, s.LastName, s.DOB, s.Age, 
-                                      s.Gender, s.Email, c.CityId, c.CityName, a.AreaId, a.AreaName, s.Address, s.Amount, s.ChequeNo, s.ChequeDate, s.transactionId, s.IsActive
+                                      SELECT s.SampleRegisterId, s.Date, b.BranchId, b.BranchName, s.TotalAmount, s.IsB2B, k.B2BId, k.B2BName, s.PhoneNumber, s.Title, s.FirstName, s.MiddleName, s.LastName, s.DOB, s.Age, 
+                                      s.Gender, s.Email, c.CityId, c.CityName, a.AreaId, a.AreaName, s.Address, s.Amount, s.ChequeNo, s.ChequeDate, s.transactionId, d.DoctorId, d.DoctorName, s.CreatedBy
                                       FROM sampleregister s
                                       INNER JOIN branch b ON s.BranchId = b.BranchId
                                       LEFT JOIN b2b k ON s.B2BId = k.B2BId
-                                      INNER JOIN city c ON s.CityId = c.CityId
-                                      INNER JOIN area a ON s.AreaId = a.AreaId
+                                      LEFT JOIN city c ON s.CityId = c.CityId
+                                      LEFT JOIN area a ON s.AreaId = a.AreaId
+                                      LEFT JOIN doctor d ON s.DoctorId = d.DoctorId
                                       WHERE s.SampleRegisterId = @SampleRegisterId;";
-                                        //INNER JOIN doctor d ON s.DoctorId = d.DoctorId
-
-
+                                       
 
                     using var common = new SqlCommand(query, _sqlConnection);
                     common.Parameters.AddWithValue("@SampleRegisterId", sampleRegister.SampleRegisterId);
@@ -2748,15 +2748,17 @@ namespace LIMSAPI.RepositryLayer
                     common.Parameters.AddWithValue("@DOB", sampleRegister.DOB);
                     common.Parameters.AddWithValue("@Age", sampleRegister.Age);
                     common.Parameters.AddWithValue("@Gender", sampleRegister.Gender);
-                    common.Parameters.AddWithValue("@Email", sampleRegister.Email);
-                    common.Parameters.AddWithValue("@CityId", sampleRegister.CityId);
-                    common.Parameters.AddWithValue("@AreaId", sampleRegister.AreaId);
-                    common.Parameters.AddWithValue("@Address", sampleRegister.Address);
+                    common.Parameters.AddWithValue("@Email", sampleRegister.Email ?? (object)DBNull.Value);
+                    common.Parameters.AddWithValue("@CityId", sampleRegister.CityId ?? (object)DBNull.Value);
+                    common.Parameters.AddWithValue("@AreaId", sampleRegister.AreaId ?? (object)DBNull.Value);
+                    common.Parameters.AddWithValue("@Address", sampleRegister.Address ?? (object)DBNull.Value);
                     common.Parameters.AddWithValue("@Amount", sampleRegister.Amount);
                     common.Parameters.AddWithValue("@ChequeNo", sampleRegister.ChequeNo ?? (object)DBNull.Value);
                     common.Parameters.AddWithValue("@ChequeDate", sampleRegister.ChequeDate ?? (object)DBNull.Value);
                     common.Parameters.AddWithValue("@TransactionId", sampleRegister.TransactionId ?? (object)DBNull.Value);
-                    //common.Parameters.AddWithValue("@DoctorId", sampleRegister.DoctorId);
+                    common.Parameters.AddWithValue("@DoctorId", sampleRegister.DoctorId ?? (object)DBNull.Value);
+                    common.Parameters.AddWithValue("@CreatedBy", sampleRegister.CreatedBy ?? (object)DBNull.Value);
+                    //common.Parameters.AddWithValue("@CreatedDate", sampleRegister.CreatedDate);
 
 
                     using var reader = common.ExecuteReader();
@@ -2778,19 +2780,21 @@ namespace LIMSAPI.RepositryLayer
                         response.DOB = Convert.ToDateTime(reader["DOB"]);
                         response.Age = Convert.ToInt32(reader["Age"]);
                         response.Gender = reader["Gender"].ToString();
-                        response.Email = reader["Email"].ToString();
-                        response.CityId = Convert.ToInt32(reader["CityId"]);
+                        response.Email = reader["Email"] != DBNull.Value ? reader["Email"].ToString() : null;
+                        response.CityId = reader["CityId"] != DBNull.Value ? Convert.ToInt32(reader["CityId"]) : null;
                         response.CityName = reader["CityName"].ToString();
-                        response.AreaId = Convert.ToInt32(reader["AreaId"]);
+                        response.AreaId = reader["AreaId"] != DBNull.Value ? Convert.ToInt32(reader["AreaId"]) : null;
                         response.AreaName = reader["AreaName"].ToString();
-                        response.Address = reader["Address"].ToString();
+                        response.Address = reader["Address"] != DBNull.Value ? reader["Address"].ToString() : null;
                         response.Amount = Convert.ToInt32(reader["Amount"]);
                         response.ChequeNo = reader["ChequeNo"] != DBNull.Value ? reader["ChequeNo"].ToString() : null;
                         response.ChequeDate = reader["ChequeDate"] != DBNull.Value ? Convert.ToDateTime(reader["ChequeDate"]) : null;
                         response.TransactionId = reader["TransactionId"] != DBNull.Value ? reader["TransactionId"].ToString() : null;
-                        //response.DoctorId = Convert.ToInt32(reader["DoctorId"]);
-                        //response.DoctorName = reader["DoctorName"].ToString();
-                        response.IsActive = Convert.ToBoolean(reader["IsActive"]);
+                        response.DoctorId = reader["DoctorId"] != DBNull.Value ? Convert.ToInt32(reader["DoctorId"]) : null;
+                        response.DoctorName = reader["DoctorName"].ToString();
+                        response.CreatedBy = reader["CreatedBy"] != DBNull.Value ? reader["CreatedBy"].ToString() : null;
+                        //response.CreatedDate = reader["ChequeDate"] != DBNull.Value ? Convert.ToDateTime(reader["ChequeDate"]) : null;
+                        //response.IsActive = Convert.ToBoolean(reader["IsActive"]);
                         response.ServiceMapping = new List<ServiceMapping>();
                         response.PaymentMapping = new List<PaymentMapping>();
                     }
@@ -2801,8 +2805,8 @@ namespace LIMSAPI.RepositryLayer
                 }
                 else
                 {
-                    string query = $@"INSERT INTO sampleregister(Date, BranchId, TotalAmount,IsB2B, B2BId, PhoneNumber, Title, FirstName, MiddleName, LastName, DOB, Age, Gender, Email, CityId, AreaId, Address, Amount, ChequeNo, ChequeDate, TransactionId, IsActive ) OUTPUT INSERTED.SampleRegisterId 
-                                                        VALUES (@Date, @BranchId, @TotalAmount, @IsB2B, @B2BId, @PhoneNumber, @Title, @FirstName, @MiddleName, @LastName, @DOB, @Age, @Gender, @Email, @CityId, @AreaId, @Address, @Amount, @ChequeNo, @ChequeDate, @TransactionId, @IsActive ) ";
+                    string query = $@"INSERT INTO sampleregister(Date, BranchId, TotalAmount,IsB2B, B2BId, PhoneNumber, Title, FirstName, MiddleName, LastName, DOB, Age, Gender, Email, CityId, AreaId, Address, Amount, ChequeNo, ChequeDate, TransactionId, DoctorId, CreatedBy) OUTPUT INSERTED.SampleRegisterId 
+                                                        VALUES (@Date, @BranchId, @TotalAmount, @IsB2B, @B2BId, @PhoneNumber, @Title, @FirstName, @MiddleName, @LastName, @DOB, @Age, @Gender, @Email, @CityId, @AreaId, @Address, @Amount, @ChequeNo, @ChequeDate, @TransactionId, @DoctorId, @CreatedBy) ";
 
                     using var common = new SqlCommand(query, _sqlConnection);
                     common.Parameters.AddWithValue("@Date", sampleRegister.Date);
@@ -2818,16 +2822,18 @@ namespace LIMSAPI.RepositryLayer
                     common.Parameters.AddWithValue("@DOB", sampleRegister.DOB);
                     common.Parameters.AddWithValue("@Age", sampleRegister.Age);
                     common.Parameters.AddWithValue("@Gender", sampleRegister.Gender);
-                    common.Parameters.AddWithValue("@Email", sampleRegister.Email);
-                    common.Parameters.AddWithValue("@CityId", sampleRegister.CityId);
-                    common.Parameters.AddWithValue("@AreaId", sampleRegister.AreaId);
-                    common.Parameters.AddWithValue("@Address", sampleRegister.Address);
+                    common.Parameters.AddWithValue("@Email", sampleRegister.Email ?? (object)DBNull.Value);
+                    common.Parameters.AddWithValue("@CityId", sampleRegister.CityId ?? (object)DBNull.Value);
+                    common.Parameters.AddWithValue("@AreaId", sampleRegister.AreaId ?? (object)DBNull.Value);
+                    common.Parameters.AddWithValue("@Address", sampleRegister.Address ?? (object)DBNull.Value);
                     common.Parameters.AddWithValue("@Amount", sampleRegister.Amount);
                     common.Parameters.AddWithValue("@ChequeNo", sampleRegister.ChequeNo ?? (object)DBNull.Value);
                     common.Parameters.AddWithValue("@ChequeDate", sampleRegister.ChequeDate ?? (object)DBNull.Value);
                     common.Parameters.AddWithValue("@TransactionId", sampleRegister.TransactionId ?? (object)DBNull.Value);
-                    //common.Parameters.AddWithValue("@DoctorId", sampleRegister.DoctorId);
-                    common.Parameters.AddWithValue("@IsActive", sampleRegister.IsActive);
+                    common.Parameters.AddWithValue("@DoctorId", sampleRegister.DoctorId ?? (object)DBNull.Value);
+                    common.Parameters.AddWithValue("@CreatedBy", sampleRegister.CreatedBy ?? (object)DBNull.Value);
+                    //common.Parameters.AddWithValue("@CreatdeDate", sampleRegister.CreatedDate);
+                    //common.Parameters.AddWithValue("@IsActive", sampleRegister.IsActive);
 
                     int insertedId = (int)common.ExecuteScalar();
 
@@ -2850,22 +2856,22 @@ namespace LIMSAPI.RepositryLayer
                     // city
                     string cityQuery = "SELECT CityName FROM city WHERE CityId = @CityId";
                     using var cityCommond = new SqlCommand(cityQuery, _sqlConnection);
-                    cityCommond.Parameters.AddWithValue("@CityId", sampleRegister.CityId);
+                    cityCommond.Parameters.AddWithValue("@CityId", sampleRegister.CityId == null ? DBNull.Value : (object)sampleRegister.CityId);
                     string cityName = (string?)cityCommond.ExecuteScalar() ?? "";
 
 
                     // area
                     string areaQuery = "SELECT AreaName FROM area WHERE AreaId = @AreaId";
                     using var areaCommond = new SqlCommand(areaQuery, _sqlConnection);
-                    areaCommond.Parameters.AddWithValue("@AreaId", sampleRegister.AreaId);
+                    areaCommond.Parameters.AddWithValue("@AreaId", sampleRegister.AreaId == null ? DBNull.Value : (object)sampleRegister.AreaId);
                     string areaName = (string?)areaCommond.ExecuteScalar() ?? "";
 
 
                     // doctor
-                    //string doctorQuery = "SELECT DoctorName FROM doctor WHERE DoctorId = @DoctorId";
-                    //using var doctorCommond = new SqlCommand(doctorQuery, _sqlConnection);
-                    //doctorCommond.Parameters.AddWithValue("@DoctorId", sampleRegister.DoctorId);
-                    //string doctorName = (string?)doctorCommond.ExecuteScalar() ?? "";
+                    string doctorQuery = "SELECT DoctorName FROM doctor WHERE DoctorId = @DoctorId";
+                    using var doctorCommond = new SqlCommand(doctorQuery, _sqlConnection);
+                    doctorCommond.Parameters.AddWithValue("@DoctorId", sampleRegister.DoctorId == null ? DBNull.Value : (object)sampleRegister.DoctorId);
+                    string doctorName = (string?)doctorCommond.ExecuteScalar() ?? "";
 
 
 
@@ -2895,9 +2901,10 @@ namespace LIMSAPI.RepositryLayer
                     response.ChequeNo = sampleRegister.ChequeNo;
                     response.ChequeDate = sampleRegister.ChequeDate;
                     response.TransactionId = sampleRegister.TransactionId;
-                    //response.DoctorId = sampleRegister.DoctorId;
-                    //response.DoctorName = doctorName;
-                    response.IsActive = true;
+                    response.DoctorId = sampleRegister.DoctorId;
+                    response.DoctorName = doctorName;
+                    response.CreatedBy = sampleRegister.CreatedBy;
+                    //response.IsActive = true;
                     response.ServiceMapping = new List<ServiceMapping>();
                     response.PaymentMapping = new List<PaymentMapping>();
 
@@ -2932,19 +2939,17 @@ namespace LIMSAPI.RepositryLayer
                                         insertCommand.ExecuteNonQuery();
                                     }
                                 }
-                                else
-                                {
-                                    var updateTest = @"UPDATE sampleServiceMap 
-                                       SET IsActive = 1 
-                                       WHERE SampleServiceMapId = @SampleServiceMapId";
-                                    using (var updateCommand = new SqlCommand(updateTest, _sqlConnection))
-                                    {
-                                        updateCommand.Parameters.AddWithValue("@SampleServiceMapId", (int)existingId);
-                                        updateCommand.ExecuteNonQuery();
-                                    }
-                                }
-
-                                
+                                //else
+                                //{
+                                //    var updateTest = @"UPDATE sampleServiceMap 
+                                //       SET IsActive = 1 
+                                //       WHERE SampleServiceMapId = @SampleServiceMapId";
+                                //    using (var updateCommand = new SqlCommand(updateTest, _sqlConnection))
+                                //    {
+                                //        updateCommand.Parameters.AddWithValue("@SampleServiceMapId", (int)existingId);
+                                //        updateCommand.ExecuteNonQuery();
+                                //    }
+                                //}
                             }
                         }
                     }
@@ -2979,17 +2984,17 @@ namespace LIMSAPI.RepositryLayer
 
                                     }
                                 }
-                                else
-                                {
-                                    var updateTest = @"UPDATE samplepaymentmap 
-                                       SET IsActive = 1 
-                                       WHERE SamplePaymentMapId = @SamplePaymentMapId";
-                                    using (var updateCommand = new SqlCommand(updateTest, _sqlConnection))
-                                    {
-                                        updateCommand.Parameters.AddWithValue("@SamplePaymentMapId", (int)existingId);
-                                        updateCommand.ExecuteNonQuery();
-                                    }
-                                }                               
+                                //else
+                                //{
+                                //    var updateTest = @"UPDATE samplepaymentmap 
+                                //       SET IsActive = 1 
+                                //       WHERE SamplePaymentMapId = @SamplePaymentMapId";
+                                //    using (var updateCommand = new SqlCommand(updateTest, _sqlConnection))
+                                //    {
+                                //        updateCommand.Parameters.AddWithValue("@SamplePaymentMapId", (int)existingId);
+                                //        updateCommand.ExecuteNonQuery();
+                                //    }
+                                //}                               
                             }
                         }
                     }
@@ -3007,147 +3012,152 @@ namespace LIMSAPI.RepositryLayer
             return response;
         }
 
-        public List<SampleRegister> GetSampleByFilter(FilterModel filterModel)
-        {
-            try
-            {
-                string query = $@"sampleregister 
-                            INNER JOIN branch ON sampleregister.BranchId = branch.BranchId
-                            LEFT JOIN  b2b ON sampleregister.B2BId = b2b.B2BId
-                            INNER JOIN city ON sampleregister.CityId = city.CityId
-                            INNER JOIN area ON sampleregister.AreaId = area.AreaId";
-                //INNER JOIN doctor ON sampleregister.DoctorId = doctor.DoctorId
 
-                var sampleRegisters = _addFilter.GetFilteredList<SampleRegister>(
-                    tableName: query,
-                    nameColumn: "MiddleName",
-                    idColumn: "SampleRegisterId",
-                    codeColumn: "MiddleName",
-                    filter: filterModel,
+        //public List<SampleRegister> GetSampleByFilter(FilterModel filterModel)
+        //{
+        //    try
+        //    {
+        //        string query = @"sampleregister 
+        //                    INNER JOIN branch ON sampleregister.BranchId = branch.BranchId
+        //                    LEFT JOIN  b2b ON sampleregister.B2BId = b2b.B2BId
+        //                    LEFT JOIN city ON sampleregister.CityId = city.CityId
+        //                    LEFT JOIN area ON sampleregister.AreaId = area.AreaId
+        //                    LEFT JOIN doctor ON sampleregister.DoctorId = doctor.DoctorId";
 
-                    mapFunc: reader => new SampleRegister
-                    {
-                        SampleRegisterId = Convert.ToInt32(reader["SampleRegisterId"]),
-                        Date = Convert.ToDateTime(reader["Date"]),
-                        BranchId = Convert.ToInt32(reader["BranchId"]),
-                        BranchName = reader["BranchName"].ToString(),
-                        TotalAmount = Convert.ToInt32(reader["TotalAmount"]),
-                        IsB2B = reader["IsB2B"] != DBNull.Value ? Convert.ToBoolean(reader["IsB2B"]) : false,
-                        B2BId = reader["B2BId"] != DBNull.Value ? Convert.ToInt32(reader["B2BId"]) : null,
-                        B2BName = reader["B2BName"].ToString(),
-                        PhoneNumber = reader["PhoneNumber"].ToString(),
-                        Title = reader["Title"].ToString(),
-                        FirstName = reader["FirstName"].ToString(),
-                        MiddleName = reader["MiddleName"].ToString(),
-                        LastName = reader["LastName"].ToString(),
-                        DOB = Convert.ToDateTime(reader["DOB"]),
-                        Age = Convert.ToInt32(reader["Age"]),
-                        Gender = reader["Gender"].ToString(),
-                        Email = reader["Email"].ToString(),
-                        CityId = Convert.ToInt32(reader["CityId"]),
-                        CityName = reader["CityName"].ToString(),
-                        AreaId = Convert.ToInt32(reader["AreaId"]),
-                        AreaName = reader["AreaName"].ToString(),
-                        Address = reader["Address"].ToString(),
-                        Amount = Convert.ToInt32(reader["Amount"]),
-                        ChequeNo = reader["ChequeNo"] != DBNull.Value ? reader["ChequeNo"].ToString() : null,
-                        ChequeDate = reader["ChequeDate"] != DBNull.Value ? Convert.ToDateTime(reader["ChequeDate"]) : null,
-                        TransactionId = reader["TransactionId"] != DBNull.Value ? reader["TransactionId"].ToString() : null,
-                        //DoctorId = Convert.ToInt32(reader["DoctorId"]),
-                        //DoctorName = reader["DoctorName"].ToString(),
-                        IsActive = Convert.ToBoolean(reader["IsActive"]),
-                        ServiceMapping = new List<ServiceMapping>(),
-                        PaymentMapping = new List<PaymentMapping>(),
-                    },
-                    selectColumns: "sampleregister.SampleRegisterId, sampleregister.Date, branch.BranchId, branch.BranchName, sampleregister.TotalAmount, sampleregister.IsB2B, b2b.B2BId, b2b.B2BName, sampleregister.PhoneNumber, sampleregister.Title, sampleregister.FirstName, sampleregister.MiddleName, sampleregister.LastName, sampleregister.DOB, sampleregister.Age, sampleregister.Gender, sampleregister.Email, city.CityId, city.CityName, area.AreaId, area.AreaName, sampleregister.Address,sampleregister.Amount, sampleregister.ChequeNo, sampleregister.ChequeDate, sampleregister.TransactionId, sampleregister.IsActive",
-                    isActiveColumn: "sampleregister.IsActive"
-                );
+        //        var sampleRegisters = _addFilter.GetFilteredList<SampleRegister>(
+        //            tableName: query,
+        //            nameColumn: "MiddleName",
+        //            idColumn: "SampleRegisterId",
+        //            codeColumn: "MiddleName",
+        //            filter: filterModel,
 
-                if (sampleRegisters?.Count > 0)
-                {
-                    if (_sqlConnection.State != ConnectionState.Open)
-                    {
-                        _sqlConnection.Open();
-                    }
+        //            mapFunc: reader => new SampleRegister
+        //            {
+        //                SampleRegisterId = Convert.ToInt32(reader["SampleRegisterId"]),
+        //                Date = Convert.ToDateTime(reader["Date"]),
+        //                BranchId = Convert.ToInt32(reader["BranchId"]),
+        //                BranchName = reader["BranchName"].ToString(),
+        //                TotalAmount = Convert.ToInt32(reader["TotalAmount"]),
+        //                IsB2B = reader["IsB2B"] != DBNull.Value ? Convert.ToBoolean(reader["IsB2B"]) : false,
+        //                B2BId = reader["B2BId"] != DBNull.Value ? Convert.ToInt32(reader["B2BId"]) : null,
+        //                B2BName = reader["B2BName"].ToString(),
+        //                PhoneNumber = reader["PhoneNumber"].ToString(),
+        //                Title = reader["Title"].ToString(),
+        //                FirstName = reader["FirstName"].ToString(),
+        //                MiddleName = reader["MiddleName"].ToString(),
+        //                LastName = reader["LastName"].ToString(),
+        //                DOB = Convert.ToDateTime(reader["DOB"]),
+        //                Age = Convert.ToInt32(reader["Age"]),
+        //                Gender = reader["Gender"].ToString(),
+        //                Email = reader["Email"] != DBNull.Value ? reader["Email"].ToString() : null,
+        //                CityId = reader["CityId"] != DBNull.Value ? Convert.ToInt32(reader["CityId"]) : null,
+        //                CityName = reader["CityName"].ToString(),
+        //                AreaId = reader["AreaId"] != DBNull.Value ? Convert.ToInt32(reader["AreaId"]) : null,
+        //                AreaName = reader["AreaName"].ToString(),
+        //                Address = reader["Address"] != DBNull.Value ? reader["Address"].ToString() : null,
+        //                Amount = Convert.ToInt32(reader["Amount"]),
+        //                ChequeNo = reader["ChequeNo"] != DBNull.Value ? reader["ChequeNo"].ToString() : null,
+        //                ChequeDate = reader["ChequeDate"] != DBNull.Value ? Convert.ToDateTime(reader["ChequeDate"]) : null,
+        //                TransactionId = reader["TransactionId"] != DBNull.Value ? reader["TransactionId"].ToString() : null,
+        //                DoctorId = reader["DoctorId"] != DBNull.Value ? Convert.ToInt32(reader["DoctorId"]) : null,
+        //                DoctorName = reader["DoctorName"].ToString(),
+        //                CreatedBy = reader["CreatedBy"] != DBNull.Value ? reader["CreatedBy"].ToString() : null,
+        //                //IsActive = Convert.ToBoolean(reader["IsActive"]),
+        //                ServiceMapping = new List<ServiceMapping>(),
+        //                PaymentMapping = new List<PaymentMapping>(),
+        //            },
+        //            selectColumns: "sampleregister.SampleRegisterId, sampleregister.Date, branch.BranchId, branch.BranchName, sampleregister.TotalAmount, sampleregister.IsB2B, b2b.B2BId, b2b.B2BName, sampleregister.PhoneNumber, sampleregister.Title, sampleregister.FirstName, sampleregister.MiddleName, sampleregister.LastName, sampleregister.DOB, sampleregister.Age, sampleregister.Gender, sampleregister.Email, city.CityId, city.CityName, area.AreaId, area.AreaName, sampleregister.Address,sampleregister.Amount, sampleregister.ChequeNo, sampleregister.ChequeDate, sampleregister.TransactionId, doctor.DoctorId, sampleregister.CreatedBy"
+        //            //isActiveColumn: "sampleregister.IsActive"
+        //        );
 
-                    foreach (var service in sampleRegisters)
-                    {
-                        string testQuery = @"
-                    SELECT s.ServiceId, s.ServiceCode, s.ServiceName, s.B2BAmount, s.B2CAmount, 
-                           stm.SampleServiceMapId, stm.IsActive, stm.SampleRegisterId
-                    FROM sampleServiceMap stm
-                    INNER JOIN service s ON stm.ServiceId = s.ServiceId
-                    WHERE stm.SampleRegisterId = @SampleRegisterId AND stm.IsActive = 1";
+        //        if (sampleRegisters?.Count > 0)
+        //        {
+        //            if (_sqlConnection.State != ConnectionState.Open)
+        //            {
+        //                _sqlConnection.Open();
+        //            }
 
-                        using (var testCmd = new SqlCommand(testQuery, _sqlConnection))
-                        {
-                            testCmd.Parameters.AddWithValue("@SampleRegisterId", service.SampleRegisterId);
+        //            foreach (var service in sampleRegisters)
+        //            {
+        //                string testQuery = @"
+        //                   SELECT s.ServiceId, s.ServiceCode, s.ServiceName, s.B2BAmount, s.B2CAmount, 
+        //                   stm.SampleServiceMapId, stm.SampleRegisterId, stm.IsActive
+        //                   FROM sampleServiceMap stm
+        //                   INNER JOIN service s ON stm.ServiceId = s.ServiceId
+        //                   WHERE stm.SampleRegisterId = @SampleRegisterId
+        //                   AND stm.IsActive = 1";
 
-                            using (var reader = testCmd.ExecuteReader())
-                            {
-                                while (reader.Read())
-                                {
-                                    service.ServiceMapping.Add(new ServiceMapping
-                                    {
-                                        ServiceId = Convert.ToInt32(reader["ServiceId"]),
-                                        ServiceCode = reader["ServiceCode"].ToString(),
-                                        ServiceName = reader["ServiceName"].ToString(),
-                                        B2BAmount = Convert.ToInt32(reader["B2BAmount"]),
-                                        B2CAmount = Convert.ToInt32(reader["B2CAmount"]),
-                                        IsActive = Convert.ToBoolean(reader["IsActive"]),
-                                        SampleServiceMapId = Convert.ToInt32(reader["SampleServiceMapId"]),
-                                    });
-                                }
-                            }
-                        }
-                    }
-                }
+        //                using (var testCmd = new SqlCommand(testQuery, _sqlConnection))
+        //                {
+        //                    testCmd.Parameters.AddWithValue("@SampleRegisterId", service.SampleRegisterId);
 
-                if (sampleRegisters?.Count > 0)
-                {
-                    if (_sqlConnection.State != ConnectionState.Open)
-                    {
-                        _sqlConnection.Open();
-                    }
+        //                    using (var reader = testCmd.ExecuteReader())
+        //                    {
+        //                        while (reader.Read())
+        //                        {
+        //                            service.ServiceMapping.Add(new ServiceMapping
+        //                            {
+        //                                ServiceId = Convert.ToInt32(reader["ServiceId"]),
+        //                                ServiceCode = reader["ServiceCode"].ToString(),
+        //                                ServiceName = reader["ServiceName"].ToString(),
+        //                                B2BAmount = Convert.ToInt32(reader["B2BAmount"]),
+        //                                B2CAmount = Convert.ToInt32(reader["B2CAmount"]),
+        //                                IsActive = Convert.ToBoolean(reader["IsActive"]),
+        //                                SampleServiceMapId = Convert.ToInt32(reader["SampleServiceMapId"]),
+        //                            });
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //        }
 
-                    foreach (var payment in sampleRegisters)
-                    {
-                        string paymentQuery = @"
-                    SELECT p.PaymentId, p.PaymentName, p.IsCash, p.IsCheque, p.IsOnline,
-                           stm.SamplePaymentMapId, stm.IsActive, stm.SampleRegisterId
-                    FROM samplepaymentmap stm
-                    INNER JOIN payment p ON stm.PaymentId = p.PaymentId
-                    WHERE stm.SampleRegisterId = @SampleRegisterId AND stm.IsActive = 1";
+        //        if (sampleRegisters?.Count > 0)
+        //        {
+        //            if (_sqlConnection.State != ConnectionState.Open)
+        //            {
+        //                _sqlConnection.Open();
+        //            }
 
-                        using (var testCmd = new SqlCommand(paymentQuery, _sqlConnection))
-                        {
-                            testCmd.Parameters.AddWithValue("@SampleRegisterId", payment.SampleRegisterId);
+        //            foreach (var payment in sampleRegisters)
+        //            {
+        //                string paymentQuery = @"
+        //            SELECT p.PaymentId, p.PaymentName, p.IsCash, p.IsCheque, p.IsOnline,
+        //                   stm.SamplePaymentMapId, stm.SampleRegisterId, stm.IsActive
+        //            FROM samplepaymentmap stm
+        //            INNER JOIN payment p ON stm.PaymentId = p.PaymentId
+        //            WHERE stm.SampleRegisterId = @SampleRegisterId 
+        //              AND stm.IsActive = 1";
 
-                            using (var reader = testCmd.ExecuteReader())
-                            {
-                                while (reader.Read())
-                                {
-                                    payment.PaymentMapping.Add(new PaymentMapping
-                                    {
-                                        PaymentId = Convert.ToInt32(reader["PaymentId"]),
-                                        PaymentName = reader["PaymentName"].ToString(),
-                                        IsCash = Convert.ToBoolean(reader["IsCash"]),
-                                        IsCheque = Convert.ToBoolean(reader["IsCheque"]),
-                                        IsOnline = Convert.ToBoolean(reader["IsOnline"]),
-                                        IsActive = Convert.ToBoolean(reader["IsActive"]),
-                                    });
-                                }
-                            }
-                        }
-                    }
-                }
-                return sampleRegisters;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Error inserting/updating SampleRegister", ex);
-            }
-        }
+        //                using (var testCmd = new SqlCommand(paymentQuery, _sqlConnection))
+        //                {
+        //                    testCmd.Parameters.AddWithValue("@SampleRegisterId", payment.SampleRegisterId);
+
+        //                    using (var reader = testCmd.ExecuteReader())
+        //                    {
+        //                        while (reader.Read())
+        //                        {
+        //                            payment.PaymentMapping.Add(new PaymentMapping
+        //                            {
+        //                                PaymentId = Convert.ToInt32(reader["PaymentId"]),
+        //                                PaymentName = reader["PaymentName"].ToString(),
+        //                                IsCash = Convert.ToBoolean(reader["IsCash"]),
+        //                                IsCheque = Convert.ToBoolean(reader["IsCheque"]),
+        //                                IsOnline = Convert.ToBoolean(reader["IsOnline"]),
+        //                                IsActive = Convert.ToBoolean(reader["IsActive"]),
+        //                            });
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //        }
+        //        return sampleRegisters;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new Exception("Error ocuur fecthing  SampleRegister" + ex.Message);
+        //    }
+        //}
+
 
         public SampleRegister GetSampleRegisterById(int SampleRegisterId)
         {
@@ -3164,10 +3174,11 @@ namespace LIMSAPI.RepositryLayer
                 string query = @"SELECT * FROM sampleregister
                                  INNER JOIN branch ON sampleregister.BranchId = branch.BranchId
                                  LEFT JOIN b2b ON sampleregister.B2BId = b2b.B2BId
-                                 INNER JOIN city ON sampleregister.CityId = city.CityId
-                                 INNER JOIN area ON sampleregister.AreaId = area.AreaId
+                                 LEFT JOIN city ON sampleregister.CityId = city.CityId
+                                 LEFT JOIN area ON sampleregister.AreaId = area.AreaId
+                                 LEFT JOIN doctor ON sampleregister.DoctorId = doctor.DoctorId 
                                  WHERE SampleRegisterId = @SampleRegisterId";
-                                 //INNER JOIN doctor ON sampleregister.DoctorId = doctor.DoctorId
+
                 using (var command = new SqlCommand(query, _sqlConnection))
                 {
                     command.Parameters.AddWithValue("@SampleRegisterId", SampleRegisterId);
@@ -3192,19 +3203,20 @@ namespace LIMSAPI.RepositryLayer
                             response.DOB = Convert.ToDateTime(reader["DOB"]);
                             response.Age = Convert.ToInt32(reader["Age"]);
                             response.Gender = reader["Gender"].ToString();
-                            response.Email = reader["Email"].ToString();
-                            response.CityId = Convert.ToInt32(reader["CityId"]);
+                            response.Email = reader["Email"] != DBNull.Value ? reader["Email"].ToString() : null;
+                            response.CityId = reader["CityId"] != DBNull.Value ? Convert.ToInt32(reader["CityId"]) : null;
                             response.CityName = reader["CityName"].ToString();
-                            response.AreaId = Convert.ToInt32(reader["AreaId"]);
+                            response.AreaId = reader["AreaId"] != DBNull.Value ? Convert.ToInt32(reader["AreaId"]) : null;
                             response.AreaName = reader["AreaName"].ToString();
-                            response.Address = reader["Address"].ToString();
+                            response.Address = reader["Address"] != DBNull.Value ? reader["Address"].ToString() : null;
                             response.Amount = Convert.ToInt32(reader["Amount"]); ;
                             response.ChequeNo = reader["ChequeNo"] != DBNull.Value ? reader["ChequeNo"].ToString() : null;
                             response.ChequeDate = reader["ChequeDate"] == DBNull.Value ? null : Convert.ToDateTime(reader["ChequeDate"]);
                             response.TransactionId = reader["TransactionId"] != DBNull.Value ? reader["TransactionId"].ToString() : null;
-                            //response.DoctorId = Convert.ToInt32(reader["DoctorId"]);
-                            //response.DoctorName = reader["DoctorName"].ToString();
-                            response.IsActive = Convert.ToBoolean(reader["IsActive"]);
+                            response.DoctorId = reader["DoctorId"] != DBNull.Value ? Convert.ToInt32(reader["DoctorId"]) : null;
+                            response.DoctorName = reader["DoctorName"].ToString();
+                            response.CreatedBy = reader["CreatedBy"] != DBNull.Value ? reader["CreatedBy"].ToString() : null;
+                            //response.IsActive = Convert.ToBoolean(reader["IsActive"]);
                             response.ServiceMapping = new List<ServiceMapping>();
                             response.PaymentMapping = new List<PaymentMapping>(); 
                         }
@@ -3220,10 +3232,11 @@ namespace LIMSAPI.RepositryLayer
 
                 string testQuery = @"
                     SELECT s.ServiceId, s.ServiceCode, s.ServiceName, s.B2BAmount, s.B2CAmount, 
-                           stm.SampleServiceMapId, stm.IsActive, stm.SampleRegisterId
+                           stm.SampleServiceMapId, stm.SampleRegisterId,  stm.IsActive
                     FROM sampleServiceMap stm
                     INNER JOIN service s ON stm.ServiceId = s.ServiceId
-                    WHERE stm.SampleRegisterId = @SampleRegisterId AND stm.IsActive = 1";
+                    WHERE stm.SampleRegisterId = @SampleRegisterId 
+                    AND stm.IsActive = 1";
 
                 using (var testCmd = new SqlCommand(testQuery, _sqlConnection))
                 {
@@ -3252,10 +3265,11 @@ namespace LIMSAPI.RepositryLayer
 
                 string paymentQuery = @"
                     SELECT p.PaymentId, p.PaymentName, p.IsCash, p.IsCheque, p.IsOnline,
-                           stm.SamplePaymentMapId, stm.IsActive, stm.SampleRegisterId
+                           stm.SamplePaymentMapId,  stm.SampleRegisterId,  stm.IsActive
                     FROM samplepaymentmap stm
                     INNER JOIN payment p ON stm.PaymentId = p.PaymentId
-                    WHERE stm.SampleRegisterId = @SampleRegisterId AND stm.IsActive = 1";
+                    WHERE stm.SampleRegisterId = @SampleRegisterId 
+                    AND stm.IsActive = 1";
 
                 using (var testCmd = new SqlCommand(paymentQuery, _sqlConnection))
                 {
@@ -3291,76 +3305,156 @@ namespace LIMSAPI.RepositryLayer
             return response;
         }
 
-        public SampleRegister DeleteSampleRegisterById(int SampleRegisterId)
+
+        //public SampleRegister DeleteSampleRegisterById(int SampleRegisterId)
+        //{
+        //    var response = new SampleRegister();
+        //    try
+        //    {
+        //        if (_sqlConnection.State != ConnectionState.Open)
+        //            _sqlConnection.Open();
+
+        //        string query = @"
+        //                          UPDATE sampleregister 
+        //                          SET IsActive = CASE WHEN IsActive = 1 THEN 0 ELSE 1 END 
+        //                          WHERE SampleRegisterId = @SampleRegisterId;
+
+        //                           SELECT s.SampleRegisterId, s.Date, b.BranchId, b.BranchName, s.TotalAmount, s.IsB2B,
+        //                           k.B2BId, k.B2BName, s.PhoneNumber, s.Title, s.FirstName, s.MiddleName, 
+        //                           s.LastName, s.DOB, s.Age, s.Gender, s.Email, c.CityId, c.CityName, 
+        //                           a.AreaId, a.AreaName, s.Address, s.Amount, s.ChequeNo, s.ChequeDate, s.TransactionId, s.IsActive
+        //                           FROM sampleregister s
+        //                           INNER JOIN branch b ON s.BranchId = b.BranchId
+        //                           LEFT JOIN b2b k ON s.B2BId = k.B2BId
+        //                           LEFT JOIN city c ON s.CityId = c.CityId
+        //                           LEFT JOIN area a ON s.AreaId = a.AreaId
+        //                           WHERE s.SampleRegisterId = @SampleRegisterId;";
+        //                          //INNER JOIN doctor d ON s.DoctorId = d.DoctorId
+
+
+        //        var commond = new SqlCommand(query, _sqlConnection);
+        //        commond.Parameters.AddWithValue("@SampleRegisterId", SampleRegisterId);
+
+        //        var reader = commond.ExecuteReader();
+        //        if (reader.Read())
+        //        {
+        //            response.SampleRegisterId = Convert.ToInt32(reader["SampleRegisterId"]);
+        //            response.Date = Convert.ToDateTime(reader["Date"]);
+        //            response.BranchId = Convert.ToInt32(reader["BranchId"]);
+        //            response.BranchName = reader["BranchName"].ToString();
+        //            response.TotalAmount = Convert.ToInt32(reader["TotalAmount"]);
+        //            response.IsB2B = Convert.ToBoolean(reader["IsB2B"]);
+        //            response.B2BId = reader["B2BId"] != DBNull.Value ? Convert.ToInt32(reader["B2BId"]) : null;
+        //            response.B2BName = reader["B2BName"].ToString();
+        //            response.PhoneNumber = reader["PhoneNumber"].ToString();
+        //            response.Title = reader["Title"].ToString();
+        //            response.FirstName = reader["FirstName"].ToString();
+        //            response.MiddleName = reader["MiddleName"].ToString();
+        //            response.LastName = reader["LastName"].ToString();
+        //            response.DOB = Convert.ToDateTime(reader["DOB"]);
+        //            response.Age = Convert.ToInt32(reader["Age"]);
+        //            response.Gender = reader["Gender"].ToString();
+        //            response.Email = reader["Email"] != DBNull.Value ? reader["Email"].ToString() : null;
+        //            response.CityId = reader["CityId"] != DBNull.Value ? Convert.ToInt32(reader["CityId"]) : null;
+        //            response.CityName = reader["CityName"].ToString();
+        //            response.AreaId = reader["AreaId"] != DBNull.Value ? Convert.ToInt32(reader["AreaId"]) : null;
+        //            response.AreaName = reader["AreaName"].ToString();
+        //            response.Address = reader["Address"] != DBNull.Value ? reader["Address"].ToString() : null;
+        //            response.Amount = Convert.ToInt32(reader["Amount"]); ;
+        //            response.ChequeNo = reader["ChequeNo"] != DBNull.Value ? reader["ChequeNo"].ToString() : null;
+        //            response.ChequeDate = reader["ChequeDate"] == DBNull.Value ? null : Convert.ToDateTime(reader["ChequeDate"]);
+        //            response.TransactionId = reader["TransactionId"] != DBNull.Value ? reader["TransactionId"].ToString() : null;
+        //            //response.DoctorId = Convert.ToInt32(reader["DoctorId"]);
+        //            //response.DoctorName = reader["DoctorName"].ToString();
+        //            response.IsActive = Convert.ToBoolean(reader["IsActive"]);
+        //        }
+        //        else
+        //        {
+        //            return null;
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new Exception(ex.Message);
+        //    }
+        //    finally
+        //    {
+        //        _sqlConnection.Close();
+        //    }
+        //    return response;
+        //}
+
+
+        // SAMPLE SERVICE MAP
+
+
+
+        public List<SampleRegister> GetSampleByFilter()
         {
-            var response = new SampleRegister();
+
+            var response = new List<SampleRegister>();
+
             try
             {
                 if (_sqlConnection.State != ConnectionState.Open)
+                {
                     _sqlConnection.Open();
-
-                string query = @"
-                                  UPDATE sampleregister 
-                                  SET IsActive = CASE WHEN IsActive = 1 THEN 0 ELSE 1 END 
-                                  WHERE SampleRegisterId = @SampleRegisterId;
-
-                                   SELECT s.SampleRegisterId, s.Date, b.BranchId, b.BranchName, s.TotalAmount, s.IsB2B,
-                                   k.B2BId, k.B2BName, s.PhoneNumber, s.Title, s.FirstName, s.MiddleName, 
-                                   s.LastName, s.DOB, s.Age, s.Gender, s.Email, c.CityId, c.CityName, 
-                                   a.AreaId, a.AreaName, s.Address, s.Amount, s.ChequeNo, s.ChequeDate, s.TransactionId, s.IsActive
-                                   FROM sampleregister s
-                                  INNER JOIN branch b ON s.BranchId = b.BranchId
-                                 LEFT JOIN b2b k ON s.B2BId = k.B2BId
-                                  INNER JOIN city c ON s.CityId = c.CityId
-                                  INNER JOIN area a ON s.AreaId = a.AreaId
-                                 WHERE s.SampleRegisterId = @SampleRegisterId;";
-                                  //INNER JOIN doctor d ON s.DoctorId = d.DoctorId
-
-
-                var commond = new SqlCommand(query, _sqlConnection);
-                commond.Parameters.AddWithValue("@SampleRegisterId", SampleRegisterId);
-
-                var reader = commond.ExecuteReader();
-                if (reader.Read())
-                {
-                    response.SampleRegisterId = Convert.ToInt32(reader["SampleRegisterId"]);
-                    response.Date = Convert.ToDateTime(reader["Date"]);
-                    response.BranchId = Convert.ToInt32(reader["BranchId"]);
-                    response.BranchName = reader["BranchName"].ToString();
-                    response.TotalAmount = Convert.ToInt32(reader["TotalAmount"]);
-                    response.IsB2B = Convert.ToBoolean(reader["IsB2B"]);
-                    response.B2BId = reader["B2BId"] != DBNull.Value ? Convert.ToInt32(reader["B2BId"]) : null;
-                    response.B2BName = reader["B2BName"].ToString();
-                    response.PhoneNumber = reader["PhoneNumber"].ToString();
-                    response.Title = reader["Title"].ToString();
-                    response.FirstName = reader["FirstName"].ToString();
-                    response.MiddleName = reader["MiddleName"].ToString();
-                    response.LastName = reader["LastName"].ToString();
-                    response.DOB = Convert.ToDateTime(reader["DOB"]);
-                    response.Age = Convert.ToInt32(reader["Age"]);
-                    response.Gender = reader["Gender"].ToString();
-                    response.Email = reader["Email"].ToString();
-                    response.CityId = Convert.ToInt32(reader["CityId"]);
-                    response.CityName = reader["CityName"].ToString();
-                    response.AreaId = Convert.ToInt32(reader["AreaId"]);
-                    response.AreaName = reader["AreaName"].ToString();
-                    response.Address = reader["Address"].ToString();
-                    response.Amount = Convert.ToInt32(reader["Amount"]); ;
-                    response.ChequeNo = reader["ChequeNo"] != DBNull.Value ? reader["ChequeNo"].ToString() : null;
-                    response.ChequeDate = reader["ChequeDate"] == DBNull.Value ? null : Convert.ToDateTime(reader["ChequeDate"]);
-                    response.TransactionId = reader["TransactionId"] != DBNull.Value ? reader["TransactionId"].ToString() : null;
-                    //response.DoctorId = Convert.ToInt32(reader["DoctorId"]);
-                    //response.DoctorName = reader["DoctorName"].ToString();
-                    response.IsActive = Convert.ToBoolean(reader["IsActive"]);
                 }
-                else
+
+                string query = @"SELECT * FROM sampleregister
+                                 INNER JOIN branch ON sampleregister.BranchId = branch.BranchId
+                                 LEFT JOIN b2b ON sampleregister.B2BId = b2b.B2BId
+                                 LEFT JOIN city ON sampleregister.CityId = city.CityId
+                                 LEFT JOIN area ON sampleregister.AreaId = area.AreaId
+                                 LEFT JOIN doctor ON sampleregister.DoctorId = doctor.DoctorId";
+
+                SqlCommand command = new SqlCommand(query, _sqlConnection);
+
+                using (SqlDataReader reader = command.ExecuteReader())
                 {
-                    return null;
+                    while (reader.Read())
+                    {
+                        response.Add(new SampleRegister()
+                        {
+                            SampleRegisterId = Convert.ToInt32(reader["SampleRegisterId"]),
+                            Date = Convert.ToDateTime(reader["Date"]),
+                            BranchId = Convert.ToInt32(reader["BranchId"]),
+                            BranchName = reader["BranchName"].ToString(),
+                            TotalAmount = Convert.ToInt32(reader["TotalAmount"]),
+                            IsB2B = reader["IsB2B"] != DBNull.Value ? Convert.ToBoolean(reader["IsB2B"]) : false,
+                            B2BId = reader["B2BId"] != DBNull.Value ? Convert.ToInt32(reader["B2BId"]) : null,
+                            B2BName = reader["B2BName"].ToString(),
+                            PhoneNumber = reader["PhoneNumber"].ToString(),
+                            Title = reader["Title"].ToString(),
+                            FirstName = reader["FirstName"].ToString(),
+                            MiddleName = reader["MiddleName"].ToString(),
+                            LastName = reader["LastName"].ToString(),
+                            DOB = Convert.ToDateTime(reader["DOB"]),
+                            Age = Convert.ToInt32(reader["Age"]),
+                            Gender = reader["Gender"].ToString(),
+                            Email = reader["Email"] != DBNull.Value ? reader["Email"].ToString() : null,
+                            CityId = reader["CityId"] != DBNull.Value ? Convert.ToInt32(reader["CityId"]) : null,
+                            CityName = reader["CityName"].ToString(),
+                            AreaId = reader["AreaId"] != DBNull.Value ? Convert.ToInt32(reader["AreaId"]) : null,
+                            AreaName = reader["AreaName"].ToString(),
+                            Address = reader["Address"] != DBNull.Value ? reader["Address"].ToString() : null,
+                            Amount = Convert.ToInt32(reader["Amount"]), 
+                            ChequeNo = reader["ChequeNo"] != DBNull.Value ? reader["ChequeNo"].ToString() : null,
+                            ChequeDate = reader["ChequeDate"] == DBNull.Value ? null : Convert.ToDateTime(reader["ChequeDate"]),
+                            TransactionId = reader["TransactionId"] != DBNull.Value ? reader["TransactionId"].ToString() : null,
+                            DoctorId = reader["DoctorId"] != DBNull.Value ? Convert.ToInt32(reader["DoctorId"]) : null,
+                            DoctorName = reader["DoctorName"].ToString(),
+                            CreatedBy = reader["CreatedBy"] != DBNull.Value ? reader["CreatedBy"].ToString() : null,
+                            //response.IsActive = Convert.ToBoolean(reader["IsActive"]);
+                            ServiceMapping = new List<ServiceMapping>(),
+                            PaymentMapping = new List<PaymentMapping>(),
+                        });
+                    }
                 }
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                throw new Exception("Error fetching Sampleregister by: " + ex.Message);
             }
             finally
             {
@@ -3369,10 +3463,8 @@ namespace LIMSAPI.RepositryLayer
             return response;
         }
 
-
-        // SAMPLE SERVICE MAP
         public SampleServiceMap DeleteSampleServiceMapId(int SampleServiceMapId)
-        {
+        { 
             var response = new SampleServiceMap();
             try
             {
@@ -3382,12 +3474,11 @@ namespace LIMSAPI.RepositryLayer
                 }
 
 
-                string query = @"select SampleServiceMapId, sampleServiceMap.ServiceId, sampleServiceMap.SampleRegisterId, sampleServiceMap.IsActive
+                string query = @"select SampleServiceMapId, sampleServiceMap.ServiceId, sampleServiceMap.SampleRegisterId
                                  from sampleServiceMap 
                                  inner join service on service.ServiceId = sampleServiceMap.ServiceId
                                  inner join sampleregister on sampleregister.SampleRegisterId = sampleServiceMap.SampleRegisterId
-                                 UPDATE sampleServiceMap 
-                                 SET IsActive = CASE WHEN IsActive = 1 THEN 0 ELSE 1 END 
+                                 DELETE FROM sampleServiceMap
                                  WHERE SampleServiceMapId = @SampleServiceMapId;";
 
 
@@ -3401,7 +3492,7 @@ namespace LIMSAPI.RepositryLayer
                     response.SampleServiceMapId = Convert.ToInt32(reader["SampleServiceMapId"]);
                     response.SampleRegisterId = Convert.ToInt32(reader["SampleRegisterId"]);
                     response.ServiceId = Convert.ToInt32(reader["ServiceId"]);
-                    response.IsActive = Convert.ToBoolean(reader["IsActive"]);
+                    //response.IsActive = Convert.ToBoolean(reader["IsActive"]);
                 }
                 else
                 {

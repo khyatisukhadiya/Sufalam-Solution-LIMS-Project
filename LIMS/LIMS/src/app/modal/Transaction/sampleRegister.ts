@@ -17,7 +17,7 @@ export interface SampleRegister {
     cityId: number;
     areaId: number;
     address: string;
-    // doctorId: number;
+    doctorId: number;
     isActive: boolean;
     amount: number;
     chequeNo: string;

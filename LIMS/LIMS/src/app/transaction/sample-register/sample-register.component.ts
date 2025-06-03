@@ -11,6 +11,7 @@ import { cityModal } from '../../modal/MasterModel/cityModal';
 import { branchModal } from '../../modal/MasterModel/branchModal';
 import { b2bModal } from '../../modal/MasterModel/b2bModal';
 import { ToastrService } from 'ngx-toastr';
+import { doctorModal } from '../../modal/MasterModel/doctorModal';
 
 @Component({
   selector: 'app-sample-register',
@@ -27,6 +28,7 @@ export class SampleRegisterComponent implements OnInit {
   modalInstance: any;
   searchClick: boolean = false;
   isB2B: boolean = false;
+
   submitted: boolean = false;
   sampleRegisterList: SampleRegister[] = [];
   cities: cityModal[] = [];
@@ -35,13 +37,14 @@ export class SampleRegisterComponent implements OnInit {
   b2bs: b2bModal[] = [];
   services: any[] = [];
   payments: any[] = [];
+  doctors: doctorModal[] = [];
   selectedServices: any[] = [];
   selectedPayment: string = '';
   errorMessage: string = '';
   validationErrors: string[] = [];
   formErrors: any = {};
   toastMessage: string = '';
-  searchCriteria = { sampleRegisterId: '', name: '', isActive: true };
+  searchCriteria = { sampleRegisterId: '', name: '', date: '' };
 
 
   constructor(private fb: FormBuilder, private toastr: ToastrService) { }
@@ -66,6 +69,7 @@ export class SampleRegisterComponent implements OnInit {
     });
 
 
+
     this.sampleRegisterForm.get('cityId')?.valueChanges.subscribe(() => {
       this.loadAreas();
     });
@@ -77,6 +81,7 @@ export class SampleRegisterComponent implements OnInit {
     this.loadB2Bs();
     this.loadServices();
     this.loadPayments();
+    this.loadDoctors();
   }
 
   openModal() {
@@ -159,7 +164,7 @@ export class SampleRegisterComponent implements OnInit {
   setForm() {
     this.sampleRegisterForm = this.fb.group({
       sampleRegisterId: [{ value: 0, disabled: true }],
-      date: ['', Validators.required],
+      date: [{ value: '', disabled: true }, Validators.required],
       branchId: [null, Validators.required],
       totalAmount: [0, Validators.required],
       isB2B: [false],
@@ -172,18 +177,18 @@ export class SampleRegisterComponent implements OnInit {
       dob: ['', Validators.required],
       age: [{ value: 0, disabled: true }, Validators.required],
       gender: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
+      email: ['', [Validators.email]],
       cityId: [null, Validators.required],
       areaId: [null, Validators.required],
       address: ['', Validators.required],
       doctorId: [null, Validators.required],
       serviceId: [null, Validators.required],
       paymentId: [null, Validators.required],
-      amount: [{ value: '', disabled: true }, Validators.required],
-      chequeNo: [{ value: '', disabled: true }, Validators.required],
-      chequeDate: [{ value: '', disabled: true }, Validators.required],
-      transactionId: [{ value: '', disabled: true }, Validators.required],
-      isActive: [true],
+      Amount: [{ value: '', disabled: true }, Validators.required],
+      ChequeNo: [{ value: '', disabled: true }, Validators.required],
+      ChequeDate: [{ value: '', disabled: true }, Validators.required],
+      TransactionId: [{ value: '', disabled: true }, Validators.required],
+      regBy: ['', Validators.required],
     });
   }
 
@@ -193,7 +198,7 @@ export class SampleRegisterComponent implements OnInit {
     this.searchCriteria = {
       sampleRegisterId: '',
       name: '',
-      isActive: true
+      date: ''
     };
   }
 
@@ -273,6 +278,17 @@ export class SampleRegisterComponent implements OnInit {
     });
   }
 
+  loadDoctors() {
+    this.sampleRegisterService.getDoctors().subscribe({
+      next: (res) => {
+        this.doctors = res || [];
+      },
+      error: (err) => {
+        console.error('Error loading doctors:', err);
+      }
+    });
+  }
+
   addService() {
     const serviceId = this.sampleRegisterForm.value.serviceId;
     const selectedService = this.services.find(s => s.serviceId === serviceId);
@@ -313,7 +329,7 @@ export class SampleRegisterComponent implements OnInit {
     const filter = {
       name: this.searchCriteria.name?.trim() || '',
       id: this.searchCriteria.sampleRegisterId || null,
-      isActive: this.searchCriteria.isActive
+      date: this.searchCriteria.date
     };
 
     this.sampleRegisterService.fetchSampleRegister(filter).subscribe({
@@ -325,6 +341,7 @@ export class SampleRegisterComponent implements OnInit {
       }
     });
   }
+
 
   onEdit(sampleRegisterId: number): void {
 
@@ -339,7 +356,7 @@ export class SampleRegisterComponent implements OnInit {
             branchId: res.branchId,
             totalAmount: res.totalAmount,
             isB2B: res.isB2B,
-            b2BId: res.b2BId ? res.b2BId : null, // if b2BId is null, then it is B2C
+            b2BId: res.b2BId ? res.b2BId : null,
             phoneNumber: res.phoneNumber,
             title: res.title,
             firstName: res.firstName,
@@ -348,20 +365,23 @@ export class SampleRegisterComponent implements OnInit {
             dob: res.dob ? formatDate(res.dob, 'yyyy-MM-dd', 'en-US') : '',
             age: res.age,
             gender: res.gender,
-            email: res.email,
+            email: res.email ? res.email : null,
             cityId: res.cityId,
             areaId: res.areaId,
             address: res.address,
             isActive: res.isActive,
-            amount: res.amount,
-            chequeNo: res.chequeNo,
-            chequeDate: res.chequeDate ? formatDate(res.chequeDate, 'yyyy-MM-dd', 'en-US') : null,
-            transactionId: res.transactionId,
+            Amount: res.amount,
+            ChequeNo: res.chequeNo,
+            ChequeDate: res.chequeDate ? formatDate(res.chequeDate, 'yyyy-MM-dd', 'en-US') : null,
+            TransactionId: res.transactionId,
             paymentId: res.paymentMapping?.[0]?.paymentId,
+            regBy: res.createdBy,
+            doctorId: res.doctorId ? res.doctorId : null,
           }
 
         );
         // console.log('Sample Register Data:', this.sampleRegisterForm);
+        // this.sampleRegisterForm.get('amount')?.enable();
         this.sampleRegisterForm.get('chequeNo')?.enable();
         this.sampleRegisterForm.get('chequeDate')?.enable();
         this.sampleRegisterForm.get('transactionId')?.enable();
@@ -369,7 +389,7 @@ export class SampleRegisterComponent implements OnInit {
         console.log('transactionId:', res.transactionId);
         console.log('chequeDate:', res.chequeDate);
         console.log('chequeNo:', res.chequeNo);
-        console.log('Amount:', res.amount);
+        console.log('amount:', res.amount);
 
 
         this.selectedServices = res.serviceMapping || [];
@@ -429,15 +449,7 @@ export class SampleRegisterComponent implements OnInit {
     });
   }
 
-  // markFormGroupTouched(sampleRegisterForm: FormGroup) {
-  //   Object.values(sampleRegisterForm.controls).forEach(control => {
-  //     if (control instanceof FormGroup) {
-  //       this.markFormGroupTouched(control);
-  //     } else {
-  //       control.markAsTouched();
-  //     }
-  //   })
-  // };
+
 
   onSubmit(): void {
     this.submitted = true;
@@ -446,8 +458,8 @@ export class SampleRegisterComponent implements OnInit {
 
 
     if (this.sampleRegisterForm.invalid) {
-      this.sampleRegisterForm.markAllAsTouched();
-      this.showError('Please fix the validation errors before submitting.');
+      // this.sampleRegisterForm.markAllAsTouched();
+      // this.showError('Please fix the validation errors before submitting.');
       return;
     }
 
@@ -485,15 +497,18 @@ export class SampleRegisterComponent implements OnInit {
       return;
     }
 
+
     console.log("sampleregister", this.sampleRegisterForm);
 
     const payload = {
       sampleRegisterId: formValues.sampleRegisterId,
       date: formValues.date,
       branchId: formValues.branchId,
+      branchName: this.branches.find(b => b.branchId === formValues.branchId)?.branchName || '',
       totalAmount: formValues.totalAmount,
       isB2B: formValues.isB2B,
       b2BId: formValues.b2BId ?? null,
+      b2BName: this.b2bs.find(b => b.b2BId === formValues.b2BId)?.b2BName || '',
       phoneNumber: formValues.phoneNumber,
       title: formValues.title,
       firstName: formValues.firstName,
@@ -502,21 +517,27 @@ export class SampleRegisterComponent implements OnInit {
       dob: formValues.dob,
       age: formValues.age,
       gender: formValues.gender,
-      email: formValues.email,
+      email: formValues.email ?? null,
       cityId: formValues.cityId,
+      cityName: this.cities.find(c => c.cityId === formValues.cityId)?.cityName || '',
       areaId: formValues.areaId,
+      areaName: this.areas.find(a => a.areaId === formValues.areaId)?.areaName || '',
       address: formValues.address,
-      amount: formValues.amount,
-      chequeNo: formValues.chequeNo ?? null,
-      chequeDate: formValues.chequeDate ?? null,
-      transactionId: formValues.transactionId ?? null,
-      isActive: true,
+      amount: formValues.Amount,
+      chequeNo: formValues.ChequeNo || null,
+      chequeDate: formValues.ChequeDate || null,
+      transactionId: formValues.TransactionId || null,
+      regBy: formValues.regBy || null,
+      doctorId: formValues.doctorId ?? null,
+      doctorName: this.doctors.find(d => d.doctorId === formValues.doctorId)?.doctorId || '',
+      // isActive: true,
       paymentMapping: [{
         paymentId: selectedPayment.paymentId,
         paymentName: selectedPayment.paymentName,
         isCash: selectedPayment.isCash,
         isCheque: selectedPayment.isCheque,
         isOnline: selectedPayment.isOnline,
+        isActive: true
       }],
       serviceMapping: this.selectedServices.map(s => ({
         serviceId: s.serviceId,
@@ -524,13 +545,14 @@ export class SampleRegisterComponent implements OnInit {
         serviceName: s.serviceName,
         b2BAmount: s.b2BAmount,
         b2CAmount: s.b2CAmount,
-        isActive: s.isActive,
-        // sampleServiceMapId : s.sampleServiceMapId,
+        isActive: true,
+        sampleServiceMapId: s.sampleServiceMapId ?? 0
       }))
     };
-    // console.log("error", this.sampleRegisterForm.valid);
-    // console.log("before sampleregister", this.sampleRegisterForm)
-    // console.log('Final Payload:', payload);
+
+    console.log("error", this.sampleRegisterForm.valid);
+    console.log("before sampleregister", this.sampleRegisterForm)
+    console.log('Final Payload:', payload);
 
     this.sampleRegisterService.addUpdatedSampleRegister(payload).subscribe({
       next: (res) => {
@@ -611,14 +633,14 @@ export class SampleRegisterComponent implements OnInit {
 
 
     if (this.selectedPayment === 'Cash') {
-      form.get('amount')?.enable();
+      form.get('Amount')?.enable();
     } else if (this.selectedPayment === 'Cheque') {
-      form.get('amount')?.enable();
-      form.get('chequeNo')?.enable();
-      form.get('chequeDate')?.enable();
+      form.get('Amount')?.enable();
+      form.get('ChequeNo')?.enable();
+      form.get('ChequeDate')?.enable();
     } else if (this.selectedPayment === 'Scanner' || this.selectedPayment === 'Online') {
-      form.get('amount')?.enable();
-      form.get('transactionId')?.enable();
+      form.get('Amount')?.enable();
+      form.get('TransactionId')?.enable();
     }
   }
 
