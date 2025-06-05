@@ -68,7 +68,7 @@ namespace LIMSAPI.Models.TransactionModal
 
 
         //[Required(ErrorMessage = "Email is required.")]
-        //[EmailAddress(ErrorMessage = "The email address is not valid.")]
+        [EmailAddress(ErrorMessage = "The email address is not valid.")]
         public string? Email { get; set; }
 
 
@@ -111,7 +111,8 @@ namespace LIMSAPI.Models.TransactionModal
         public string? CreatedBy { get; set; }
 
         //public DateTime CreatedOn { get; set; }
-        //public bool IsActive { get; set; }
+
+        public bool IsActive { get; set; }
 
 
         // service

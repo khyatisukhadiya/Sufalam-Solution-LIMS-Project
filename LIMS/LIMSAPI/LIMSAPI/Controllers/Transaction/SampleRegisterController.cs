@@ -92,19 +92,19 @@ namespace LIMSAPI.Controllers.Transaction
         //}
 
 
-        //[HttpGet]
-        //public IActionResult GetSampleByFilter([FromQuery] FilterModel filterModel)
-        //{
-        //    var result = _sampleSL.GetSampleByFilter(filterModel);
-        //    return Ok(new { data = result });
-        //}
-
         [HttpGet]
-        public IActionResult GetSampleByIsActive()
+        public IActionResult GetSampleByFilter([FromQuery] FilterModel filterModel)
         {
-            var result = _sampleSL.GetSampleByIsActive();
+            var result = _sampleSL.GetSampleByFilter(filterModel);
             return Ok(new { data = result });
         }
+
+        //[HttpGet]
+        //public IActionResult GetSampleByIsActive()
+        //{
+        //    var result = _sampleSL.GetSampleByIsActive();
+        //    return Ok(new { data = result });
+        //}
 
 
         [HttpGet]

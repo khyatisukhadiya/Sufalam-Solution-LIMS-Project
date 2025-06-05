@@ -46,8 +46,8 @@ export class SampleRegisterService {
       params = params.set('name', filter.name);
     }
 
-    if (filter.code) {
-      params = params.set('code', filter.code);
+    if (filter.phoneNumber) {
+      params = params.set('code', filter.phoneNumber);
     }
 
     if (filter.id !== null && filter.id !== undefined) {
@@ -58,7 +58,7 @@ export class SampleRegisterService {
       params = params.set('isActive', filter.isActive.toString());
     }
 
-    return this.http.get<any>('https://localhost:7161/api/SampleRegister/GetSampleByIsActive', { params });
+    return this.http.get<any>('https://localhost:7161/api/SampleRegister/GetSampleByFilter', { params });
   }
 
 

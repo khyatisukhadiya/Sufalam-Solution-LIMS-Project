@@ -159,9 +159,9 @@ namespace LIMSAPI.RepositryLayer
 
         SampleRegister AddUpdateSampleRegister(SampleRegister sampleRegister);
 
-        //List<SampleRegister> GetSampleByFilter(FilterModel filterModel);
+        List<SampleRegister> GetSampleByFilter(FilterModel filterModel);
 
-        List<SampleRegister> GetSampleByIsActive();
+        //List<SampleRegister> GetSampleByIsActive();
 
         SampleRegister GetSampleRegisterById(int SampleRegisterId);
 

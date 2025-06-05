@@ -18,7 +18,7 @@
                 <div class="d-flex align-items-center gap-2">
                     <label class="form-label mb-0" style="min-width: 150px; white-space: nowrap;">SampleRegister
                         Id</label>
-                    <input type="number" [(ngModel)]="searchCriteria.sampleRegisterId" class="form-control"
+                    <input type="number" [(ngModel)]="searchCriteria.id" class="form-control"
                         placeholder="Enter SampleRegister Id">
                 </div>
             </div>
@@ -36,8 +36,8 @@
             <!-- Status -->
             <div class="col-md-4 col-sm-6">
                 <div class="d-flex align-items-center gap-2">
-                    <label class="form-label mb-0" style="min-width: 150px;">Mobile No.</label>
-                    <input type="number" class="form-control" placeholder="Enter Mobile No.">
+                    <label class="form-label mb-0" style="min-width: 150px;">Phone No.</label>
+                    <input type="number" class="form-control" placeholder="Enter Mobile No." [(ngModel)]="searchCriteria.code">
                     <!-- <select class="form-select" [(ngModel)]="searchCriteria.isActive">
                         <option [ngValue]="null">All</option>
                         <option [ngValue]="true">Active</option>
@@ -270,13 +270,13 @@
                                         <td>
                                             <label for="email">Email ID</label>
                                             <input type="email" class="form-control" formControlName="email"
-                                                placeholder="abc@gmail.com">
-                                            <!-- <ng-container *ngFor="let error of validationErrors">
+                                                placeholder="abc@gmail.com" (input)="onInputChange()">
+                                            <ng-container *ngFor="let error of validationErrors">
                                                 <small *ngIf="error.toLowerCase().includes('email')"
                                                     class="text-danger">
                                                     {{ error }}
                                                 </small>
-                                            </ng-container> -->
+                                            </ng-container>
                                         </td>
                                     </tr>
                                     <tr>

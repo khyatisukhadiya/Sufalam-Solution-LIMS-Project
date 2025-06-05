@@ -46,7 +46,7 @@ export class SampleRegisterComponent implements OnInit {
   validationErrors: string[] = [];
   formErrors: any = {};
   toastMessage: string = '';
-  searchCriteria = { sampleRegisterId: '', name: '', date: '' };
+  searchCriteria = { id: '', name: '', code: '' };
   changeDetectorRef: any;
 
 
@@ -183,7 +183,7 @@ export class SampleRegisterComponent implements OnInit {
       dob: ['', Validators.required],
       age: [{ value: 0, disabled: true }, Validators.required],
       gender: ['', Validators.required],
-      email: ['', [Validators.email]],
+      email: [''],
       cityId: [null],
       areaId: [null],
       address: [''],
@@ -202,9 +202,9 @@ export class SampleRegisterComponent implements OnInit {
   clearSearch() {
     this.searchClick = false;
     this.searchCriteria = {
-      sampleRegisterId: '',
+      id: '',
       name: '',
-      date: ''
+      code: ''
     };
   }
 
@@ -306,7 +306,7 @@ export class SampleRegisterComponent implements OnInit {
       this.selectedServices.push(selectedService);
       this.calculateTotalAmount();
     } else {
-      this.showSuccess('Service already exists in the list');
+      this.showSuccess('Service already exists in the table');
     }
 
     this.sampleRegisterForm.patchValue({ serviceId: null });
@@ -338,8 +338,8 @@ export class SampleRegisterComponent implements OnInit {
 
     const filter = {
       name: this.searchCriteria.name?.trim() || '',
-      id: this.searchCriteria.sampleRegisterId || null,
-      date: this.searchCriteria.date
+      id: this.searchCriteria.id || null,
+      phoneNumber: this.searchCriteria.code
     };
 
     this.sampleRegisterService.fetchSampleRegister(filter).subscribe({
@@ -546,7 +546,7 @@ export class SampleRegisterComponent implements OnInit {
       doctorName: this.doctors.find(d => d.doctorId === formValues.doctorId)?.doctorName || '',
       paymentId: selectedPayment.paymentId,
       paymentName: selectedPayment.paymentName,
-      // isActive: true,
+      isActive: true,
       // paymentMapping: [{
       //   paymentId: selectedPayment.paymentId,
       //   paymentName: selectedPayment.paymentName,
@@ -707,7 +707,5 @@ export class SampleRegisterComponent implements OnInit {
 
     }
   }
-
-
 
 }
