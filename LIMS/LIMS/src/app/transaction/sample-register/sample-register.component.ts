@@ -5,7 +5,7 @@ import { Modal } from 'bootstrap';
 import { RouterModule } from '@angular/router';
 import { CommonModule, formatDate } from '@angular/common';
 import { SampleRegister } from '../../modal/Transaction/sampleRegister';
-import { SampleRegisterService } from '../../service/TransactionService/sample-register.service';
+import { SampleRegisterService } from '../../service/TransactionService/sampleregister/sample-register.service';
 import { AreaModal } from '../../modal/MasterModel/areaModal';
 import { cityModal } from '../../modal/MasterModel/cityModal';
 import { branchModal } from '../../modal/MasterModel/branchModal';
@@ -131,7 +131,7 @@ export class SampleRegisterComponent implements OnInit {
     this.validationErrors = [];
     this.submitted = false;
      this.selectedServices = [];
-   this.selectedPayment = '';
+    this.selectedPayment = '';
 
     this.sampleRegisterForm.reset({
     sampleRegisterId: 0,

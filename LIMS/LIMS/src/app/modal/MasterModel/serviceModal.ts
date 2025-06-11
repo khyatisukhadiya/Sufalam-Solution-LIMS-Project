@@ -5,5 +5,11 @@ export interface serviceModal {
   b2BAmount : number;
   b2CAmount : number;
   isActive : boolean;
-  ServiceTestId : number
+  ServiceTestId : number;
+  test : [{
+    isActive: true;
+    testId : number;
+    testName : string;
+    testCode : string;
+  }]
 }

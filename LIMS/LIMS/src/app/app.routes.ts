@@ -11,6 +11,7 @@ import { TestComponent } from './master/test/test.component';
 import { ServiceComponent } from './master/service/service.component';
 import { PaymentComponent } from './finance/payment/payment.component';
 import { SampleRegisterComponent } from './transaction/sample-register/sample-register.component';
+import { TestresultComponent } from './transaction/testresult/testresult.component';
 
 export const routes: Routes = [
     {
@@ -60,5 +61,9 @@ export const routes: Routes = [
     {
         path : 'sampleRegister',
         component : SampleRegisterComponent
+    },
+    {
+        path : 'testresult',
+        component : TestresultComponent
     }
 ];

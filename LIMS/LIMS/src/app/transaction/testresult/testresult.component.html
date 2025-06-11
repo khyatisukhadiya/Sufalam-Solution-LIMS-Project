@@ -1,0 +1,178 @@
+<app-sliderbar></app-sliderbar>
+
+
+<div class="container p-3" style="max-width: 96%;">
+
+    <!-- Header with Add Button -->
+    <div class="d-flex justify-content-between align-items-center pb-3">
+        <h5>Test Result</h5>
+    </div>
+
+    <!-- search table -->
+    <div class="border border-dark rounded-2 my-3 p-3">
+        <div class="row g-4">
+
+            <!-- Sample Register ID -->
+            <div class="col-md-4 col-sm-6">
+                <div class="d-flex align-items-center gap-2">
+                    <label class="form-label mb-0" style="min-width: 150px; white-space: nowrap;">SampleRegister
+                        Id</label>
+                    <input type="number" [(ngModel)]="searchCriteria.id" class="form-control"
+                        placeholder="Enter SampleRegister Id">
+                </div>
+            </div>
+
+            <!-- Sample Register Name -->
+            <div class="col-md-4 col-sm-6">
+                <div class="d-flex align-items-center gap-2">
+                    <label class="form-label mb-0" style="min-width: 150px; white-space: nowrap;">Middle
+                        Name</label>
+                    <input type="text" [(ngModel)]="searchCriteria.name" class="form-control"
+                        placeholder="Enter Middle Name">
+                </div>
+            </div>
+
+            <!-- Phonenumber -->
+            <div class="col-md-4 col-sm-6">
+                <div class="d-flex align-items-center gap-2">
+                    <label class="form-label mb-0" style="min-width: 150px;">PhoneNumber</label>
+                    <input type="number" class="form-control" placeholder="Enter PhoneNumber"
+                        [(ngModel)]="searchCriteria.code">
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Button Row -->
+        <div class="row mt-3">
+            <div class="col d-flex justify-content-end gap-2">
+                <button class="btn btn-primary" (click)="getSampleregister()">Search</button>
+                <button class="btn btn-danger" (click)="clearSearch()">Clear</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="myModal" #myModal tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 1460px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Test Result Details</h5>
+                <button type="button" class="btn-close" aria-label="Close" (click)="closeModal()"></button>
+            </div>
+            <form [formGroup]="testresultForm">
+                <!-- Modal Body -->
+                <div class="modal-body">
+                    <div class="container mt-3" *ngIf="selectedSample">
+
+                        <!-- Sample Info -->
+                        <div class="card p-2 mb-3 shadow-sm">
+                            <div class="d-flex flex-wrap gap-1 justify-content-center">
+                                <span class="me-3" data-bs-toggle="tooltip" title="SampleRegister Id">🔘 {{
+                                    selectedSample.sampleRegisterId }}</span>
+                                <span class="me-3 text-break">
+                                    <strong>{{ selectedSample.title }} {{ selectedSample.firstName }} {{
+                                        selectedSample.middleName }} -
+                                        {{ selectedSample.gender }} - {{ selectedSample.age }} Yrs</strong>
+                                </span>
+                                <span class="me-3" data-toggle="tooltip" data-placement="bottom"
+                                    title="Date of Birth">🎂 {{ selectedSample.dob }}</span>
+                                <span class="me-3" data-bs-toggle="tooltip" title="B2B">📍 {{ selectedSample.b2BName
+                                    }}</span>
+                                <span class="me-3" data-bs-toggle="tooltip" title="Branch">🏥 {{
+                                    selectedSample.branchName }}</span>
+                                <span class="me-3">📱 {{ selectedSample.phoneNumber }}</span>
+                                <span>📆 {{ selectedSample.date }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Test Results -->
+                        <div class="card p-3 shadow-sm">
+                            <h5 class="mb-3">Test Results</h5>
+
+                            <ng-container *ngIf="selectedServices.length > 0; else noServices">
+                                <div *ngFor="let serviceMapping of selectedServices" class="mb-4">
+                                    <h6 class="text-primary">{{ serviceMapping.serviceName }}</h6>
+
+                                    <div class="table-responsive">
+                                        <table class="table" style="table-layout: fixed; width: 100%;">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th style="width: 40%;">Test Name</th>
+                                                    <th style="width: 40%;">Test Result</th>
+                                                    <th class="text-center" style="width: 20%;">Validation</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr *ngFor="let test of serviceMapping.tests; let i = index">
+                                                    <td>{{ test.testName }}</td>
+                                                    <td>
+                                                        <input type="text" class="form-control"
+                                                            [(ngModel)]="test.result"
+                                                            [ngModelOptions]="{standalone: true}"
+                                                            name="testResult_{{ serviceMapping.serviceId }}_{{ i }}"
+                                                            placeholder="Enter Test Result..." style="width: 100%;">
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <div
+                                                            class="form-check form-switch d-flex justify-content-center">
+                                                            <input class="form-check-input" type="checkbox"
+                                                                [(ngModel)]="test.valid"
+                                                                [ngModelOptions]="{standalone: true}">
+                                                            {{ test.valid ? 'V' : 'N' }}
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </ng-container>
+
+                            <ng-template #noServices>
+                                <p class="text-center text-danger mt-3">No services found for this sample.</p>
+                            </ng-template>
+
+                            <!-- Action Buttons -->
+                            <div class="d-flex justify-content-end mt-3">
+                                <button class="btn btn-success me-2 px-4">Save
+                                    Changes</button>
+                                <button class="btn btn-secondary px-4" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="container my-3 p-3" style="max-width: 96%;">
+    <div class="border border-dark rounded-2" *ngIf="searchClick">
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped table-hover text-center"
+                *ngIf="sampleRegisterList.length > 0; else noData">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>SamplRegister Id</th>
+                        <th>Patient Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let sampleRegister of sampleRegisterList; let i = index">
+                        <td>{{ i + 1}}</td>
+                        <td> <a href="#" (click)="openModal(sampleRegister.sampleRegisterId,$event)"
+                                data-bs-toggle="modal" data-bs-target="#myModal">{{
+                                sampleRegister.sampleRegisterId}}</a></td>
+                        <td>{{ sampleRegister.title}} {{sampleRegister.firstName}} {{ sampleRegister.middleName}}
+                            {{sampleRegister.lastName}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <ng-template #noData>
+        <div class="text-center text-danger fw-bold p-3" style="background-color: #f1f1f1">No data found.</div>
+    </ng-template>
+</div>
