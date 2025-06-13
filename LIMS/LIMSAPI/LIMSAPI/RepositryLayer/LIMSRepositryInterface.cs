@@ -170,7 +170,12 @@ namespace LIMSAPI.RepositryLayer
 
 
         // SAMPLE SERVICE MAP
-
         SampleServiceMap DeleteSampleServiceMapId(int SampleServiceMapId);
+
+
+
+
+        // TEST RESULT
+        TestResultModal AddUpdateTestResult(TestResultModal resultModal);
     }
 }

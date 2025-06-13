@@ -182,7 +182,12 @@ namespace LIMSAPI.ServiceLayer
 
 
         // SAMPLE SERVICE MAP
-
         SampleServiceMap DeleteSampleServiceMapId(int SampleServiceMapId);
+
+
+
+        // TEST RESULT
+
+        TestResultModal AddUpdateTestResult(TestResultModal resultModal);
     }
 }

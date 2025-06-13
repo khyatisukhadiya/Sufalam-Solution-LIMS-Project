@@ -353,5 +353,10 @@ namespace LIMSAPI.ServiceLayer
         {
             return _lIMSRepositryInterface.DeleteSampleServiceMapId(SampleServiceMapId);
         }
+
+        public TestResultModal AddUpdateTestResult(TestResultModal resultModal)
+        {
+            return _lIMSRepositryInterface.AddUpdateTestResult(resultModal);
+        }
     }
 }

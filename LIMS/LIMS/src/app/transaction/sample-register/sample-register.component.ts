@@ -472,9 +472,6 @@ export class SampleRegisterComponent implements OnInit {
 
 
     if (this.sampleRegisterForm.invalid) {
-      // this.changeDetectorRef.detectChanges()
-      // this.sampleRegisterForm.markAllAsTouched();
-      // this.showError('Please fix the validation errors before submitting.');
       return;
     }
 

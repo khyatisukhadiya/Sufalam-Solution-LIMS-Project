@@ -36,4 +36,8 @@ export class TestresultService {
   getSampleRegisterById(sampleRegisterId : number) {
     return this.http.get<any>(`https://localhost:7161/api/SampleRegister/GetSampleRegisterById?SampleRegisterId=${sampleRegisterId}`);
   }
+
+  addUpdatedTestResult(data: any) {
+    return this.http.post<any>('https://localhost:7161/api/TestResult/AddUpdateTestResult', data);
+  }
 }

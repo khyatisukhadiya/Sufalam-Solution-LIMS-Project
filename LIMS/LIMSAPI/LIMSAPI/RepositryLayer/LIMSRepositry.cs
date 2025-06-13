@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Formats.Tar;
+using System.IO.Pipelines;
 using System.Linq;
 using System.Reflection;
 using System.Transactions;
@@ -3026,7 +3027,6 @@ namespace LIMSAPI.RepositryLayer
             return response;
         }
 
-
         public List<SampleRegister> GetSampleByFilter(FilterModel filterModel)
         {
             try
@@ -3174,7 +3174,6 @@ namespace LIMSAPI.RepositryLayer
                 throw new Exception("Error ocuur fecthing  SampleRegister" + ex.Message);
             }
         }
-
 
         public SampleRegister GetSampleRegisterById(int SampleRegisterId)
         {
@@ -3524,6 +3523,135 @@ namespace LIMSAPI.RepositryLayer
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _sqlConnection.Close();
+            }
+            return response;
+        }
+
+        public TestResultModal AddUpdateTestResult(TestResultModal resultModal)
+        {
+            var response = new TestResultModal();
+
+            try
+            {
+
+                if (resultModal.TestResultId > 0)
+                {
+
+                    if (_sqlConnection.State != ConnectionState.Open)
+                    {
+                        _sqlConnection.Open();
+                    }
+
+                    string query = @"UPDATE testResultDetails 
+                                     SET SampleRegisterId = @SampleRegisterId, ServiceId = @ServiceId, TestId = @TestId, ResultValue = @ResultValue, ValidationStatus = @ValidationStatus, ValidateBy = @ValidateBy,CreatedBy = @CreatedBy
+                                     WHERE SampleRegisterId = @SampleRegisterId
+
+                                     SELECT t.TestResultId, s.SampleRegisterId, sh.ServiceId, sh.ServiceName, ts.TestId, ts.TestName, t.ResultValue, t.ValidationStatus, t.ValidateBy, t.CreatedBy, t.IsActive
+                                     FROM testResultDetails T
+                                     INNER JOIN sampleregister s ON t.SampleRegisterId = s.SampleRegisterId
+                                     INNER JOIN service sh ON t.ServiceId = sh.ServiceId
+                                     INNER JOIN test ts ON t.TestId = ts.TestId
+                                     WHERE s.SampleRegisterId = @SampleRegisterId";
+
+                    using var common = new SqlCommand(query, _sqlConnection);
+                    common.Parameters.AddWithValue("@TestResultId", resultModal.TestResultId);
+                    common.Parameters.AddWithValue("@SampleRegisterId", resultModal.SampleRegisterId);
+                    common.Parameters.AddWithValue("@ServiceId", resultModal.ServiceId);
+                    common.Parameters.AddWithValue("@TestId", resultModal.TestId);
+                    common.Parameters.AddWithValue("@ResultValue", resultModal.ResultValue);
+                    common.Parameters.AddWithValue("@ValidationStatus", resultModal.ValidationStatus);
+                    common.Parameters.AddWithValue("@ValidateBy", resultModal.ValidateBy ?? (object)DBNull.Value);
+                    //common.Parameters.AddWithValue("@ValidateOn", resultModal.ValidateOn);
+                    common.Parameters.AddWithValue("@CreatedBy", resultModal.CreatedBy ?? (object)DBNull.Value);
+                    //common.Parameters.AddWithValue("@CreatedOn", resultModal.CreatedOn);
+
+
+                    using var reader = common.ExecuteReader();
+                    if (reader.Read())
+                    {
+                        response.TestResultId = Convert.ToInt32(reader["TestResultId"]);
+                        response.SampleRegisterId = Convert.ToInt32(reader["SampleRegisterId"]);
+                        response.ServiceId = Convert.ToInt32(reader["ServiceId"]);
+                        response.ServiceName = reader["ServiceName"].ToString();
+                        response.TestId = Convert.ToInt32(reader["TestId"]);
+                        response.TestName = reader["TestName"].ToString();
+                        response.ResultValue = reader["ResultValue"].ToString();
+                        response.ValidationStatus = reader["ValidationStatus"].ToString();
+                        response.CreatedBy = reader["CreatedBy"].ToString();
+                        //response.CreatedOn = Convert.ToDateTime(reader["CreatedOn"]);
+                        response.ValidateBy = reader["ValidateBy"].ToString();
+                        //response.ValidateOn = Convert.ToDateTime(reader["Validateon"]);
+                        response.IsActive = Convert.ToBoolean(reader["IsActive"]);
+                    }
+                    else
+                    {
+                        throw new Exception("Update Successfully but no fetch data properly");
+                    }
+                }
+                else
+                {
+
+                    if (_sqlConnection.State != ConnectionState.Open)
+                    {
+                        _sqlConnection.Open();
+                    }
+
+                    string query = @"INSERT INTO testResultDetails(SampleRegisterId, ServiceId, TestId, ResultValue, ValidationStatus, CreatedBy, ValidateBy) OUTPUT INSERTED.TestResultId
+                                     VALUES (@SampleRegisterId, @ServiceId, @TestId, @ResultValue, @ValidationStatus, @CreatedBy, @ValidateBy)";
+
+                    using var common = new SqlCommand(query, _sqlConnection);
+                    common.Parameters.AddWithValue("@TestResultId", resultModal.TestResultId);
+                    common.Parameters.AddWithValue("@SampleRegisterId", resultModal.SampleRegisterId);
+                    common.Parameters.AddWithValue("@ServiceId", resultModal.ServiceId);
+                    common.Parameters.AddWithValue("@TestId", resultModal.TestId);
+                    common.Parameters.AddWithValue("@ResultValue", resultModal.ResultValue);
+                    common.Parameters.AddWithValue("@ValidationStatus", resultModal.ValidationStatus);
+                    common.Parameters.AddWithValue("@CreatedBy", resultModal.CreatedBy ?? (object)DBNull.Value);
+                    common.Parameters.AddWithValue("@ValidateBy", resultModal.ValidateBy ?? (object)DBNull.Value);
+                    //common.Parameters.AddWithValue("@ValidateOn", resultModal.ValidateOn);
+                    //common.Parameters.AddWithValue("@CreatedOn", resultModal.CreatedOn);
+                    common.Parameters.AddWithValue("@IsActive", resultModal.IsActive);
+
+
+                    int insertedId = (int)common.ExecuteScalar();
+
+
+                    // service
+                    string serviceQuery = "SELECT ServiceName FROM service WHERE ServiceId = @ServiceId";
+                    using var serviceCommond = new SqlCommand(serviceQuery, _sqlConnection);
+                    serviceCommond.Parameters.AddWithValue("@ServiceId", resultModal.ServiceId);
+                    string serviceName = (string?)serviceCommond.ExecuteScalar() ?? "";
+
+
+                    // Test
+                    string TestQuery = "SELECT TestName FROM test WHERE TestId = @TestId";
+                    using var testCommond = new SqlCommand(TestQuery, _sqlConnection);
+                    testCommond.Parameters.AddWithValue("@TestId", resultModal.TestId);
+                    string testName = (string?)testCommond.ExecuteScalar() ?? "";
+
+
+                    response.TestResultId = insertedId;
+                    response.SampleRegisterId = resultModal.SampleRegisterId;
+                    response.ServiceId = resultModal.ServiceId;
+                    response.ServiceName = resultModal.ServiceName;
+                    response.TestId = resultModal.TestId;
+                    response.TestName = resultModal.TestName;
+                    response.ResultValue = resultModal.ResultValue;
+                    response.ValidationStatus = resultModal.ValidationStatus;
+                    response.ValidateBy = resultModal.ValidateBy;
+                    response.CreatedBy = resultModal.CreatedBy;
+                    //response.CreatedOn = resultModal.CreatedOn;
+                    //response.ValidateOn = resultModal.ValidateOn;
+                    response.IsActive = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(" fetch data in error accure", ex); 
             }
             finally
             {

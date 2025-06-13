@@ -60,7 +60,7 @@
                 <h5 class="modal-title">Test Result Details</h5>
                 <button type="button" class="btn-close" aria-label="Close" (click)="closeModal()"></button>
             </div>
-            <form [formGroup]="testresultForm">
+            <form [formGroup]="testresultForm" (ngSubmit)="onSubmit()">
                 <!-- Modal Body -->
                 <div class="modal-body">
                     <div class="container mt-3" *ngIf="selectedSample">
@@ -108,8 +108,8 @@
                                                     <td>{{ test.testName }}</td>
                                                     <td>
                                                         <input type="text" class="form-control"
-                                                            [(ngModel)]="test.result"
-                                                            [ngModelOptions]="{standalone: true}"
+                                                            [(ngModel)]="test.resultValue"
+                                                            formControlName="resultValue"
                                                             name="testResult_{{ serviceMapping.serviceId }}_{{ i }}"
                                                             placeholder="Enter Test Result..." style="width: 100%;">
                                                     </td>
@@ -117,9 +117,9 @@
                                                         <div
                                                             class="form-check form-switch d-flex justify-content-center">
                                                             <input class="form-check-input" type="checkbox"
-                                                                [(ngModel)]="test.valid"
-                                                                [ngModelOptions]="{standalone: true}">
-                                                            {{ test.valid ? 'V' : 'N' }}
+                                                                [(ngModel)]="test.validationStatus"
+                                                                formControlName="validationStatus">
+                                                            {{ test.validationStatus ? 'V' : 'N' }}
                                                         </div>
                                                     </td>
                                                 </tr>
