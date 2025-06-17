@@ -1,25 +1,22 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
-import { SliderbarComponent } from '../../component/sliderbar/sliderbar.component';
+import { Component, ElementRef, inject, ViewChild } from '@angular/core';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { TestresultService } from '../../service/TransactionService/testresult/testresult.service';
-import { TestService } from '../../service/MasterService/test/test.service';
-import { testModal } from '../../modal/MasterModel/testModal';
-import { serviceModal } from '../../modal/MasterModel/serviceModal';
-import { Modal } from 'bootstrap';
-import { SampleRegister } from '../../modal/Transaction/sampleRegister';
-import { ToastrService } from 'ngx-toastr';
 import { testresult } from '../../modal/Transaction/testresult';
+import { serviceModal } from '../../modal/MasterModel/serviceModal';
+import { SampleRegister } from '../../modal/Transaction/sampleRegister';
+import { TestresultService } from '../../service/TransactionService/testresult/testresult.service';
+import { ToastrService } from 'ngx-toastr';
+import { SliderbarComponent } from "../../component/sliderbar/sliderbar.component";
 
 @Component({
-  selector: 'app-testresult',
+  selector: 'app-testapproval',
   imports: [CommonModule, SliderbarComponent, RouterModule, FormsModule, ReactiveFormsModule],
-  templateUrl: './testresult.component.html',
-  styleUrl: './testresult.component.css'
+  templateUrl: './testapproval.component.html',
+  styleUrl: './testapproval.component.css'
 })
-export class TestresultComponent implements OnInit {
-  @ViewChild('myModal') modal: ElementRef | undefined;
+export class TestapprovalComponent {
+ @ViewChild('myModal') modal: ElementRef | undefined;
   @ViewChild('autofocus') autofocus: ElementRef | undefined;
   searchCriteria = { id: '', name: '', code: '' }
   testresultForm: FormGroup = new FormGroup({});
@@ -106,6 +103,20 @@ export class TestresultComponent implements OnInit {
   openModal(sampleRegisterId: number, event: Event) {
     event.preventDefault();
     this.selectSample(sampleRegisterId);
+    // this.testresultService.addUpdatedTestResult(this.selectedSample).subscribe({
+    //       next: (res) => {
+    //           this.testresultForm.patchValue({
+    //       testResultId: res.data?.testResultId || 0,
+    //       sampleRegisterId: res.data?.sampleRegisterId || null,
+    //       serviceId: res.data?.serviceId || null,
+    //       testId: res.data?.testId || null,
+    //       resultValue: res.resultValue || '',
+    //       validationStatus: res.validationStatus ? 'V' : 'N',
+    //       createdBy: res.createdBy || '',
+    //       validateBy: res.validateBy || ''
+    //       });
+    //       }
+    //     });
   }
 
   selectSample(sampleRegisterId: number): void {
@@ -119,10 +130,12 @@ export class TestresultComponent implements OnInit {
           tests: this.services.find(s => s.serviceId === service.serviceId)?.test || []
         }));
 
+
         console.log('selectedSample:', this.selectedSample);
         console.log('selectedServices with tests:', this.selectedServices);
       },
-    })
+    });
+      
   }
 
   setFrom() {
@@ -150,28 +163,24 @@ export class TestresultComponent implements OnInit {
   getrowvalue() {
     this.testresultForm.value.sampleRegisterId = this.selectedSample.sampleRegisterId ;
     this.testresultForm.value.serviceId = this.selectedServices.map(service => service.serviceId);
-    this.testresultForm.value.serviceName = this.selectedServices.map(service => service.serviceName);
-    this.testresultForm.value.testName = this.selectedServices.flatMap(service => service.tests.map((test: any) => test.testName));
     this.testresultForm.value.testId = this.selectedServices.flatMap(service => service.tests.map((test: any) => test.testId));
     this.testresultForm.value.resultValue = this.selectedServices.flatMap(service => service.tests.map((test: any) => test.resultValue));
     this.testresultForm.value.validationStatus = this.selectedServices.flatMap(service => service.tests.map((test: any) => test.validationStatus ? 'V' : 'N'));
-    this.testresultForm.value.createdBy = this.selectedServices.flatMap(service => service.tests.map((test: any) => test.createdBy || ''));
-    this.testresultForm.value.validateBy = this.selectedServices.flatMap(service => service.tests.map((test: any) => test.validateBy || ''));
-    this.testresultForm.value.isActive = this.selectedServices.flatMap(service => service.tests.map((test: any) => test.isActive || true));
+    this.testresultForm.value.createdBy = this.selectedServices.flatMap(service => service.tests.map((test: any) => test.createdBy || null));
+    this.testresultForm.value.validateBy = this.selectedServices.flatMap(service => service.tests.map((test: any) => test.validateBy || null));
 
     const formValues = this.testresultForm.value;
     this.selectedSample.sampleRegisterId = formValues.sampleRegisterId || null;
-    this.selectedServices = this.selectedServices.map(service => ({   
+      this.selectedServices = this.selectedServices.map(service => ({   
       serviceId: service.serviceId,
-      serviceName: service,
+      serviceName: service.serviceName,
       tests: service.tests.map((test: any) => ({
         testId: test.testId,
         testName: test.testName,
         resultValue: test.resultValue,
         validationStatus: test.validationStatus ? 'V' : 'N',
-        createdBy: test.createdBy || '',
-        validateBy: test.validateBy || '',
-        isActive : test.isActive || true
+        createdBy: test.createdBy || null,
+        validateBy: test.validateBy || null
       }))
     }));
 
@@ -199,8 +208,22 @@ export class TestresultComponent implements OnInit {
 
     const formValues = this.getrowvalue();
 
+
     this.testresultService.addUpdatedTestResult(formValues).subscribe({
       next: (res) => {
+
+        //  this.testresultForm.patchValue({
+        //   testResultId: res.data?.testResultId || 0,
+        //   sampleRegisterId: res.data?.sampleRegisterId || null,
+        //   serviceId: res.data?.serviceId || null,
+        //   testId: res.data?.testId || null,
+        //   resultValue: res.data?.resultValue || '',
+        //   validationStatus: res.data?.validationStatus || '',
+        //   createdBy: res.data?.createdBy || '',
+        //   validateBy: res.data?.validateBy || ''
+        //   });
+
+
         if (res.success) {
           this.showSuccess(res.message);
           this.closeModal();
@@ -221,3 +244,4 @@ export class TestresultComponent implements OnInit {
     });
   }
 } 
+

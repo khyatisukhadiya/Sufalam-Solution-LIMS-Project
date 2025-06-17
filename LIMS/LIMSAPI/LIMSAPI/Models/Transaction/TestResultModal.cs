@@ -1,4 +1,7 @@
-﻿namespace LIMSAPI.Models.Transaction
+﻿using LIMSAPI.Models.TransactionModal;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+
+namespace LIMSAPI.Models.Transaction
 {
     public class TestResultModal
     {
@@ -22,7 +25,11 @@
 
         public string ? CreatedBy { get; set; }
 
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; }        
 
     }
+
+  
+
+
 }

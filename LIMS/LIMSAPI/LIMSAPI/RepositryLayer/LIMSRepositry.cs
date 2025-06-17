@@ -2454,7 +2454,6 @@ namespace LIMSAPI.RepositryLayer
         }
 
 
-
         // PAYMENT
         public PaymentModal AddUpdatedPayment(PaymentModal paymentModal)
         {
@@ -2733,8 +2732,8 @@ namespace LIMSAPI.RepositryLayer
                                       LEFT JOIN doctor d ON s.DoctorId = d.DoctorId
                                       INNER JOIN payment p ON s.PaymentId = p.PaymentId
                                       WHERE s.SampleRegisterId = @SampleRegisterId;";
-                    
-                                       
+
+
 
                     using var common = new SqlCommand(query, _sqlConnection);
                     common.Parameters.AddWithValue("@SampleRegisterId", sampleRegister.SampleRegisterId);
@@ -2838,7 +2837,7 @@ namespace LIMSAPI.RepositryLayer
                     common.Parameters.AddWithValue("@ChequeDate", sampleRegister.ChequeDate ?? (object)DBNull.Value);
                     common.Parameters.AddWithValue("@TransactionId", sampleRegister.TransactionId ?? (object)DBNull.Value);
                     common.Parameters.AddWithValue("@DoctorId", sampleRegister.DoctorId ?? (object)DBNull.Value);
-                    common.Parameters.AddWithValue("@CreatedBy", sampleRegister.CreatedBy ?? (object)DBNull.Value); 
+                    common.Parameters.AddWithValue("@CreatedBy", sampleRegister.CreatedBy ?? (object)DBNull.Value);
                     common.Parameters.AddWithValue("@PaymentId", sampleRegister.PaymentId);
                     //common.Parameters.AddWithValue("@CreatdeDate", sampleRegister.CreatedDate);
                     common.Parameters.AddWithValue("@IsActive", sampleRegister.IsActive);
@@ -2943,7 +2942,7 @@ namespace LIMSAPI.RepositryLayer
 
                                 object existingId = checkCommand.ExecuteScalar();
 
-                                if (existingId == null )
+                                if (existingId == null)
                                 {
                                     var insertTest = @"INSERT INTO sampleServiceMap (SampleRegisterId, ServiceId) 
                                        VALUES (@SampleRegisterId, @ServiceId)";
@@ -2984,7 +2983,7 @@ namespace LIMSAPI.RepositryLayer
                 //            {
                 //                checkCommand.Parameters.AddWithValue("@SampleRegisterId", sampleRegister.SampleRegisterId);
                 //                checkCommand.Parameters.AddWithValue("@PaymentId", paymentModal.PaymentId);
-                                
+
                 //                object existingId = checkCommand.ExecuteScalar();
 
                 //                if (existingId == null)
@@ -3255,7 +3254,7 @@ namespace LIMSAPI.RepositryLayer
                     FROM sampleServiceMap stm
                     INNER JOIN service s ON stm.ServiceId = s.ServiceId
                     WHERE stm.SampleRegisterId = @SampleRegisterId ";
-                    //AND stm.IsActive = 1";,  stm.IsActive
+                //AND stm.IsActive = 1";,  stm.IsActive
 
                 using (var testCmd = new SqlCommand(testQuery, _sqlConnection))
                 {
@@ -3265,7 +3264,7 @@ namespace LIMSAPI.RepositryLayer
                     {
                         while (reader.Read())
                         {
-                             response.ServiceMapping.Add(new ServiceMapping
+                            response.ServiceMapping.Add(new ServiceMapping
                             {
                                 ServiceId = Convert.ToInt32(reader["ServiceId"]),
                                 ServiceCode = reader["ServiceCode"].ToString(),
@@ -3275,7 +3274,7 @@ namespace LIMSAPI.RepositryLayer
                                 //IsActive = Convert.ToBoolean(reader["IsActive"]),
                                 SampleServiceMapId = Convert.ToInt32(reader["SampleServiceMapId"]),
                                 //CreatedDate = Convert.ToDateTime(reader["CreatedDate"]),
-                             });
+                            });
                         }
                     }
                 }
@@ -3484,8 +3483,9 @@ namespace LIMSAPI.RepositryLayer
         //    return response;
         //}
 
+        // SAMPLE SERVICE MAP ID
         public SampleServiceMap DeleteSampleServiceMapId(int SampleServiceMapId)
-        { 
+        {
             var response = new SampleServiceMap();
             try
             {
@@ -3531,6 +3531,10 @@ namespace LIMSAPI.RepositryLayer
             return response;
         }
 
+
+
+
+        // TEST RESULT
         public TestResultModal AddUpdateTestResult(TestResultModal resultModal)
         {
             var response = new TestResultModal();
@@ -3644,7 +3648,7 @@ namespace LIMSAPI.RepositryLayer
             }
             catch (Exception ex)
             {
-                throw new Exception(" fetch data in error accure", ex); 
+                throw new Exception(" fetch data in error accure", ex);
             }
             finally
             {
@@ -3653,45 +3657,42 @@ namespace LIMSAPI.RepositryLayer
             return response;
         }
 
-        //public List<TestResultModal> GetTestResultByFilter(FilterModel filterModel)
-        //{
-        //    try
-        //    {
-        //        string query = @"testResultDetails 
-        //                    INNER JOIN sampleregister ON testResultDetails.SampleRegisterId = sampleregister.SampleRegisterId
-        //                    INNER JOIN service ON testResultDetails.ServiceId = service.ServiceId
-        //                    INNER JOIN test ON testResultDetails.TestId = test.TestId";
 
+        public TestResultDto AddUpdateTestResults(TestResultDto testResults)
+        {
+            var response = new TestResultDto();
+           
+            try
+            {
+                foreach (var sample in testResults.SampleRegister)
+                {
+                    foreach (var service in sample.Services)
+                    {
+                        foreach (var test in service.Tests)
+                        {
+                            var testResultModal = new TestResultModal
+                            {
+                                SampleRegisterId = sample.SampleRegisterId,
+                                ServiceId = service.ServiceId,
+                                TestId = test.TestId,
+                                ResultValue = test.ResultValue,
+                                ValidationStatus = test.ValidationStatus,
+                                CreatedBy = test.CreatedBy,
+                                ValidateBy = test.ValidateBy,
+                                IsActive = test.IsActive,
+                            };
+                            AddUpdateTestResult(testResultModal);
+                        }
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                throw new Exception("not proper work",ex);
+            }
+            response.SampleRegister = testResults.SampleRegister;
+            return response;
+        }
 
-        //        var testResult = _addFilter.GetFilteredList<TestResultModal>(
-        //          tableName: query,
-        //          nameColumn: "MiddleName",
-        //          idColumn: "SampleRegisterId",
-        //          codeColumn: "sampleregister.PhoneNumber",
-        //          filter: filterModel,
-        //          mapFunc: reader => new TestResultModal
-        //          {
-        //              TestResultId = Convert.ToInt32(reader["TestResultId"]),
-        //              SampleRegisterId = Convert.ToInt32(reader["SampleRegisterId"]),
-        //              ServiceId = Convert.ToInt32(reader["ServiceId"]),
-        //              ServiceName = reader["ServiceName"].ToString(),
-        //              TestId = Convert.ToInt32(reader["TestId"]),
-        //              TestName = reader["TestName"].ToString(),
-        //              ResultValue = reader["ResultValue"].ToString(),
-        //              ValidationStatus = reader["ValidationStatus"].ToString(),
-        //              ValidateBy = reader["ValidateBy"] != DBNull.Value ? reader["ValidateBy"].ToString() : null,
-        //              CreatedBy = reader["CreatedBy"] != DBNull.Value ? reader["CreatedBy"].ToString() : null,
-        //              IsActive = Convert.ToBoolean(reader["IsActive"]),
-        //          },
-        //          selectColumns: "testResultDetails.TestResultId, testResultDetails.SampleRegisterId, testResultDetails.ServiceId, service.ServiceName, testResultDetails.TestId, test.TestName, testResultDetails.ResultValue, testResultDetails.ValidationStatus, testResultDetails.ValidateBy, testResultDetails.CreatedBy, testResultDetails.IsActive",
-        //          isActiveColumn: "testResultDetails.IsActive"
-        //          );
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw new Exception("Error fetching TestResult" + ex.Message);
-        //    }
-        //}
     }
-
- }
+}

@@ -19,14 +19,56 @@ namespace LIMSAPI.Controllers.Transaction
             _sampleSL = sampleSL;
         }
 
-        [HttpPost]
-        public IActionResult AddUpdateTestResult([FromBody]TestResultModal testResult)
-        {
-            if (testResult == null)
-            {
-                return Error("Invalid request payload input");
-            }
+        //[HttpPost]
+        //public IActionResult AddUpdateTestResult([FromBody]TestResultModal testResult)
+        //{
+        //    if (testResult == null)
+        //    {
+        //        return Error("Invalid request payload input");
+        //    }
 
+
+        //    if (!ModelState.IsValid)
+        //    {
+        //        var validationError = ModelState.Values
+        //            .Select(v => v.Errors[0])
+        //            .Select(e => e.ErrorMessage)
+        //            .ToList();
+
+        //        return BadRequest(new { success = false, errors = validationError });
+        //    }
+
+        //    var errors = new List<string>();
+
+
+        //    if (errors.Any())
+        //    {
+        //        return BadRequest(new { Success = false, errors });
+        //    }
+
+        //    try
+        //    {
+        //        bool isUpdate = testResult.TestResultId > 0;
+        //        var result = _sampleSL.AddUpdateTestResult(testResult);
+        //        var message = isUpdate ? "TestResult Update Successfully" : "TestResult Add Successfully.";
+        //        return Success(message, result);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return Error("Failed to save data" + ex.Message, HttpStatusCode.InternalServerError);
+        //    }
+
+        //}
+
+       
+        [HttpPost]
+        public IActionResult AddUpdateTestResult([FromBody]TestResultDto testResults)
+        {
+
+            if (testResults == null && testResults.SampleRegister == null)
+            {
+                return Error("Invalid or missing data.", HttpStatusCode.BadRequest);
+            }
 
             if (!ModelState.IsValid)
             {
@@ -48,31 +90,33 @@ namespace LIMSAPI.Controllers.Transaction
 
             try
             {
-                bool isUpdate = testResult.TestResultId > 0;
-                var result = _sampleSL.AddUpdateTestResult(testResult);
-                var message = isUpdate ? "TestResult Update Successfully" : "TestResult Add Successfully.";
+
+                List<TestResultModal> testResultModals = testResults.SampleRegister.SelectMany(sampleRegister => sampleRegister.Services.SelectMany(service => service.Tests.Select(test => new TestResultModal
+                {
+                    SampleRegisterId = sampleRegister.SampleRegisterId,
+                    ServiceId = service.ServiceId,
+                    ServiceName = service.ServiceName,
+                    TestId = test.TestId,
+                    TestName = test.TestName,
+                    ResultValue = test.ResultValue,
+                    ValidationStatus = test.ValidationStatus,
+                    ValidateBy = test.ValidateBy,
+                    CreatedBy = test.CreatedBy,
+                    IsActive = test.IsActive
+                }))).ToList();
+
+                var result = _sampleSL.AddUpdateTestResults(testResults);
+                var message = "Data updated successfully";
                 return Success(message, result);
             }
             catch (Exception ex)
             {
-                return Error("Failed to save data" + ex.Message, HttpStatusCode.InternalServerError);
+                return Error("Failed to save data: " + ex.Message, HttpStatusCode.InternalServerError);
             }
-
         }
 
-        //[HttpGet]
-        //public IActionResult GetTestResultByFilter([FromQuery]FilterModel filterModel)
-        //{
-        //    try
-        //    {
-        //        var results = _sampleSL.GetTestResultByFilter(filterModel);
-        //        return Success("Test Results retrieved successfully", results);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return Error("Failed to retrieve test results: " + ex.Message, HttpStatusCode.InternalServerError);
-        //    }
-        //}
+
+
 
     }
 }

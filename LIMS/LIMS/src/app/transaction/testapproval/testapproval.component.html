@@ -5,7 +5,7 @@
 
     <!-- Header with Add Button -->
     <div class="d-flex justify-content-between align-items-center pb-3">
-        <h5>Test Result</h5>
+        <h5>Test Approval</h5>
     </div>
 
     <!-- search table -->
@@ -57,7 +57,7 @@
     <div class="modal-dialog modal-dialog-centered" style="max-width: 1050px;">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Test Result Details</h5>
+                <h5 class="modal-title">Test Approval Details</h5>
                 <button type="button" class="btn-close" aria-label="Close" (click)="closeModal()"></button>
             </div>
             <form [formGroup]="testresultForm" (ngSubmit)="onSubmit()">
@@ -83,7 +83,7 @@
                                     selectedSample.branchName }}</span>
                                 <span class="me-3">📱 {{ selectedSample.phoneNumber }}</span>
                                 <span>📆 {{ selectedSample.date }}</span>
-                            </div>
+                            </div>  
                         </div>
 
                         <!-- Test Results -->

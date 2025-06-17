@@ -12,6 +12,7 @@ import { ServiceComponent } from './master/service/service.component';
 import { PaymentComponent } from './finance/payment/payment.component';
 import { SampleRegisterComponent } from './transaction/sample-register/sample-register.component';
 import { TestresultComponent } from './transaction/testresult/testresult.component';
+import { TestapprovalComponent } from './transaction/testapproval/testapproval.component';
 
 export const routes: Routes = [
     {
@@ -65,5 +66,9 @@ export const routes: Routes = [
     {
         path : 'testresult',
         component : TestresultComponent
+    },
+    {
+       path : 'testapproval',
+       component : TestapprovalComponent
     }
 ];
