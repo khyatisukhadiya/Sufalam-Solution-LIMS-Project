@@ -3551,19 +3551,20 @@ namespace LIMSAPI.RepositryLayer
                     }
 
                     string query = @"UPDATE testResultDetails 
-                                     SET SampleRegisterId = @SampleRegisterId, ServiceId = @ServiceId, TestId = @TestId, ResultValue = @ResultValue, ValidationStatus = @ValidationStatus, ValidateBy = @ValidateBy,CreatedBy = @CreatedBy
-                                     WHERE SampleRegisterId = @SampleRegisterId
+                                     SET ResultValue = @ResultValue, ValidationStatus = @ValidationStatus, ValidateBy = @ValidateBy, CreatedBy = @CreatedBy
+                                     WHERE SampleRegisterId = @SampleRegisterId AND ServiceId = @ServiceId AND TestId = @TestId;
 
                                      SELECT t.TestResultId, s.SampleRegisterId, sh.ServiceId, sh.ServiceName, ts.TestId, ts.TestName, t.ResultValue, t.ValidationStatus, t.ValidateBy, t.CreatedBy, t.IsActive
-                                     FROM testResultDetails T
+                                     FROM testResultDetails t
                                      INNER JOIN sampleregister s ON t.SampleRegisterId = s.SampleRegisterId
-                                     INNER JOIN service sh ON t.ServiceId = sh.ServiceId
+                                     INNER JOIN service sh ON t.ServiceId = sh.ServiceId 
                                      INNER JOIN test ts ON t.TestId = ts.TestId
-                                     WHERE s.SampleRegisterId = @SampleRegisterId";
+                                     WHERE t.SampleRegisterId =  @SampleRegisterId AND t.ServiceId = @ServiceId AND t.TestId = @TestId";
+
 
 
                     using var common = new SqlCommand(query, _sqlConnection);
-                    common.Parameters.AddWithValue("@TestResultId", resultModal.TestResultId);
+                    //common.Parameters.AddWithValue("@TestResultId", resultModal.TestResultId);
                     common.Parameters.AddWithValue("@SampleRegisterId", resultModal.SampleRegisterId);
                     common.Parameters.AddWithValue("@ServiceId", resultModal.ServiceId);
                     common.Parameters.AddWithValue("@TestId", resultModal.TestId);
@@ -3605,7 +3606,7 @@ namespace LIMSAPI.RepositryLayer
                                      VALUES (@SampleRegisterId, @ServiceId, @TestId, @ResultValue, @ValidationStatus, @CreatedBy, @ValidateBy)";
 
                     using var common = new SqlCommand(query, _sqlConnection);
-                    common.Parameters.AddWithValue("@TestResultId", resultModal.TestResultId);
+                    //common.Parameters.AddWithValue("@TestResultId", resultModal.TestResultId);
                     common.Parameters.AddWithValue("@SampleRegisterId", resultModal.SampleRegisterId);
                     common.Parameters.AddWithValue("@ServiceId", resultModal.ServiceId);
                     common.Parameters.AddWithValue("@TestId", resultModal.TestId);

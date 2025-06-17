@@ -135,8 +135,8 @@ export class TestresultComponent implements OnInit {
       validationStatus: ['', Validators.required],
       createdBy: ['', Validators.required],
       validateBy: ['', Validators.required],
+      isActive: [true, Validators.required]
     });
-
   }
 
   showSuccess(message: string) {
@@ -148,44 +148,40 @@ export class TestresultComponent implements OnInit {
   }
 
   getrowvalue() {
-    this.testresultForm.value.sampleRegisterId = this.selectedSample.sampleRegisterId ;
-    this.testresultForm.value.serviceId = this.selectedServices.map(service => service.serviceId);
-    this.testresultForm.value.serviceName = this.selectedServices.map(service => service.serviceName);
-    this.testresultForm.value.testName = this.selectedServices.flatMap(service => service.tests.map((test: any) => test.testName));
-    this.testresultForm.value.testId = this.selectedServices.flatMap(service => service.tests.map((test: any) => test.testId));
-    this.testresultForm.value.resultValue = this.selectedServices.flatMap(service => service.tests.map((test: any) => test.resultValue));
-    this.testresultForm.value.validationStatus = this.selectedServices.flatMap(service => service.tests.map((test: any) => test.validationStatus ? 'V' : 'N'));
-    this.testresultForm.value.createdBy = this.selectedServices.flatMap(service => service.tests.map((test: any) => test.createdBy || ''));
-    this.testresultForm.value.validateBy = this.selectedServices.flatMap(service => service.tests.map((test: any) => test.validateBy || ''));
-    this.testresultForm.value.isActive = this.selectedServices.flatMap(service => service.tests.map((test: any) => test.isActive || true));
-
-    const formValues = this.testresultForm.value;
-    this.selectedSample.sampleRegisterId = formValues.sampleRegisterId || null;
-    this.selectedServices = this.selectedServices.map(service => ({   
+    // Prepare nested structure for submission
+    const services = this.selectedServices.map(service => ({
       serviceId: service.serviceId,
-      serviceName: service,
-      tests: service.tests.map((test: any) => ({
+      serviceName: service.serviceName,
+      tests : service.tests.map((test: any) => ({
         testId: test.testId,
         testName: test.testName,
         resultValue: test.resultValue,
         validationStatus: test.validationStatus ? 'V' : 'N',
         createdBy: test.createdBy || '',
         validateBy: test.validateBy || '',
-        isActive : test.isActive || true
+        isActive :  test.isActive || true
       }))
     }));
 
+    const formValues = {
+      sampleregister : [{
+        sampleRegisterId: this.selectedSample?.sampleRegisterId || null,
+         services
+      }]
+    };
+
     console.log('formValues after mapping', formValues);
     console.log("selectedServices after mapping", this.selectedServices); 
-    console.log("selectedSampleRegisterId after mapping", this.selectedSample.sampleRegisterId);
+    console.log("selectedSampleRegisterId after mapping", this.selectedSample?.sampleRegisterId);
     console.log("testresultForm after mapping", this.testresultForm.value);
     console.log("testresultForm raw value", this.testresultForm.getRawValue());
     console.log("testresultForm value", this.testresultForm.value);
-    console.log("testresultForm value sampleRegisterId", this.testresultForm.value.sampleRegisterId);
-    console.log("testresultForm value serviceId", this.testresultForm.value.serviceId);
 
     return formValues;
   }
+
+
+    
 
   onSubmit() {
     this.submitted = true;

@@ -29,7 +29,4 @@ namespace LIMSAPI.Models.Transaction
 
     }
 
-  
-
-
 }

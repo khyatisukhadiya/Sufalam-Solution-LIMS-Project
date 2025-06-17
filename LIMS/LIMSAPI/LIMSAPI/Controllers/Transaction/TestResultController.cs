@@ -65,10 +65,11 @@ namespace LIMSAPI.Controllers.Transaction
         public IActionResult AddUpdateTestResult([FromBody]TestResultDto testResults)
         {
 
-            if (testResults == null && testResults.SampleRegister == null)
-            {
-                return Error("Invalid or missing data.", HttpStatusCode.BadRequest);
-            }
+            //if (testResults == null)
+            //{
+            //    return Error("Invalid or missing data.", HttpStatusCode.BadRequest);
+            //}
+
 
             if (!ModelState.IsValid)
             {
@@ -106,7 +107,7 @@ namespace LIMSAPI.Controllers.Transaction
                 }))).ToList();
 
                 var result = _sampleSL.AddUpdateTestResults(testResults);
-                var message = "Data updated successfully";
+                var message = "Data added successfully";
                 return Success(message, result);
             }
             catch (Exception ex)
