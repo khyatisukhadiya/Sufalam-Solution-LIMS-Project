@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using LIMSAPI.Models;
 using LIMSAPI.Models.Transaction;
 using LIMSAPI.Models.TransactionModal;
 using LIMSAPI.ServiceLayer;
@@ -58,6 +59,20 @@ namespace LIMSAPI.Controllers.Transaction
             }
 
         }
+
+        //[HttpGet]
+        //public IActionResult GetTestResultByFilter([FromQuery]FilterModel filterModel)
+        //{
+        //    try
+        //    {
+        //        var results = _sampleSL.GetTestResultByFilter(filterModel);
+        //        return Success("Test Results retrieved successfully", results);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return Error("Failed to retrieve test results: " + ex.Message, HttpStatusCode.InternalServerError);
+        //    }
+        //}
 
     }
 }

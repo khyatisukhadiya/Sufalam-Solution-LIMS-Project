@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
 import { SliderbarComponent } from '../../component/sliderbar/sliderbar.component';
 import { RouterModule } from '@angular/router';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TestresultService } from '../../service/TransactionService/testresult/testresult.service';
 import { TestService } from '../../service/MasterService/test/test.service';
 import { testModal } from '../../modal/MasterModel/testModal';
@@ -127,7 +127,7 @@ export class TestresultComponent implements OnInit {
 
   setFrom() {
     this.testresultForm = this.fb.group({
-      testResultId : [null],
+      testResultId : [{value : 0, disabled: true}],
       sampleRegisterId: [null, Validators.required],
       serviceId: [null, Validators.required],
       testId: [null, Validators.required],
@@ -139,7 +139,6 @@ export class TestresultComponent implements OnInit {
 
   }
 
-  // Toast messages
   showSuccess(message: string) {
     this.toastr.success(message, 'Success');
   }
@@ -149,43 +148,77 @@ export class TestresultComponent implements OnInit {
   }
 
   onSubmit() {
-
     this.submitted = true;
     this.errorMessage = '';
     this.validationErrors = [];
 
-    
+    if (!this.selectedServices || !Array.isArray(this.selectedServices) || this.selectedServices.length === 0) {
+      this.showError('No services selected.');
+      return;
+    }
+
+    // if (!this.selectedSample.sampleRegisterId || this.selectedSample.sampleRegisterId === ''  || this.selectedSampleRegisterId === null) {
+    //   this.showError('No sample register selected.');
+    //   return;
+    // }
+
     // if (this.testresultForm.invalid) {
     //   return;
     // }
-    const formValues = this.testresultForm.getRawValue();
-    
-    console.log("payload", formValues);
-    console.log("form", this.testresultForm);
 
-    const payload = {
-      testResultId : this.testresultForm.value.sampleRegisterId,
-      sampleRegisterId: formValues.sampleRegisterId,
-      serviceId: formValues.serviceId,
-      serviceName: this.services.find(s => s.serviceId === formValues.serviceId)?.serviceName || '',
-      testId: formValues.testId,
-      testName: this.services.find(s => s.serviceId === s.serviceId)?.test || '',
-      resultValue: formValues.resultValue,
-      validationStatus: formValues.validationStatus,
-      createdBy: formValues.createdBy || null,
-      validateBy: formValues.validateBy || null,
-    }
+    this.testresultForm.value.sampleRegisterId = this.selectedSample.sampleRegisterId ;
+    this.testresultForm.value.serviceId = this.selectedServices.map(service => service.serviceId);
+    this.testresultForm.value.testId = this.selectedServices.flatMap(service => service.tests.map((test: any) => test.testId));
+    this.testresultForm.value.resultValue = this.selectedServices.flatMap(service => service.tests.map((test: any) => test.resultValue));
+    this.testresultForm.value.validationStatus = this.selectedServices.flatMap(service => service.tests.map((test: any) => test.validationStatus ? 'V' : 'N'));
+    this.testresultForm.value.createdBy = this.selectedServices.flatMap(service => service.tests.map((test: any) => test.createdBy || null));
+    this.testresultForm.value.validateBy = this.selectedServices.flatMap(service => service.tests.map((test: any) => test.validateBy || null));
 
-    console.log("form", this.testresultForm);
 
-    this.testresultService.addUpdatedTestResult(payload).subscribe({
+  const formValues = this.testresultForm.value;
+    this.selectedSample.sampleRegisterId = formValues.sampleRegisterId || null;
+    this.selectedServices = this.selectedServices.map(service => ({   
+      serviceId: service.serviceId,
+      serviceName: service.serviceName,
+      tests: service.tests.map((test: any) => ({
+        testId: test.testId,
+        testName: test.testName,
+        resultValue: test.resultValue,
+        validationStatus: test.validationStatus ? 'V' : 'N',
+        createdBy: test.createdBy || null,
+        validateBy: test.validateBy || null
+      }))
+    }));
+
+  console.log('formValues after mapping', formValues);
+    console.log("selectedServices after mapping", this.selectedServices); 
+    console.log("selectedSampleRegisterId after mapping", this.selectedSample.sampleRegisterId);
+    console.log("testresultForm after mapping", this.testresultForm.value);
+    console.log("testresultForm raw value", this.testresultForm.getRawValue());
+    console.log("testresultForm value", this.testresultForm.value);
+    console.log("testresultForm value sampleRegisterId", this.testresultForm.value.sampleRegisterId);
+    console.log("testresultForm value serviceId", this.testresultForm.value.serviceId);
+
+    //  const payload = {
+    //   sampleRegisterId: this.selectedSample.sampleRegisterId,
+    //   serviceId: this.selectedServices.map(service => service.serviceId),
+    //   serviceName: this.selectedServices.map(service => service.serviceName),
+    //   testId: this.selectedServices.flatMap(service => service.tests.map((test: any) => test.testId)),
+    //   testName: this.selectedServices.flatMap(service => service.tests.map((test: any) => test.testName)),
+    //   resultValue: this.selectedServices.flatMap(service => service.tests.map((test: any) => test.resultValue)),
+    //   validationStatus: this.selectedServices.flatMap(service => service.tests.map((test: any) => test.validationStatus ? 'V' : 'N')),
+    //   createdBy: this.selectedServices.flatMap(service => service.tests.map((test: any) => test.createdBy || null)),
+    //   validateBy: this.selectedServices.flatMap(service => service.tests.map((test: any) => test.validateBy || null)),
+    // };
+    // console.log("payload", payload);
+
+
+    this.testresultService.addUpdatedTestResult(formValues).subscribe({
       next: (res) => {
         if (res.success) {
           this.showSuccess(res.message);
           this.closeModal();
           this.searchClick = true;
-          // this.getSampleRegister();
-          // this.isEditModal = false;
         } else if (res.errors) {
           this.validationErrors = res.errors;
         }
@@ -200,5 +233,4 @@ export class TestresultComponent implements OnInit {
         }
       }
     });
-  }
-}
+}}

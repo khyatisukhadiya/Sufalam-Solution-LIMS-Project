@@ -20,11 +20,7 @@
 
         public string? ValidateBy { get; set; }
 
-        //public DateTime ValidateOn { get; set; }
-
         public string ? CreatedBy { get; set; }
-
-        //public DateTime CreatedOn { get; set; }
 
         public bool IsActive { get; set; }
 

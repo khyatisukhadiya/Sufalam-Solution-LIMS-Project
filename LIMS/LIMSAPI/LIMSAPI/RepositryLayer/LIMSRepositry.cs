@@ -3557,6 +3557,7 @@ namespace LIMSAPI.RepositryLayer
                                      INNER JOIN test ts ON t.TestId = ts.TestId
                                      WHERE s.SampleRegisterId = @SampleRegisterId";
 
+
                     using var common = new SqlCommand(query, _sqlConnection);
                     common.Parameters.AddWithValue("@TestResultId", resultModal.TestResultId);
                     common.Parameters.AddWithValue("@SampleRegisterId", resultModal.SampleRegisterId);
@@ -3565,9 +3566,7 @@ namespace LIMSAPI.RepositryLayer
                     common.Parameters.AddWithValue("@ResultValue", resultModal.ResultValue);
                     common.Parameters.AddWithValue("@ValidationStatus", resultModal.ValidationStatus);
                     common.Parameters.AddWithValue("@ValidateBy", resultModal.ValidateBy ?? (object)DBNull.Value);
-                    //common.Parameters.AddWithValue("@ValidateOn", resultModal.ValidateOn);
                     common.Parameters.AddWithValue("@CreatedBy", resultModal.CreatedBy ?? (object)DBNull.Value);
-                    //common.Parameters.AddWithValue("@CreatedOn", resultModal.CreatedOn);
 
 
                     using var reader = common.ExecuteReader();
@@ -3582,9 +3581,7 @@ namespace LIMSAPI.RepositryLayer
                         response.ResultValue = reader["ResultValue"].ToString();
                         response.ValidationStatus = reader["ValidationStatus"].ToString();
                         response.CreatedBy = reader["CreatedBy"].ToString();
-                        //response.CreatedOn = Convert.ToDateTime(reader["CreatedOn"]);
                         response.ValidateBy = reader["ValidateBy"].ToString();
-                        //response.ValidateOn = Convert.ToDateTime(reader["Validateon"]);
                         response.IsActive = Convert.ToBoolean(reader["IsActive"]);
                     }
                     else
@@ -3612,8 +3609,6 @@ namespace LIMSAPI.RepositryLayer
                     common.Parameters.AddWithValue("@ValidationStatus", resultModal.ValidationStatus);
                     common.Parameters.AddWithValue("@CreatedBy", resultModal.CreatedBy ?? (object)DBNull.Value);
                     common.Parameters.AddWithValue("@ValidateBy", resultModal.ValidateBy ?? (object)DBNull.Value);
-                    //common.Parameters.AddWithValue("@ValidateOn", resultModal.ValidateOn);
-                    //common.Parameters.AddWithValue("@CreatedOn", resultModal.CreatedOn);
                     common.Parameters.AddWithValue("@IsActive", resultModal.IsActive);
 
 
@@ -3644,8 +3639,6 @@ namespace LIMSAPI.RepositryLayer
                     response.ValidationStatus = resultModal.ValidationStatus;
                     response.ValidateBy = resultModal.ValidateBy;
                     response.CreatedBy = resultModal.CreatedBy;
-                    //response.CreatedOn = resultModal.CreatedOn;
-                    //response.ValidateOn = resultModal.ValidateOn;
                     response.IsActive = true;
                 }
             }
@@ -3659,6 +3652,46 @@ namespace LIMSAPI.RepositryLayer
             }
             return response;
         }
+
+        //public List<TestResultModal> GetTestResultByFilter(FilterModel filterModel)
+        //{
+        //    try
+        //    {
+        //        string query = @"testResultDetails 
+        //                    INNER JOIN sampleregister ON testResultDetails.SampleRegisterId = sampleregister.SampleRegisterId
+        //                    INNER JOIN service ON testResultDetails.ServiceId = service.ServiceId
+        //                    INNER JOIN test ON testResultDetails.TestId = test.TestId";
+
+
+        //        var testResult = _addFilter.GetFilteredList<TestResultModal>(
+        //          tableName: query,
+        //          nameColumn: "MiddleName",
+        //          idColumn: "SampleRegisterId",
+        //          codeColumn: "sampleregister.PhoneNumber",
+        //          filter: filterModel,
+        //          mapFunc: reader => new TestResultModal
+        //          {
+        //              TestResultId = Convert.ToInt32(reader["TestResultId"]),
+        //              SampleRegisterId = Convert.ToInt32(reader["SampleRegisterId"]),
+        //              ServiceId = Convert.ToInt32(reader["ServiceId"]),
+        //              ServiceName = reader["ServiceName"].ToString(),
+        //              TestId = Convert.ToInt32(reader["TestId"]),
+        //              TestName = reader["TestName"].ToString(),
+        //              ResultValue = reader["ResultValue"].ToString(),
+        //              ValidationStatus = reader["ValidationStatus"].ToString(),
+        //              ValidateBy = reader["ValidateBy"] != DBNull.Value ? reader["ValidateBy"].ToString() : null,
+        //              CreatedBy = reader["CreatedBy"] != DBNull.Value ? reader["CreatedBy"].ToString() : null,
+        //              IsActive = Convert.ToBoolean(reader["IsActive"]),
+        //          },
+        //          selectColumns: "testResultDetails.TestResultId, testResultDetails.SampleRegisterId, testResultDetails.ServiceId, service.ServiceName, testResultDetails.TestId, test.TestName, testResultDetails.ResultValue, testResultDetails.ValidationStatus, testResultDetails.ValidateBy, testResultDetails.CreatedBy, testResultDetails.IsActive",
+        //          isActiveColumn: "testResultDetails.IsActive"
+        //          );
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new Exception("Error fetching TestResult" + ex.Message);
+        //    }
+        //}
     }
 
  }

@@ -358,5 +358,10 @@ namespace LIMSAPI.ServiceLayer
         {
             return _lIMSRepositryInterface.AddUpdateTestResult(resultModal);
         }
+
+        //public List<TestResultModal> GetTestResultByFilter(FilterModel filterModel)
+        //{
+        //    return _lIMSRepositryInterface.GetTestResultByFilter(filterModel);
+        //}
     }
 }

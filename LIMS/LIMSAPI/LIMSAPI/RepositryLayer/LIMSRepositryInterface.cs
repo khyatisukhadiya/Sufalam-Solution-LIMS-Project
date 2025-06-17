@@ -177,5 +177,9 @@ namespace LIMSAPI.RepositryLayer
 
         // TEST RESULT
         TestResultModal AddUpdateTestResult(TestResultModal resultModal);
+
+        //List<TestResultModal> GetTestResultByFilter(FilterModel filterModel);
+
+
     }
 }
