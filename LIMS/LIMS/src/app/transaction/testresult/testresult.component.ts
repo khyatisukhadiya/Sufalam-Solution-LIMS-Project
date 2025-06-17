@@ -54,8 +54,6 @@ export class TestresultComponent implements OnInit {
     this.testresultService.getServices().subscribe({
       next: (res) => {
         this.services = res || [];
-        // this.selectedTest = this.services.filter(service => (service.test || []).map((test: any) => test.testName)) || [];
-        // console.log('test',this.selectedTest);
       },
       error: (err) => {
         console.error('Error loading services:', err);
@@ -66,8 +64,6 @@ export class TestresultComponent implements OnInit {
 
 
   closeModal() {
-    // (document.activeElement as HTMLElement)?.blur();
-
     if (this.modalInstance) {
       this.modalInstance.hide();
     }
@@ -75,7 +71,22 @@ export class TestresultComponent implements OnInit {
     if (this.modal != null) {
       this.modal.nativeElement.style.display = "none";
     }
+
     this.submitted = false;
+
+    this.testresultForm.reset(
+      {
+        testResultId: 0,
+        sampleRegisterId: null,
+        serviceId: null,
+        testId: null,
+        resultValue: '',
+        validationStatus: '',
+        createdBy: '',
+        validateBy: '',
+        isActive: true
+        }
+    );
   }
 
   getSampleregister() {
@@ -104,15 +115,31 @@ export class TestresultComponent implements OnInit {
   }
 
   openModal(sampleRegisterId: number, event: Event) {
+     const modal = document.getElementById('myModal');
+    
+    if (modal != null) {
+      modal.style.display = "block";
+      // modal.addEventListener('shown.bs.modal', () => {
+      //   this.autofocus?.nativeElement.focus();
+      // }, { once: true });
+    }
+
+      if (this.modal?.nativeElement) {
+      this.modalInstance = new Modal(this.modal.nativeElement, {
+        backdrop: 'static',
+        keyboard: false
+      });
+      this.modalInstance.show();
+    }
+
     event.preventDefault();
     this.selectSample(sampleRegisterId);
   }
 
   selectSample(sampleRegisterId: number): void {
     this.testresultService.getSampleRegisterById(sampleRegisterId).subscribe({
-      next: async (res) => {
+      next: (res) => {
         console.log('API response:', res);
-        console.log('Response keys:', Object.keys(res));
         this.selectedSample = res || null;
         this.selectedServices = (this.selectedSample?.serviceMapping || []).map((service: any) => ({
           ...service,
@@ -148,7 +175,7 @@ export class TestresultComponent implements OnInit {
   }
 
   getrowvalue() {
-    // Prepare nested structure for submission
+    
     const services = this.selectedServices.map(service => ({
       serviceId: service.serviceId,
       serviceName: service.serviceName,
@@ -179,8 +206,6 @@ export class TestresultComponent implements OnInit {
 
     return formValues;
   }
-
-
     
 
   onSubmit() {
@@ -188,10 +213,18 @@ export class TestresultComponent implements OnInit {
     this.errorMessage = '';
     this.validationErrors = [];
 
+
+
     if (!this.selectedServices || !Array.isArray(this.selectedServices) || this.selectedServices.length === 0) {
       this.showError('No services selected.');
       return;
     }
+
+    if (!this.selectedSample || !this.selectedSample.sampleRegisterId) {
+      this.showError('No sample selected.');
+      return;
+    }
+
 
     const formValues = this.getrowvalue();
 

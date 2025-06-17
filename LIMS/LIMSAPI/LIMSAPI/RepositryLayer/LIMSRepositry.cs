@@ -3542,110 +3542,129 @@ namespace LIMSAPI.RepositryLayer
             try
             {
 
-                if (resultModal.TestResultId > 0)
+                if (_sqlConnection.State != ConnectionState.Open)
                 {
+                    _sqlConnection.Open();
+                }
 
-                    if (_sqlConnection.State != ConnectionState.Open)
+                string chechQuery = @"SELECT COUNT(1) FROM testResultDetails 
+                               WHERE SampleRegisterId = @SampleRegisterId AND ServiceId = @ServiceId AND TestId = @TestId";
+
+
+                using (var checkCmd = new SqlCommand(chechQuery, _sqlConnection))
+                {
+                    checkCmd.Parameters.AddWithValue("@SampleRegisterId", resultModal.SampleRegisterId);
+                    checkCmd.Parameters.AddWithValue("@ServiceId", resultModal.ServiceId);
+                    checkCmd.Parameters.AddWithValue("@TestId", resultModal.TestId);
+
+                    int exists = (int)checkCmd.ExecuteScalar();
+
+                    if (exists > 0)
                     {
-                        _sqlConnection.Open();
-                    }
 
-                    string query = @"UPDATE testResultDetails 
-                                     SET ResultValue = @ResultValue, ValidationStatus = @ValidationStatus, ValidateBy = @ValidateBy, CreatedBy = @CreatedBy
-                                     WHERE SampleRegisterId = @SampleRegisterId AND ServiceId = @ServiceId AND TestId = @TestId;
+                        if (_sqlConnection.State != ConnectionState.Open)
+                        {
+                            _sqlConnection.Open();
+                        }
 
-                                     SELECT t.TestResultId, s.SampleRegisterId, sh.ServiceId, sh.ServiceName, ts.TestId, ts.TestName, t.ResultValue, t.ValidationStatus, t.ValidateBy, t.CreatedBy, t.IsActive
-                                     FROM testResultDetails t
-                                     INNER JOIN sampleregister s ON t.SampleRegisterId = s.SampleRegisterId
-                                     INNER JOIN service sh ON t.ServiceId = sh.ServiceId 
-                                     INNER JOIN test ts ON t.TestId = ts.TestId
-                                     WHERE t.SampleRegisterId =  @SampleRegisterId AND t.ServiceId = @ServiceId AND t.TestId = @TestId";
+                        string query = @"UPDATE testResultDetails 
+                                         SET ResultValue = @ResultValue, ValidationStatus = @ValidationStatus, ValidateBy = @ValidateBy, CreatedBy = @CreatedBy
+                                         WHERE SampleRegisterId = @SampleRegisterId AND ServiceId = @ServiceId AND TestId = @TestId;
 
-
-
-                    using var common = new SqlCommand(query, _sqlConnection);
-                    //common.Parameters.AddWithValue("@TestResultId", resultModal.TestResultId);
-                    common.Parameters.AddWithValue("@SampleRegisterId", resultModal.SampleRegisterId);
-                    common.Parameters.AddWithValue("@ServiceId", resultModal.ServiceId);
-                    common.Parameters.AddWithValue("@TestId", resultModal.TestId);
-                    common.Parameters.AddWithValue("@ResultValue", resultModal.ResultValue);
-                    common.Parameters.AddWithValue("@ValidationStatus", resultModal.ValidationStatus);
-                    common.Parameters.AddWithValue("@ValidateBy", resultModal.ValidateBy ?? (object)DBNull.Value);
-                    common.Parameters.AddWithValue("@CreatedBy", resultModal.CreatedBy ?? (object)DBNull.Value);
+                                         SELECT t.TestResultId, s.SampleRegisterId, sh.ServiceId, sh.ServiceName, ts.TestId, ts.TestName, t.ResultValue, t.ValidationStatus, t.ValidateBy, t.CreatedBy, t.IsActive
+                                         FROM testResultDetails t
+                                         INNER JOIN sampleregister s ON t.SampleRegisterId = s.SampleRegisterId
+                                         INNER JOIN service sh ON t.ServiceId = sh.ServiceId 
+                                         INNER JOIN test ts ON t.TestId = ts.TestId
+                                         WHERE t.SampleRegisterId =  @SampleRegisterId AND t.ServiceId = @ServiceId AND t.TestId = @TestId";
 
 
-                    using var reader = common.ExecuteReader();
-                    if (reader.Read())
-                    {
-                        response.TestResultId = Convert.ToInt32(reader["TestResultId"]);
-                        response.SampleRegisterId = Convert.ToInt32(reader["SampleRegisterId"]);
-                        response.ServiceId = Convert.ToInt32(reader["ServiceId"]);
-                        response.ServiceName = reader["ServiceName"].ToString();
-                        response.TestId = Convert.ToInt32(reader["TestId"]);
-                        response.TestName = reader["TestName"].ToString();
-                        response.ResultValue = reader["ResultValue"].ToString();
-                        response.ValidationStatus = reader["ValidationStatus"].ToString();
-                        response.CreatedBy = reader["CreatedBy"].ToString();
-                        response.ValidateBy = reader["ValidateBy"].ToString();
-                        response.IsActive = Convert.ToBoolean(reader["IsActive"]);
+
+                        using var common = new SqlCommand(query, _sqlConnection);
+                        //common.Parameters.AddWithValue("@TestResultId", resultModal.TestResultId);
+                        common.Parameters.AddWithValue("@SampleRegisterId", resultModal.SampleRegisterId);
+                        common.Parameters.AddWithValue("@ServiceId", resultModal.ServiceId);
+                        common.Parameters.AddWithValue("@TestId", resultModal.TestId);
+                        common.Parameters.AddWithValue("@ResultValue", resultModal.ResultValue);
+                        common.Parameters.AddWithValue("@ValidationStatus", resultModal.ValidationStatus);
+                        common.Parameters.AddWithValue("@ValidateBy", resultModal.ValidateBy ?? (object)DBNull.Value);
+                        common.Parameters.AddWithValue("@CreatedBy", resultModal.CreatedBy ?? (object)DBNull.Value);
+
+
+                        using var reader = common.ExecuteReader();
+                        if (reader.Read())
+                        {
+                            response.TestResultId = Convert.ToInt32(reader["TestResultId"]);
+                            response.SampleRegisterId = Convert.ToInt32(reader["SampleRegisterId"]);
+                            response.ServiceId = Convert.ToInt32(reader["ServiceId"]);
+                            response.ServiceName = reader["ServiceName"].ToString();
+                            response.TestId = Convert.ToInt32(reader["TestId"]);
+                            response.TestName = reader["TestName"].ToString();
+                            response.ResultValue = reader["ResultValue"].ToString();
+                            response.ValidationStatus = reader["ValidationStatus"].ToString();
+                            response.CreatedBy = reader["CreatedBy"].ToString();
+                            response.ValidateBy = reader["ValidateBy"].ToString();
+                            response.IsActive = Convert.ToBoolean(reader["IsActive"]);
+                        }
+                        else
+                        {
+                            throw new Exception("Update Successfully but no fetch data properly");
+                        }
                     }
                     else
                     {
-                        throw new Exception("Update Successfully but no fetch data properly");
+
+                        if (_sqlConnection.State != ConnectionState.Open)
+                        {
+                            _sqlConnection.Open();
+                        }
+
+                        string query = @"INSERT INTO testResultDetails(SampleRegisterId, ServiceId, TestId, ResultValue, ValidationStatus, CreatedBy, ValidateBy) OUTPUT INSERTED.TestResultId
+                                         VALUES (@SampleRegisterId, @ServiceId, @TestId, @ResultValue, @ValidationStatus, @CreatedBy, @ValidateBy)";
+
+                        using var common = new SqlCommand(query, _sqlConnection);
+                        //common.Parameters.AddWithValue("@TestResultId", resultModal.TestResultId);
+                        common.Parameters.AddWithValue("@SampleRegisterId", resultModal.SampleRegisterId);
+                        common.Parameters.AddWithValue("@ServiceId", resultModal.ServiceId);
+                        common.Parameters.AddWithValue("@TestId", resultModal.TestId);
+                        common.Parameters.AddWithValue("@ResultValue", resultModal.ResultValue);
+                        common.Parameters.AddWithValue("@ValidationStatus", resultModal.ValidationStatus);
+                        common.Parameters.AddWithValue("@CreatedBy", resultModal.CreatedBy ?? (object)DBNull.Value);
+                        common.Parameters.AddWithValue("@ValidateBy", resultModal.ValidateBy ?? (object)DBNull.Value);
+                        common.Parameters.AddWithValue("@IsActive", resultModal.IsActive);
+
+
+                        int insertedId = (int)common.ExecuteScalar();
+
+
+                        // service
+                        string serviceQuery = "SELECT ServiceName FROM service WHERE ServiceId = @ServiceId";
+                        using var serviceCommond = new SqlCommand(serviceQuery, _sqlConnection);
+                        serviceCommond.Parameters.AddWithValue("@ServiceId", resultModal.ServiceId);
+                        string serviceName = (string?)serviceCommond.ExecuteScalar() ?? "";
+
+
+                        // Test
+                        string TestQuery = "SELECT TestName FROM test WHERE TestId = @TestId";
+                        using var testCommond = new SqlCommand(TestQuery, _sqlConnection);
+                        testCommond.Parameters.AddWithValue("@TestId", resultModal.TestId);
+                        string testName = (string?)testCommond.ExecuteScalar() ?? "";
+
+
+                        response.TestResultId = insertedId;
+                        response.SampleRegisterId = resultModal.SampleRegisterId;
+                        response.ServiceId = resultModal.ServiceId;
+                        response.ServiceName = resultModal.ServiceName;
+                        response.TestId = resultModal.TestId;
+                        response.TestName = resultModal.TestName;
+                        response.ResultValue = resultModal.ResultValue;
+                        response.ValidationStatus = resultModal.ValidationStatus;
+                        response.ValidateBy = resultModal.ValidateBy;
+                        response.CreatedBy = resultModal.CreatedBy;
+                        response.IsActive = true;
                     }
                 }
-                else
-                {
 
-                    if (_sqlConnection.State != ConnectionState.Open)
-                    {
-                        _sqlConnection.Open();
-                    }
-
-                    string query = @"INSERT INTO testResultDetails(SampleRegisterId, ServiceId, TestId, ResultValue, ValidationStatus, CreatedBy, ValidateBy) OUTPUT INSERTED.TestResultId
-                                     VALUES (@SampleRegisterId, @ServiceId, @TestId, @ResultValue, @ValidationStatus, @CreatedBy, @ValidateBy)";
-
-                    using var common = new SqlCommand(query, _sqlConnection);
-                    //common.Parameters.AddWithValue("@TestResultId", resultModal.TestResultId);
-                    common.Parameters.AddWithValue("@SampleRegisterId", resultModal.SampleRegisterId);
-                    common.Parameters.AddWithValue("@ServiceId", resultModal.ServiceId);
-                    common.Parameters.AddWithValue("@TestId", resultModal.TestId);
-                    common.Parameters.AddWithValue("@ResultValue", resultModal.ResultValue);
-                    common.Parameters.AddWithValue("@ValidationStatus", resultModal.ValidationStatus);
-                    common.Parameters.AddWithValue("@CreatedBy", resultModal.CreatedBy ?? (object)DBNull.Value);
-                    common.Parameters.AddWithValue("@ValidateBy", resultModal.ValidateBy ?? (object)DBNull.Value);
-                    common.Parameters.AddWithValue("@IsActive", resultModal.IsActive);
-
-
-                    int insertedId = (int)common.ExecuteScalar();
-
-
-                    // service
-                    string serviceQuery = "SELECT ServiceName FROM service WHERE ServiceId = @ServiceId";
-                    using var serviceCommond = new SqlCommand(serviceQuery, _sqlConnection);
-                    serviceCommond.Parameters.AddWithValue("@ServiceId", resultModal.ServiceId);
-                    string serviceName = (string?)serviceCommond.ExecuteScalar() ?? "";
-
-
-                    // Test
-                    string TestQuery = "SELECT TestName FROM test WHERE TestId = @TestId";
-                    using var testCommond = new SqlCommand(TestQuery, _sqlConnection);
-                    testCommond.Parameters.AddWithValue("@TestId", resultModal.TestId);
-                    string testName = (string?)testCommond.ExecuteScalar() ?? "";
-
-
-                    response.TestResultId = insertedId;
-                    response.SampleRegisterId = resultModal.SampleRegisterId;
-                    response.ServiceId = resultModal.ServiceId;
-                    response.ServiceName = resultModal.ServiceName;
-                    response.TestId = resultModal.TestId;
-                    response.TestName = resultModal.TestName;
-                    response.ResultValue = resultModal.ResultValue;
-                    response.ValidationStatus = resultModal.ValidationStatus;
-                    response.ValidateBy = resultModal.ValidateBy;
-                    response.CreatedBy = resultModal.CreatedBy;
-                    response.IsActive = true;
-                }
             }
             catch (Exception ex)
             {
@@ -3662,7 +3681,7 @@ namespace LIMSAPI.RepositryLayer
         public TestResultDto AddUpdateTestResults(TestResultDto testResults)
         {
             var response = new TestResultDto();
-           
+
             try
             {
                 foreach (var sample in testResults.SampleRegister)
@@ -3687,13 +3706,193 @@ namespace LIMSAPI.RepositryLayer
                     }
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                throw new Exception("not proper work",ex);
+                throw new Exception("not proper work", ex);
             }
             response.SampleRegister = testResults.SampleRegister;
             return response;
         }
+
+        public TestResultDto GetTestResultById(int SampleRegisterId)
+        {
+            var results = new TestResultDto();
+
+            try
+            {
+                if (_sqlConnection.State != ConnectionState.Open)
+                {
+                    _sqlConnection.Open();
+                }
+
+                string query = @"SELECT t.TestResultId, t.SampleRegisterId, t.ServiceId, t.TestId, t.ResultValue, t.ValidationStatus, t.CreatedBy, t.ValidateBy, t.IsActive,
+                                s.ServiceName, ts.TestName
+                                 FROM testResultDetails t
+                                 INNER JOIN service s ON t.ServiceId = s.ServiceId
+                                 INNER JOIN test ts ON t.TestId = ts.TestId
+                                 WHERE t.SampleRegisterId = @SampleRegisterId";
+
+                using (var command = new SqlCommand(query, _sqlConnection))
+                {
+                    command.Parameters.AddWithValue("@SampleRegisterId", SampleRegisterId);
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+
+                            if (results.SampleRegister == null)
+                            {
+                                results.SampleRegister = new List<SampleRegisterDto>();
+                            }
+
+                            if (results.SampleRegister.Count == 0 || results.SampleRegister.Last().SampleRegisterId != SampleRegisterId)
+                            {
+                                results.SampleRegister.Add(new SampleRegisterDto
+                                {
+                                    SampleRegisterId = SampleRegisterId,
+                                    Services = new List<ServiceDto>()
+                                });
+                            }
+
+                            var lastSample = results.SampleRegister.Last();
+
+                            if (lastSample.Services == null)
+                            {
+                                lastSample.Services = new List<ServiceDto>();
+                            }
+
+                            if (lastSample.Services.Count == 0 || lastSample.Services.Last().ServiceId != Convert.ToInt32(reader["ServiceId"]))
+                            {
+                                lastSample.Services.Add(new ServiceDto
+                                {
+                                    ServiceId = Convert.ToInt32(reader["ServiceId"]),
+                                    ServiceName = reader["ServiceName"].ToString(),
+                                    Tests = new List<TestDto>()
+                                });
+                            }
+
+                            var lastService = lastSample.Services.Last();
+                            lastService.Tests.Add(new TestDto
+                            {
+                                TestId = Convert.ToInt32(reader["TestId"]),
+                                TestName = reader["TestName"].ToString(),
+                                ResultValue = reader["ResultValue"].ToString(),
+                                ValidationStatus = reader["ValidationStatus"].ToString(),
+                                CreatedBy = reader["CreatedBy"].ToString(),
+                                ValidateBy = reader["ValidateBy"].ToString(),
+                                IsActive = Convert.ToBoolean(reader["IsActive"])
+                            });
+
+
+                            //results.Add(new TestResultModal
+                            //{
+                            //    TestResultId = Convert.ToInt32(reader["TestResultId"]),
+                            //    SampleRegisterId = Convert.ToInt32(reader["SampleRegisterId"]),
+                            //    ServiceId = Convert.ToInt32(reader["ServiceId"]),
+                            //    ServiceName = reader["ServiceName"].ToString(),
+                            //    TestId = Convert.ToInt32(reader["TestId"]),
+                            //    TestName = reader["TestName"].ToString(),
+                            //    ResultValue = reader["ResultValue"].ToString(),
+                            //    ValidationStatus = reader["ValidationStatus"].ToString(),
+                            //    CreatedBy = reader["CreatedBy"].ToString(),
+                            //    ValidateBy = reader["ValidateBy"].ToString(),
+                            //    IsActive = Convert.ToBoolean(reader["IsActive"])
+                            //});
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error fetching test results by SampleRegisterId: " + ex.Message, ex);
+            }
+            finally
+            {
+                _sqlConnection.Close();
+            }
+            return results;
+        }
+
+
+        //public TestResultDto GetTestResultById(int sampleRegisterId)
+        //{
+        //    var resultDto = new TestResultDto
+        //    {
+        //        SampleRegister = new List<SampleRegisterDto>()
+        //    };
+
+        //    try
+        //    {
+        //        if (_sqlConnection.State != ConnectionState.Open)
+        //            _sqlConnection.Open();
+
+
+        //        string query = @"SELECT t.TestResultId, t.SampleRegisterId, t.ServiceId, t.TestId, t.ResultValue, t.ValidationStatus, t.CreatedBy, t.ValidateBy, t.IsActive,
+        //                        s.ServiceName, ts.TestName
+        //                         FROM testResultDetails t
+        //                         INNER JOIN service s ON t.ServiceId = s.ServiceId
+        //                         INNER JOIN test ts ON t.TestId = ts.TestId
+        //                         WHERE t.SampleRegisterId = @SampleRegisterId";
+
+        //        using (var command = new SqlCommand(query, _sqlConnection))
+        //        {
+        //            command.Parameters.AddWithValue("@SampleRegisterId", sampleRegisterId);
+
+        //            using (var reader = command.ExecuteReader())
+        //            {
+                       
+        //                var serviceDict = new Dictionary<int, ServiceDto>();
+        //                var sampleRegisterDto = new SampleRegisterDto
+        //                {
+        //                    SampleRegisterId = sampleRegisterId,
+        //                    Services = new List<ServiceDto>()
+        //                };
+
+        //                while (reader.Read())
+        //                {
+        //                    int serviceId = Convert.ToInt32(reader["ServiceId"]);
+        //                    ServiceDto service;
+        //                    if (!serviceDict.TryGetValue(serviceId, out service))
+        //                    {
+        //                        service = new ServiceDto
+        //                        {
+        //                            ServiceId = serviceId,
+        //                            ServiceName = reader["ServiceName"].ToString(),
+        //                            Tests = new List<TestDto>()
+        //                        };
+        //                        serviceDict[serviceId] = service;
+        //                        sampleRegisterDto.Services.Add(service);
+        //                    }
+
+        //                    service.Tests.Add(new TestDto
+        //                    {
+        //                        TestId = Convert.ToInt32(reader["TestId"]),
+        //                        TestName = reader["TestName"].ToString(),
+        //                        ResultValue = reader["ResultValue"].ToString(),
+        //                        ValidationStatus = reader["ValidationStatus"].ToString(),
+        //                        CreatedBy = reader["CreatedBy"].ToString(),
+        //                        ValidateBy = reader["ValidateBy"].ToString(),
+        //                        IsActive = Convert.ToBoolean(reader["IsActive"])
+        //                    });
+        //                }
+
+        //                if (sampleRegisterDto.Services.Count > 0)
+        //                    resultDto.SampleRegister.Add(sampleRegisterDto);
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new Exception("Error fetching test results by SampleRegisterId: " + ex.Message, ex);
+        //    }
+        //    finally
+        //    {
+        //        _sqlConnection.Close();
+        //    }
+
+        //    return resultDto;
+        //}
 
     }
 }

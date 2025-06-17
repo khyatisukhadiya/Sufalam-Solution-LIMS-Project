@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, inject, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { testresult } from '../../modal/Transaction/testresult';
@@ -8,6 +8,8 @@ import { SampleRegister } from '../../modal/Transaction/sampleRegister';
 import { TestresultService } from '../../service/TransactionService/testresult/testresult.service';
 import { ToastrService } from 'ngx-toastr';
 import { SliderbarComponent } from "../../component/sliderbar/sliderbar.component";
+import { TestapprovalService } from '../../service/TransactionService/testapproval/testapproval.service';
+import { Modal } from 'bootstrap';
 
 @Component({
   selector: 'app-testapproval',
@@ -15,8 +17,8 @@ import { SliderbarComponent } from "../../component/sliderbar/sliderbar.componen
   templateUrl: './testapproval.component.html',
   styleUrl: './testapproval.component.css'
 })
-export class TestapprovalComponent {
- @ViewChild('myModal') modal: ElementRef | undefined;
+export class TestapprovalComponent implements OnInit {
+  @ViewChild('myModal') modal: ElementRef | undefined;
   @ViewChild('autofocus') autofocus: ElementRef | undefined;
   searchCriteria = { id: '', name: '', code: '' }
   testresultForm: FormGroup = new FormGroup({});
@@ -38,6 +40,7 @@ export class TestapprovalComponent {
   errorMessage: string = '';
 
   testresultService = inject(TestresultService)
+  testapprovalService = inject(TestapprovalService);
 
 
   constructor(private fb: FormBuilder, private toastr: ToastrService) { }
@@ -45,14 +48,50 @@ export class TestapprovalComponent {
   ngOnInit(): void {
     this.setFrom();
     this.loadServices();
+
+
+    
+  }
+
+  loadTestApprovalList(sampleRegisterId: number) {
+    this.testapprovalService.getTestApprovalList(sampleRegisterId).subscribe({
+      next: (res) => {
+
+        this.testresultList = res || [];
+        console.log('Test Approval List:', this.testresultList);
+
+
+        this.testresultForm.patchValue({
+          sampleregister: [{
+            sampleRegisterId: sampleRegisterId,
+            services: this.selectedServices.map(service => ({
+              serviceId: service.serviceId,
+              serviceName: service.serviceName,
+              tests: service.tests.map((test: any) => ({
+                testId: test.testId,
+                testName: test.testName,
+                resultValue: test.resultValue,
+                validationStatus: test.validationStatus ? 'A' : 'V',
+                createdBy: test.createdBy || '',
+                validateBy: test.validateBy || '',
+                isActive: test.isActive || true
+              }))
+            }))
+          }]
+        });
+        console.log('Selected Services:', this.selectedServices);
+
+      },
+      error: (error) => {
+        console.error('Error:', error);
+      }
+    });
   }
 
   loadServices() {
     this.testresultService.getServices().subscribe({
       next: (res) => {
         this.services = res || [];
-        // this.selectedTest = this.services.filter(service => (service.test || []).map((test: any) => test.testName)) || [];
-        // console.log('test',this.selectedTest);
       },
       error: (err) => {
         console.error('Error loading services:', err);
@@ -60,11 +99,7 @@ export class TestapprovalComponent {
     });
   }
 
-
-
   closeModal() {
-    // (document.activeElement as HTMLElement)?.blur();
-
     if (this.modalInstance) {
       this.modalInstance.hide();
     }
@@ -72,7 +107,22 @@ export class TestapprovalComponent {
     if (this.modal != null) {
       this.modal.nativeElement.style.display = "none";
     }
+
     this.submitted = false;
+
+    this.testresultForm.reset(
+      {
+        testResultId: 0,
+        sampleRegisterId: null,
+        serviceId: null,
+        testId: null,
+        resultValue: '',
+        validationStatus: '',
+        createdBy: '',
+        validateBy: '',
+        isActive: true
+      }
+    );
   }
 
   getSampleregister() {
@@ -101,46 +151,47 @@ export class TestapprovalComponent {
   }
 
   openModal(sampleRegisterId: number, event: Event) {
+    const modal = document.getElementById('myModal');
+
+    if (modal != null) {
+      modal.style.display = "block";
+      // modal.addEventListener('shown.bs.modal', () => {
+      //   this.autofocus?.nativeElement.focus();
+      // }, { once: true });
+    }
+
+    if (this.modal?.nativeElement) {
+      this.modalInstance = new Modal(this.modal.nativeElement, {
+        backdrop: 'static',
+        keyboard: false
+      });
+      this.modalInstance.show();
+    }
+
     event.preventDefault();
     this.selectSample(sampleRegisterId);
-    // this.testresultService.addUpdatedTestResult(this.selectedSample).subscribe({
-    //       next: (res) => {
-    //           this.testresultForm.patchValue({
-    //       testResultId: res.data?.testResultId || 0,
-    //       sampleRegisterId: res.data?.sampleRegisterId || null,
-    //       serviceId: res.data?.serviceId || null,
-    //       testId: res.data?.testId || null,
-    //       resultValue: res.resultValue || '',
-    //       validationStatus: res.validationStatus ? 'V' : 'N',
-    //       createdBy: res.createdBy || '',
-    //       validateBy: res.validateBy || ''
-    //       });
-    //       }
-    //     });
   }
 
   selectSample(sampleRegisterId: number): void {
     this.testresultService.getSampleRegisterById(sampleRegisterId).subscribe({
-      next: async (res) => {
+      next: (res) => {
         console.log('API response:', res);
-        console.log('Response keys:', Object.keys(res));
         this.selectedSample = res || null;
         this.selectedServices = (this.selectedSample?.serviceMapping || []).map((service: any) => ({
           ...service,
           tests: this.services.find(s => s.serviceId === service.serviceId)?.test || []
         }));
-
-
+        this.loadTestApprovalList(sampleRegisterId);
         console.log('selectedSample:', this.selectedSample);
         console.log('selectedServices with tests:', this.selectedServices);
       },
-    });
-      
+    })
   }
+
 
   setFrom() {
     this.testresultForm = this.fb.group({
-      testResultId : [{value : 0, disabled: true}],
+      testResultId: [{ value: 0, disabled: true }],
       sampleRegisterId: [null, Validators.required],
       serviceId: [null, Validators.required],
       testId: [null, Validators.required],
@@ -148,8 +199,8 @@ export class TestapprovalComponent {
       validationStatus: ['', Validators.required],
       createdBy: ['', Validators.required],
       validateBy: ['', Validators.required],
+      isActive: [true, Validators.required]
     });
-
   }
 
   showSuccess(message: string) {
@@ -161,69 +212,60 @@ export class TestapprovalComponent {
   }
 
   getrowvalue() {
-    this.testresultForm.value.sampleRegisterId = this.selectedSample.sampleRegisterId ;
-    this.testresultForm.value.serviceId = this.selectedServices.map(service => service.serviceId);
-    this.testresultForm.value.testId = this.selectedServices.flatMap(service => service.tests.map((test: any) => test.testId));
-    this.testresultForm.value.resultValue = this.selectedServices.flatMap(service => service.tests.map((test: any) => test.resultValue));
-    this.testresultForm.value.validationStatus = this.selectedServices.flatMap(service => service.tests.map((test: any) => test.validationStatus ? 'V' : 'N'));
-    this.testresultForm.value.createdBy = this.selectedServices.flatMap(service => service.tests.map((test: any) => test.createdBy || null));
-    this.testresultForm.value.validateBy = this.selectedServices.flatMap(service => service.tests.map((test: any) => test.validateBy || null));
-
-    const formValues = this.testresultForm.value;
-    this.selectedSample.sampleRegisterId = formValues.sampleRegisterId || null;
-      this.selectedServices = this.selectedServices.map(service => ({   
+    const services = this.selectedServices.map(service => ({
       serviceId: service.serviceId,
       serviceName: service.serviceName,
       tests: service.tests.map((test: any) => ({
         testId: test.testId,
         testName: test.testName,
         resultValue: test.resultValue,
-        validationStatus: test.validationStatus ? 'V' : 'N',
-        createdBy: test.createdBy || null,
-        validateBy: test.validateBy || null
+        validationStatus: test.validationStatus ? 'A' : 'V',
+        createdBy: test.createdBy || '',
+        validateBy: test.validateBy || '',
+        isActive: test.isActive || true
       }))
     }));
 
+    const formValues = {
+      sampleregister: [{
+        sampleRegisterId: this.selectedSample?.sampleRegisterId || null,
+        services
+      }]
+    };
+
     console.log('formValues after mapping', formValues);
-    console.log("selectedServices after mapping", this.selectedServices); 
-    console.log("selectedSampleRegisterId after mapping", this.selectedSample.sampleRegisterId);
+    console.log("selectedServices after mapping", this.selectedServices);
+    console.log("selectedSampleRegisterId after mapping", this.selectedSample?.sampleRegisterId);
     console.log("testresultForm after mapping", this.testresultForm.value);
     console.log("testresultForm raw value", this.testresultForm.getRawValue());
     console.log("testresultForm value", this.testresultForm.value);
-    console.log("testresultForm value sampleRegisterId", this.testresultForm.value.sampleRegisterId);
-    console.log("testresultForm value serviceId", this.testresultForm.value.serviceId);
 
     return formValues;
   }
+
 
   onSubmit() {
     this.submitted = true;
     this.errorMessage = '';
     this.validationErrors = [];
 
+
+
     if (!this.selectedServices || !Array.isArray(this.selectedServices) || this.selectedServices.length === 0) {
       this.showError('No services selected.');
       return;
     }
 
-    const formValues = this.getrowvalue();
+    if (!this.selectedSample || !this.selectedSample.sampleRegisterId) {
+      this.showError('No sample selected.');
+      return;
+    }
 
+
+    const formValues = this.getrowvalue();
 
     this.testresultService.addUpdatedTestResult(formValues).subscribe({
       next: (res) => {
-
-        //  this.testresultForm.patchValue({
-        //   testResultId: res.data?.testResultId || 0,
-        //   sampleRegisterId: res.data?.sampleRegisterId || null,
-        //   serviceId: res.data?.serviceId || null,
-        //   testId: res.data?.testId || null,
-        //   resultValue: res.data?.resultValue || '',
-        //   validationStatus: res.data?.validationStatus || '',
-        //   createdBy: res.data?.createdBy || '',
-        //   validateBy: res.data?.validateBy || ''
-        //   });
-
-
         if (res.success) {
           this.showSuccess(res.message);
           this.closeModal();
@@ -244,4 +286,3 @@ export class TestapprovalComponent {
     });
   }
 } 
-

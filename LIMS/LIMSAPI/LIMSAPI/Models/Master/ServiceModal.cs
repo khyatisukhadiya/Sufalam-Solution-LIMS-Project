@@ -15,7 +15,7 @@ namespace LIMSAPI.Models.Master
 
 
         [Required(ErrorMessage = "Service Name is required.")]
-        [StringLength(15, MinimumLength = 1, ErrorMessage = "Service Name must be between 1 and 15 characters.")]
+        [StringLength(30, MinimumLength = 1, ErrorMessage = "Service Name must be between 1 and 30 characters.")]
         public string ServiceName { get; set; }
 
 

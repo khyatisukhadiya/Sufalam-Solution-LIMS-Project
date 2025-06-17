@@ -65,10 +65,10 @@ namespace LIMSAPI.Controllers.Transaction
         public IActionResult AddUpdateTestResult([FromBody]TestResultDto testResults)
         {
 
-            //if (testResults == null)
-            //{
-            //    return Error("Invalid or missing data.", HttpStatusCode.BadRequest);
-            //}
+            if (testResults == null)
+            {
+                return Error("Invalid or missing data.", HttpStatusCode.BadRequest);
+            }
 
 
             if (!ModelState.IsValid)
@@ -116,7 +116,13 @@ namespace LIMSAPI.Controllers.Transaction
             }
         }
 
+        [HttpGet]
 
+        public IActionResult GetTestResultById(int SampleRegisterId)
+        {
+            var result = _sampleSL.GetTestResultById(SampleRegisterId);
+            return Ok(result);
+        }
 
 
     }

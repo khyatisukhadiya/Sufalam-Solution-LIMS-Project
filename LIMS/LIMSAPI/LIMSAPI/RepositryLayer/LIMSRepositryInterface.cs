@@ -180,5 +180,6 @@ namespace LIMSAPI.RepositryLayer
 
         TestResultDto AddUpdateTestResults(TestResultDto testResults);
 
+        TestResultDto GetTestResultById(int SampleRegisterId);
     }
 }

@@ -53,20 +53,24 @@
     </div>
 </div>
 
-<div class="modal fade" id="myModal" #myModal tabindex="-1">
+<div class="modal" id="myModal"  tabindex="-1" #myModal>
     <div class="modal-dialog modal-dialog-centered" style="max-width: 1050px;">
         <div class="modal-content">
+
             <div class="modal-header">
                 <h5 class="modal-title">Test Result Details</h5>
-                <button type="button" class="btn-close" aria-label="Close" (click)="closeModal()"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" (click)="closeModal()"></button>
             </div>
+
             <form [formGroup]="testresultForm" (ngSubmit)="onSubmit()">
                 <!-- Modal Body -->
                 <div class="modal-body">
+
                     <div class="container mt-3" *ngIf="selectedSample">
 
                         <!-- Sample Info -->
                         <div class="card p-2 mb-3 shadow-sm">
+
                             <div class="d-flex flex-wrap gap-1 justify-content-center">
                                 <span class="me-3" data-bs-toggle="tooltip" title="SampleRegister Id">🔘 {{
                                     selectedSample.sampleRegisterId }}</span>
@@ -84,6 +88,7 @@
                                 <span class="me-3">📱 {{ selectedSample.phoneNumber }}</span>
                                 <span>📆 {{ selectedSample.date }}</span>
                             </div>
+
                         </div>
 
                         <!-- Test Results -->
@@ -95,7 +100,9 @@
                                     <h6 class="text-primary">{{ serviceMapping.serviceName }}</h6>
 
                                     <div class="table-responsive">
+
                                         <table class="table" style="table-layout: fixed; width: 100%;">
+
                                             <thead class="table-light">
                                                 <tr>
                                                     <th style="width: 40%;">Test Name</th>
@@ -103,11 +110,12 @@
                                                     <th class="text-center" style="width: 20%;">Validation</th>
                                                 </tr>
                                             </thead>
+
                                             <tbody>
                                                 <tr *ngFor="let test of serviceMapping.tests; let i = index">
                                                     <td>{{ test.testName }}</td>
                                                     <td>
-                                                        <input type="text" class="form-control"
+                                                        <input type="text" class="form-control" 
                                                             [(ngModel)]="test.resultValue" formControlName="resultValue"
                                                             name="testResult_{{ serviceMapping.serviceId }}_{{ i }}"
                                                             placeholder="Enter Test Result..." style="width: 100%;">
@@ -123,25 +131,29 @@
                                                     </td>
                                                 </tr>
                                             </tbody>
+
                                         </table>
+
                                     </div>
+
                                 </div>
+
                             </ng-container>
 
                             <ng-template #noServices>
                                 <p class="text-center text-danger mt-3">No services found for this sample.</p>
                             </ng-template>
 
-                            <!-- Action Buttons -->
-                            <div class="d-flex justify-content-end mt-3">
-                                <button class="btn btn-success me-2 px-4">Save
-                                    Changes</button>
-                                <button class="btn btn-secondary px-4" data-bs-dismiss="modal"
-                                    (click)="closeModal()">Close</button>
-                            </div>
                         </div>
                     </div>
+  
                 </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Save</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal" (click)="closeModal()">Close</button>
+                </div>
+               
             </form>
         </div>
     </div>
@@ -163,7 +175,7 @@
                     <tr *ngFor="let sampleRegister of sampleRegisterList; let i = index">
                         <td>{{ i + 1}}</td>
                         <td> <a href="#" (click)="openModal(sampleRegister.sampleRegisterId,$event)"
-                                data-bs-toggle="modal" data-bs-target="#myModal">{{
+                                data-bs-toggle="myModal" data-bs-target="#myModal">{{
                                 sampleRegister.sampleRegisterId}}</a></td>
                         <td>{{ sampleRegister.title}} {{sampleRegister.firstName}} {{ sampleRegister.middleName}}
                             {{sampleRegister.lastName}}</td>

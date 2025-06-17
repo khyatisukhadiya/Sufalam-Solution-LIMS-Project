@@ -106,7 +106,7 @@ export class CountryComponent implements OnInit {
       }
     });
 
-    // Clear server-side or custom validation errors
+
     this.validationErrors = [];
     this.errorMessage = '';
   }
@@ -123,7 +123,6 @@ export class CountryComponent implements OnInit {
       return;
     }
 
-    // Get raw value (including disabled fields) from the form
     const payload = this.countryForm.getRawValue();
 
     console.log(payload);
@@ -138,7 +137,7 @@ export class CountryComponent implements OnInit {
           this.closeModal();
           this.searchClick = true;
           this.getCountry();
-          this.isEditModal = false; // Reset modal state
+          this.isEditModal = false; 
         } else if (res.errors) {
           this.validationErrors = res.errors;
         }
@@ -190,7 +189,6 @@ export class CountryComponent implements OnInit {
 
   // Edit Modal
   onEdit(countryId : number) {
-    // deb/ugger
     this.countryService.getCountryById(countryId).subscribe({
       next : (res) => {
         console.log('onedit', res);
@@ -215,7 +213,7 @@ export class CountryComponent implements OnInit {
 
     const country = this.countryList.find(c => c.countryId === countryId);
     if (country && country.isActive === null) {
-      country.isActive = false;  // Or true, depending on the expected value
+      country.isActive = false;  
     }
 
     this.countryService.deleteCountry(countryId).subscribe(() => {

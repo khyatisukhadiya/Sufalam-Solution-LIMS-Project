@@ -5,7 +5,7 @@
 
     <!-- Header with Add Button -->
     <div class="d-flex justify-content-between align-items-center pb-3">
-        <h5>Test Approval</h5>
+        <h5>Test Approval List</h5>
     </div>
 
     <!-- search table -->
@@ -53,13 +53,15 @@
     </div>
 </div>
 
-<div class="modal fade" id="myModal" #myModal tabindex="-1">
+<div class="modal" id="myModal"  tabindex="-1" #myModal>
     <div class="modal-dialog modal-dialog-centered" style="max-width: 1050px;">
         <div class="modal-content">
+
             <div class="modal-header">
                 <h5 class="modal-title">Test Approval Details</h5>
-                <button type="button" class="btn-close" aria-label="Close" (click)="closeModal()"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="Close" (click)="closeModal()"></button>
             </div>
+
             <form [formGroup]="testresultForm" (ngSubmit)="onSubmit()">
                 <!-- Modal Body -->
                 <div class="modal-body">
@@ -83,7 +85,7 @@
                                     selectedSample.branchName }}</span>
                                 <span class="me-3">📱 {{ selectedSample.phoneNumber }}</span>
                                 <span>📆 {{ selectedSample.date }}</span>
-                            </div>  
+                            </div>
                         </div>
 
                         <!-- Test Results -->
@@ -117,8 +119,8 @@
                                                             class="form-check form-switch d-flex justify-content-center">
                                                             <input class="form-check-input" type="checkbox"
                                                                 [(ngModel)]="test.validationStatus"
-                                                                formControlName="validationStatus">
-                                                            {{ test.validationStatus ? 'V' : 'N' }}
+                                                                   formControlName="validationStatus">
+                                                            {{ test.validationStatus ? 'A' : 'V' }}
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -132,16 +134,15 @@
                                 <p class="text-center text-danger mt-3">No services found for this sample.</p>
                             </ng-template>
 
-                            <!-- Action Buttons -->
-                            <div class="d-flex justify-content-end mt-3">
-                                <button class="btn btn-success me-2 px-4">Save
-                                    Changes</button>
-                                <button class="btn btn-secondary px-4" data-bs-dismiss="modal"
-                                    (click)="closeModal()">Close</button>
-                            </div>
                         </div>
                     </div>
                 </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Save</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal" (click)="closeModal()">Close</button>
+                </div>
+                
             </form>
         </div>
     </div>
@@ -157,16 +158,25 @@
                         <th>#</th>
                         <th>SamplRegister Id</th>
                         <th>Patient Name</th>
+                        <th>PDF</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr *ngFor="let sampleRegister of sampleRegisterList; let i = index">
                         <td>{{ i + 1}}</td>
-                        <td> <a href="#" (click)="openModal(sampleRegister.sampleRegisterId,$event)"
-                                data-bs-toggle="modal" data-bs-target="#myModal">{{
-                                sampleRegister.sampleRegisterId}}</a></td>
+                        <td><a href="#" (click)="openModal(sampleRegister.sampleRegisterId,$event)"
+                                data-bs-toggle="myModal" data-bs-target="#myModal">{{
+                                sampleRegister.sampleRegisterId}}
+                            </a>
+                        </td>
                         <td>{{ sampleRegister.title}} {{sampleRegister.firstName}} {{ sampleRegister.middleName}}
-                            {{sampleRegister.lastName}}</td>
+                            {{sampleRegister.lastName}}
+                        </td>
+                        <td>
+                            <button class="btn">
+                            <i class="fa-solid fa-file-pdf"></i>
+                            </button>
+                        </td>
                     </tr>
                 </tbody>
             </table>

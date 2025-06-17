@@ -190,8 +190,9 @@ namespace LIMSAPI.ServiceLayer
 
         TestResultModal AddUpdateTestResult(TestResultModal resultModal);
 
-
         TestResultDto AddUpdateTestResults(TestResultDto testResults);
+
+        TestResultDto GetTestResultById(int SampleRegisterId);
 
     }
 }

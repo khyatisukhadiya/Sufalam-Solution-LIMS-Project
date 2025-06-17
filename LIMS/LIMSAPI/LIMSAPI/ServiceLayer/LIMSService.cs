@@ -363,5 +363,10 @@ namespace LIMSAPI.ServiceLayer
         {
             return _lIMSRepositryInterface.AddUpdateTestResults(testResults);
         }
+
+        public TestResultDto GetTestResultById(int SampleRegisterId)
+        {
+            return _lIMSRepositryInterface.GetTestResultById(SampleRegisterId);
+        }
     }
 }
