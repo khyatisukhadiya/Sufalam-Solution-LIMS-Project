@@ -11,6 +11,9 @@ import { SliderbarComponent } from "../../component/sliderbar/sliderbar.componen
 import { TestapprovalService } from '../../service/TransactionService/testapproval/testapproval.service';
 import { Modal } from 'bootstrap';
 import { testApproval } from '../../modal/Transaction/testApproval';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import { testModal } from '../../modal/MasterModel/testModal';
 
 @Component({
   selector: 'app-testapproval',
@@ -24,7 +27,7 @@ export class TestapprovalComponent implements OnInit {
   searchCriteria = { id: '', name: '', code: '' }
   testresultForm: FormGroup = new FormGroup({});
   testresultList: testresult[] = [];
-  testapprovalList: testApproval[] = [];
+  testapprovalList: testresult[] = [];
   selectedSample: any = null;
   services: serviceModal[] = [];
   filteredServices: serviceModal[] = [];
@@ -53,27 +56,25 @@ export class TestapprovalComponent implements OnInit {
   }
 
   loadTestApprovalList(sampleRegisterId: number) {
-    this.testapprovalService.getTestApprovalList(sampleRegisterId).subscribe({
+    this.testapprovalService.getTestApprovalById(sampleRegisterId).subscribe({
       next: (res) => {
 
-        this.testapprovalList = res || [];
+        this.testresultList = res || [];
         console.log('Test Approval List response:', res);
-        console.log('Test Approval List loaded:', this.testapprovalList);
+        console.log('Test Approval List loaded:', this.testresultList);
 
         if (!sampleRegisterId) {
           console.error('sampleRegisterId is null or undefined');
           return;
         }
 
-        if (this.testapprovalList.length === 0) {
+        if (this.testresultList.length === 0) {
           console.warn('No test results found for the given sampleRegisterId:', sampleRegisterId);
           this.selectedServices = [];
           this.testresultForm.reset();
           this.toastr.warning('No test results found for the selected sample.');
           return;
         }
-
-        console.log('Patching form with sampleRegisterId:', sampleRegisterId);
 
       },
       error: (error) => {
@@ -173,6 +174,7 @@ export class TestapprovalComponent implements OnInit {
           ...service,
           tests: this.services.find(s => s.serviceId === service.serviceId)?.test || []
         }));
+
         console.log('selectedSample:', this.selectedSample);
         console.log('selectedServices with tests:', this.selectedServices);
       },
@@ -272,6 +274,134 @@ export class TestapprovalComponent implements OnInit {
         }
       }
     });
+  }
+
+
+  generatePDF(sampleRegisterId: number) {
+
+    console.log("🔍 Generating PDF for Sample ID:", sampleRegisterId);
+
+    if (!sampleRegisterId) {
+      console.error("🚨 Sample ID is missing!");
+      return;
+    }
+
+    console.log("📄 Sample Register ID:", sampleRegisterId);
+    console.log("📄 Selected Sample:", this.selectedSample);
+
+    // Check if jsPDF and autoTable are available
+    if (typeof jsPDF === 'undefined' || typeof autoTable === 'undefined') {
+      console.error("🚨 jsPDF or autoTable is not available!");
+      return;
+    }
+
+    // Check if selectedSample is available
+    if (!this.selectedSample) {
+      this.showError("No sample selected! Please select a sample before generating the PDF.");
+      console.error("🚨 No sample selected!");
+      return;
+    }
+
+
+    // Find the sample and test data
+    if (Array.isArray(this.selectedSample)) {
+      var matchedSample: any = null;
+      matchedSample = this.selectedSample.find((s: { sampleRegisterId: number }) => s.sampleRegisterId === sampleRegisterId);
+    } else if (this.selectedSample && this.selectedSample.sampleRegisterId === sampleRegisterId) {
+      matchedSample = this.selectedSample;
+    }
+
+    console.log("📄 Matched Sample:", matchedSample);
+
+    // Generate PDF using jsPDF
+    const doc = new jsPDF();
+    const today = new Date().toISOString().split('T')[0];
+
+    // Report Title
+    doc.setFontSize(14).setFont("helvetica", "bold");
+    doc.text("LABORATORY REPORT", 105, 24, { align: "center" });
+
+    let finalrY = 17;
+    doc.line(10, finalrY, 200, finalrY);
+    finalrY += 10; // Adjusted to ensure a max 10px gap
+    doc.line(10, finalrY, 200, finalrY);
+
+    // Patient Details Table
+    const patientDetails = [
+      ["Name", `: ${matchedSample.title || ''} ${matchedSample.firstName || ''} ${matchedSample.middleName || ''}`, "Sex/Age", `: ${matchedSample.gender || ''} / ${matchedSample.age || ''} Years`],
+      ["Case ID", `: ${matchedSample.sampleRegisterId || ''}`, "Mobile", `: ${matchedSample.phoneNumber || ''}`],
+      ["Branch", `: ${matchedSample.branchName || ''}`, "B2B", `: ${matchedSample.b2BName || ''}`],
+      ["Reg Date and Time", `: ${matchedSample.date || ''}`, "Report Date and Time", `: ${today}`],
+
+    ];
+
+    autoTable(doc, {
+      startY: 31,
+      body: patientDetails,
+      theme: "plain",
+      styles: { fontSize: 9, cellPadding: 1 },
+      columnStyles: { 0: { fontStyle: "bold" }, 2: { fontStyle: "bold" } }
+    });
+
+    let finalY = (doc as any).lastAutoTable.finalY + 8;
+
+    // Table Headers
+    doc.setFontSize(9).setFont("helvetica", "bold");
+    doc.text("Parameter", 10, finalY);
+    doc.text("Result", 90, finalY);
+    finalY += 2;
+
+
+    doc.line(10, finalY, 200, finalY);
+    finalY += 8;
+
+    // Adding test results
+    const pageHeight = doc.internal.pageSize.height;
+
+    matchedSample?.serviceMapping?.forEach((serviceMapping: any) => {
+      if (finalY > pageHeight - 20) {
+        doc.addPage();
+        finalY = 20;
+      }
+
+      doc.setFont("helvetica", "bold").text(serviceMapping.serviceName, 10, finalY);
+      finalY += 6;
+
+      const services = this.selectedServices.map(service => ({
+        serviceId: service.serviceId,
+        serviceName: service.serviceName,
+        tests: service.tests.map((test: any) => ({
+          testId: test.testId,
+          testName: test.testName,
+          resultValue: test.resultValue,
+          validationStatus: test.validationStatus ? 'A' : 'V',
+          createdBy: test.createdBy || '',
+          validateBy: test.validateBy || '',
+          isActive: test.isActive || true
+        }))
+      }));
+
+      services.forEach((serviceId) => {
+        serviceId.tests?.forEach((test: any) => {
+          if (finalY > pageHeight - 20) {
+            doc.addPage();
+            finalY = 20;
+          }
+
+          doc.setFont("helvetica", "normal");
+          doc.text(test.testName || "", 12, finalY);
+          doc.text(test.resultValue?.toString() || "", 90, finalY);
+          // If you have unit and refInterval, add them here; otherwise, remove these lines
+          doc.text(test.unit || "", 140, finalY);
+          doc.text(test.refInterval || "", 170, finalY);
+          finalY += 8;
+        });
+      });
+    });
+    doc.text("------------------- End Of Report -------------------", 73, finalY);
+
+    // Save PDF
+    doc.save(`Test_Report_CaseID_${sampleRegisterId}.pdf`);
   }
 
 }

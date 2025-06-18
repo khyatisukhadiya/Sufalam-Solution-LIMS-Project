@@ -125,5 +125,13 @@ namespace LIMSAPI.Controllers.Transaction
         }
 
 
+        [HttpGet]
+        public IActionResult GetTestResultsById(int SampleRegisterId)
+        {
+            var result = _sampleSL.GetTestResultsById(SampleRegisterId);
+            return Ok(result);
+        }
+
+
     }
 }

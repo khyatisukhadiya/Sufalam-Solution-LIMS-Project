@@ -12,4 +12,8 @@ export class TestapprovalService {
   getTestApprovalList(sampleRegisterId : number) {
     return this.http.get<any[]>('https://localhost:7161/api/TestResult/GetTestResultById?SampleRegisterId='+ sampleRegisterId);
   }
+
+  getTestApprovalById(sampleRegisterId : number) {
+    return this.http.get<any>('https://localhost:7161/api/TestResult/GetTestResultsById?SampleRegisterId=' + sampleRegisterId);
+  }
 }

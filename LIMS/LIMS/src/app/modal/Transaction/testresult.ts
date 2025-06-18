@@ -7,4 +7,5 @@ export interface testresult {
     validationStatus : string;
     createdBy : string;
     validateBy : string;
+    isActive : boolean;
 }

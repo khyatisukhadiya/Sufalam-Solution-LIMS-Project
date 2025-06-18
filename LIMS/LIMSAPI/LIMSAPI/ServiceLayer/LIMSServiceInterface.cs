@@ -194,5 +194,7 @@ namespace LIMSAPI.ServiceLayer
 
         TestResultDto GetTestResultById(int SampleRegisterId);
 
+        List<TestResultModal> GetTestResultsById(int SampleRegisterId);
+
     }
 }

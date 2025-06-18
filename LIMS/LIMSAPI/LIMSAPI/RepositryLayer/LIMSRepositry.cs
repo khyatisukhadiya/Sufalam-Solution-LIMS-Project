@@ -3815,84 +3815,60 @@ namespace LIMSAPI.RepositryLayer
         }
 
 
-        //public TestResultDto GetTestResultById(int sampleRegisterId)
-        //{
-        //    var resultDto = new TestResultDto
-        //    {
-        //        SampleRegister = new List<SampleRegisterDto>()
-        //    };
+        public List<TestResultModal> GetTestResultsById(int sampleRegisterId)
+        {
+            var response = new List<TestResultModal>();
 
-        //    try
-        //    {
-        //        if (_sqlConnection.State != ConnectionState.Open)
-        //            _sqlConnection.Open();
+            try
+            {
+                if (_sqlConnection.State != ConnectionState.Open)
+                    _sqlConnection.Open();
 
 
-        //        string query = @"SELECT t.TestResultId, t.SampleRegisterId, t.ServiceId, t.TestId, t.ResultValue, t.ValidationStatus, t.CreatedBy, t.ValidateBy, t.IsActive,
-        //                        s.ServiceName, ts.TestName
-        //                         FROM testResultDetails t
-        //                         INNER JOIN service s ON t.ServiceId = s.ServiceId
-        //                         INNER JOIN test ts ON t.TestId = ts.TestId
-        //                         WHERE t.SampleRegisterId = @SampleRegisterId";
+                string query = @"SELECT t.TestResultId, t.SampleRegisterId, t.ServiceId, t.TestId, t.ResultValue, t.ValidationStatus, t.CreatedBy, t.ValidateBy, t.IsActive,
+                                s.ServiceName, ts.TestName
+                                 FROM testResultDetails t
+                                 INNER JOIN service s ON t.ServiceId = s.ServiceId
+                                 INNER JOIN test ts ON t.TestId = ts.TestId
+                                 WHERE t.SampleRegisterId = @SampleRegisterId";
 
-        //        using (var command = new SqlCommand(query, _sqlConnection))
-        //        {
-        //            command.Parameters.AddWithValue("@SampleRegisterId", sampleRegisterId);
+                using (var command = new SqlCommand(query, _sqlConnection))
+                {
+                    command.Parameters.AddWithValue("@SampleRegisterId", sampleRegisterId);
 
-        //            using (var reader = command.ExecuteReader())
-        //            {
-                       
-        //                var serviceDict = new Dictionary<int, ServiceDto>();
-        //                var sampleRegisterDto = new SampleRegisterDto
-        //                {
-        //                    SampleRegisterId = sampleRegisterId,
-        //                    Services = new List<ServiceDto>()
-        //                };
+                    var reader = command.ExecuteReader();
+                    {
+                        while (reader.Read())
+                        {
+                               response.Add(new TestResultModal
+                               {
+                                  TestResultId = Convert.ToInt32(reader["TestResultId"]),
+                                  SampleRegisterId = Convert.ToInt32(reader["SampleRegisterId"]),
+                                  ServiceId = Convert.ToInt32(reader["ServiceId"]),
+                                  ServiceName = reader["ServiceName"].ToString(),
+                                  TestId = Convert.ToInt32(reader["TestId"]),
+                                  TestName = reader["TestName"].ToString(),
+                                  ResultValue = reader["ResultValue"].ToString(),
+                                  ValidationStatus = reader["ValidationStatus"].ToString(),
+                                  CreatedBy = reader["CreatedBy"].ToString(),
+                                  ValidateBy = reader["ValidateBy"].ToString(),
+                                  IsActive = Convert.ToBoolean(reader["IsActive"])
+                              });
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error fetching test results by SampleRegisterId: " + ex.Message, ex);
+            }
+            finally
+            {
+                _sqlConnection.Close();
+            }
 
-        //                while (reader.Read())
-        //                {
-        //                    int serviceId = Convert.ToInt32(reader["ServiceId"]);
-        //                    ServiceDto service;
-        //                    if (!serviceDict.TryGetValue(serviceId, out service))
-        //                    {
-        //                        service = new ServiceDto
-        //                        {
-        //                            ServiceId = serviceId,
-        //                            ServiceName = reader["ServiceName"].ToString(),
-        //                            Tests = new List<TestDto>()
-        //                        };
-        //                        serviceDict[serviceId] = service;
-        //                        sampleRegisterDto.Services.Add(service);
-        //                    }
-
-        //                    service.Tests.Add(new TestDto
-        //                    {
-        //                        TestId = Convert.ToInt32(reader["TestId"]),
-        //                        TestName = reader["TestName"].ToString(),
-        //                        ResultValue = reader["ResultValue"].ToString(),
-        //                        ValidationStatus = reader["ValidationStatus"].ToString(),
-        //                        CreatedBy = reader["CreatedBy"].ToString(),
-        //                        ValidateBy = reader["ValidateBy"].ToString(),
-        //                        IsActive = Convert.ToBoolean(reader["IsActive"])
-        //                    });
-        //                }
-
-        //                if (sampleRegisterDto.Services.Count > 0)
-        //                    resultDto.SampleRegister.Add(sampleRegisterDto);
-        //            }
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw new Exception("Error fetching test results by SampleRegisterId: " + ex.Message, ex);
-        //    }
-        //    finally
-        //    {
-        //        _sqlConnection.Close();
-        //    }
-
-        //    return resultDto;
-        //}
+            return response;
+        }
 
     }
 }
