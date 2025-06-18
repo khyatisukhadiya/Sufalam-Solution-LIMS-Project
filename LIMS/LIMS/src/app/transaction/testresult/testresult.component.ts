@@ -175,7 +175,6 @@ export class TestresultComponent implements OnInit {
   }
 
   getrowvalue() {
-    
     const services = this.selectedServices.map(service => ({
       serviceId: service.serviceId,
       serviceName: service.serviceName,
@@ -213,6 +212,10 @@ export class TestresultComponent implements OnInit {
     this.errorMessage = '';
     this.validationErrors = [];
 
+     if (this.testresultForm.invalid) {
+      this.showError('Please fill all t estResult fields correctly.');
+      return;
+    }
 
 
     if (!this.selectedServices || !Array.isArray(this.selectedServices) || this.selectedServices.length === 0) {

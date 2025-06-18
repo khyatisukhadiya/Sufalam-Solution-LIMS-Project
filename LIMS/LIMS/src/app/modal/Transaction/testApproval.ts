@@ -1,18 +1,20 @@
-testResult: {
-    sampleregister: [{
-        sampleregisterId: 1,
+export interface testApproval {
+  sampleregister: [{
+        sampleregisterId: number,
         services: [{
-            serviceId: 1,
-            serviceName: '',
+            serviceId: number,
+            serviceName: string,
             tests: [{
-                testId: 1,
-                testName: '',
-                resultValue: '',
-                validationStatus: '',
-                createdby: '',
-                validateBy: '',
-                isActive : true
+                testId: number,
+                testName: string,
+                resultValue: string,
+                validationStatus: string,
+                createdby: string,
+                validateBy: string,
+                isActive : boolean,
             }]
         }]
     }]
+
 }
+

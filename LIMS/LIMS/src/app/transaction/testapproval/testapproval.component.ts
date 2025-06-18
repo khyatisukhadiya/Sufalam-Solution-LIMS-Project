@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { testresult } from '../../modal/Transaction/testresult';
 import { serviceModal } from '../../modal/MasterModel/serviceModal';
@@ -10,6 +10,7 @@ import { ToastrService } from 'ngx-toastr';
 import { SliderbarComponent } from "../../component/sliderbar/sliderbar.component";
 import { TestapprovalService } from '../../service/TransactionService/testapproval/testapproval.service';
 import { Modal } from 'bootstrap';
+import { testApproval } from '../../modal/Transaction/testApproval';
 
 @Component({
   selector: 'app-testapproval',
@@ -23,6 +24,7 @@ export class TestapprovalComponent implements OnInit {
   searchCriteria = { id: '', name: '', code: '' }
   testresultForm: FormGroup = new FormGroup({});
   testresultList: testresult[] = [];
+  testapprovalList: testApproval[] = [];
   selectedSample: any = null;
   services: serviceModal[] = [];
   filteredServices: serviceModal[] = [];
@@ -48,38 +50,30 @@ export class TestapprovalComponent implements OnInit {
   ngOnInit(): void {
     this.setFrom();
     this.loadServices();
-
-
-    
   }
 
   loadTestApprovalList(sampleRegisterId: number) {
     this.testapprovalService.getTestApprovalList(sampleRegisterId).subscribe({
       next: (res) => {
 
-        this.testresultList = res || [];
-        console.log('Test Approval List:', this.testresultList);
+        this.testapprovalList = res || [];
+        console.log('Test Approval List response:', res);
+        console.log('Test Approval List loaded:', this.testapprovalList);
 
+        if (!sampleRegisterId) {
+          console.error('sampleRegisterId is null or undefined');
+          return;
+        }
 
-        this.testresultForm.patchValue({
-          sampleregister: [{
-            sampleRegisterId: sampleRegisterId,
-            services: this.selectedServices.map(service => ({
-              serviceId: service.serviceId,
-              serviceName: service.serviceName,
-              tests: service.tests.map((test: any) => ({
-                testId: test.testId,
-                testName: test.testName,
-                resultValue: test.resultValue,
-                validationStatus: test.validationStatus ? 'A' : 'V',
-                createdBy: test.createdBy || '',
-                validateBy: test.validateBy || '',
-                isActive: test.isActive || true
-              }))
-            }))
-          }]
-        });
-        console.log('Selected Services:', this.selectedServices);
+        if (this.testapprovalList.length === 0) {
+          console.warn('No test results found for the given sampleRegisterId:', sampleRegisterId);
+          this.selectedServices = [];
+          this.testresultForm.reset();
+          this.toastr.warning('No test results found for the selected sample.');
+          return;
+        }
+
+        console.log('Patching form with sampleRegisterId:', sampleRegisterId);
 
       },
       error: (error) => {
@@ -155,9 +149,6 @@ export class TestapprovalComponent implements OnInit {
 
     if (modal != null) {
       modal.style.display = "block";
-      // modal.addEventListener('shown.bs.modal', () => {
-      //   this.autofocus?.nativeElement.focus();
-      // }, { once: true });
     }
 
     if (this.modal?.nativeElement) {
@@ -170,6 +161,7 @@ export class TestapprovalComponent implements OnInit {
 
     event.preventDefault();
     this.selectSample(sampleRegisterId);
+    this.loadTestApprovalList(sampleRegisterId);
   }
 
   selectSample(sampleRegisterId: number): void {
@@ -181,7 +173,6 @@ export class TestapprovalComponent implements OnInit {
           ...service,
           tests: this.services.find(s => s.serviceId === service.serviceId)?.test || []
         }));
-        this.loadTestApprovalList(sampleRegisterId);
         console.log('selectedSample:', this.selectedSample);
         console.log('selectedServices with tests:', this.selectedServices);
       },
@@ -249,10 +240,8 @@ export class TestapprovalComponent implements OnInit {
     this.errorMessage = '';
     this.validationErrors = [];
 
-
-
-    if (!this.selectedServices || !Array.isArray(this.selectedServices) || this.selectedServices.length === 0) {
-      this.showError('No services selected.');
+    if (this.testresultForm.invalid) {
+      this.showError('Please fill all testResult fields correctly.');
       return;
     }
 
@@ -260,7 +249,6 @@ export class TestapprovalComponent implements OnInit {
       this.showError('No sample selected.');
       return;
     }
-
 
     const formValues = this.getrowvalue();
 
@@ -285,4 +273,5 @@ export class TestapprovalComponent implements OnInit {
       }
     });
   }
-} 
+
+}
