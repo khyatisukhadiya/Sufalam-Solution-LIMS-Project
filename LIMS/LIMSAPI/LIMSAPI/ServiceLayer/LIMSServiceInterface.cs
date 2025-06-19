@@ -196,5 +196,7 @@ namespace LIMSAPI.ServiceLayer
 
         List<TestResultModal> GetTestResultsById(int SampleRegisterId);
 
+
+        TestApprovalResultModal GetApprovalResultBySampleRegisterId(int sampleRegisterId);
     }
 }

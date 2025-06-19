@@ -3870,5 +3870,122 @@ namespace LIMSAPI.RepositryLayer
             return response;
         }
 
+        public TestApprovalResultModal GetApprovalResultBySampleRegisterId(int sampleRegisterId)
+        {
+            var testApprovalResultModal = new TestApprovalResultModal();
+
+            using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            {
+                connection.Open();
+
+                string query = @"
+                                 SELECT 
+                                     sr.SampleRegisterId, sr.Title, sr.FirstName, sr.MiddleName, sr.Gender, sr.Age, sr.DOB, sr.Date, sr.PhoneNumber,
+                                     sr.BranchId, b.BranchName,
+                                     sr.B2BId, bb.B2BName
+                                 FROM SampleRegister sr
+                                 LEFT JOIN Branch b ON sr.BranchId = b.BranchId
+                                 LEFT JOIN B2B bb ON sr.B2BId = bb.B2BId
+                                 WHERE sr.SampleRegisterId = @SampleRegisterId";
+
+                using (var command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@SampleRegisterId", sampleRegisterId);
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            testApprovalResultModal.SampleRegisterId = Convert.ToInt32(reader["SampleRegisterId"]);
+                            //testApprovalResultModal.SampleRegisterModals = new SampleRegisterModal
+                            testApprovalResultModal = new TestApprovalResultModal
+                            {
+                                SampleRegisterId = Convert.ToInt32(reader["SampleRegisterId"]),
+                                Title = reader["Title"]?.ToString(),
+                                FirstName = reader["FirstName"]?.ToString(),
+                                MiddleName = reader["MiddleName"]?.ToString(),
+                                Gender = reader["Gender"]?.ToString(),
+                                Age = Convert.ToInt32(reader["Age"]),
+                                DOB = (DateTime)(reader["DOB"] as DateTime?),
+                                Date = (DateTime)(reader["Date"] as DateTime?),
+                                PhoneNumber = reader["PhoneNumber"]?.ToString(),
+                                BranchId = reader["BranchId"] as int?,
+                                BranchName = reader["BranchName"]?.ToString(),
+                                B2BId = reader["B2BId"] as int?,
+                                B2BName = reader["B2BName"]?.ToString()
+                            };
+                        }
+                        else
+                        {
+                            return null; 
+                        }
+                    }
+                }
+
+                string serviceQuery = @"
+                                         SELECT ssm.SampleServiceMapId, ssm.SampleRegisterId, ssm.ServiceId, ssm.CreatedOn,
+                                                s.ServiceName, s.ServiceCode, s.B2BAmount, s.B2CAmount, s.IsActive
+                                         FROM sampleServiceMap ssm
+                                         INNER JOIN Service s ON ssm.ServiceId = s.ServiceId
+                                         WHERE ssm.SampleRegisterId = @SampleRegisterId";
+
+                using (var serviceCommand = new SqlCommand(serviceQuery, connection))
+                {
+                    serviceCommand.Parameters.AddWithValue("@SampleRegisterId", sampleRegisterId);
+
+                    using (var mapReader = serviceCommand.ExecuteReader())
+                    {
+                        var mappedServices = new List<serviceMapping>();
+                        while (mapReader.Read())
+                        {
+                            var serviceMapping = new serviceMapping
+                            {
+                                ServiceId = Convert.ToInt32(mapReader["ServiceId"]),
+                                ServiceName = mapReader["ServiceName"]?.ToString(),
+                            };
+                            mappedServices.Add(serviceMapping);
+                        }
+                        testApprovalResultModal.serviceMappings = mappedServices;
+                    }
+                }
+
+           
+                string testQuery = @"
+                                     SELECT 
+                                         tr.TestId, t.TestName, tr.ResultValue, tr.ValidationStatus, tr.TestResultId, tr.IsActive, s.ServiceId
+                                     FROM testResultDetails tr
+                                     INNER JOIN test t ON tr.TestId = t.TestId
+                                     INNER JOIN Service s on tr.ServiceId = s.ServiceId
+                                     WHERE tr.SampleRegisterId = @SampleRegisterId";
+
+                using (var testCmd = new SqlCommand(testQuery, connection))
+                {
+                    testCmd.Parameters.AddWithValue("@SampleRegisterId", sampleRegisterId);
+
+                    using (var testReader = testCmd.ExecuteReader())
+                    {
+                        while (testReader.Read())
+                        {
+                            var test = new Test
+                            {
+                                TestId = Convert.ToInt32(testReader["TestId"]),
+                                TestName = testReader["TestName"]?.ToString(),
+                                ResultValue = testReader["ResultValue"]?.ToString(),
+                                ValidationStatus = testReader["ValidationStatus"]?.ToString(),
+                                IsActive = testReader["IsActive"] != DBNull.Value && Convert.ToBoolean(testReader["IsActive"]),
+                                ServiceId = Convert.ToInt32(testReader["ServiceId"]),
+                            };
+
+                            testApprovalResultModal.TestresultId = Convert.ToInt32(testReader["TestResultId"]);
+                            testApprovalResultModal.Tests.Add(test);
+                        }
+                    }
+                }
+
+                return testApprovalResultModal;
+            }
+        }
+
+
     }
 }
