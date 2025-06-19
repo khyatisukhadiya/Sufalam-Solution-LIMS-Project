@@ -83,8 +83,7 @@
                             {{sampleRegister.lastName}}
                         </td>
                         <td>
-                            <button class="btn">
-                                <span class="d-none" (click)="generatePDF(sampleRegister.selectedSampleId)">Generate PDF</span>
+                            <button class="btn" (click)="generatePDF(sampleRegister.sampleRegisterId)">
                                 <i class="fa-solid fa-file-pdf"></i>
                             </button>
                         </td>

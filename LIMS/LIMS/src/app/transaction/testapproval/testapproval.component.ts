@@ -262,7 +262,7 @@ export class TestapprovalComponent implements OnInit {
     });
   }
 
-   generatePDF(selectedSampleId: number) {
+  generatePDF(selectedSampleId: number) {
     console.log("🔍 Generating PDF for Sample ID:", selectedSampleId);
 
     if (!selectedSampleId) {
@@ -270,29 +270,19 @@ export class TestapprovalComponent implements OnInit {
       return;
     }
 
-    console.log("📄 Sample Register ID:", selectedSampleId);
-    console.log("📄 Selected Sample:", this.selectedSampleId);
-
     // Check if jsPDF and autoTable are available
     if (typeof jsPDF === 'undefined' || typeof autoTable === 'undefined') {
       console.error("🚨 jsPDF or autoTable is not available!");
       return;
     }
 
-    // Check if selectedSample is available
-    if (!this.selectedSampleId) {
-      this.showError("No sample selected! Please select a sample before generating the PDF.");
-      console.error("🚨 No sample selected!");
+    // Find the matched sample from sampleRegisterMaster
+    const matchedSample = this.sampleRegisterMaster.find(s => s.sampleRegisterId === selectedSampleId);
+
+    if (!matchedSample) {
+      this.showError("No sample data found for the selected ID.");
+      console.error("🚨 No sample data found for ID:", selectedSampleId);
       return;
-    }
-
-
-    // Find the sample and test data
-    if (Array.isArray(this.selectedSampleId)) {
-      var matchedSample: any = null;
-      matchedSample = this.selectedSampleId.find((s: { sampleRegisterId: number }) => s.sampleRegisterId === selectedSampleId);
-    } else if (this.selectedSampleId && this.SampleRegister.sampleRegisterId === selectedSampleId) {
-      matchedSample = this.selectedSampleId;
     }
 
     console.log("📄 Matched Sample:", matchedSample);
