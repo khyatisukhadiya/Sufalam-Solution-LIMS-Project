@@ -7,7 +7,7 @@ import { SliderbarComponent } from "../../component/sliderbar/sliderbar.componen
 import { TestapprovalService } from '../../service/TransactionService/testapproval/testapproval.service';
 import { Modal } from 'bootstrap';
 import autoTable from 'jspdf-autotable';
-// import { Router } from '@angular/router';
+import { every } from 'rxjs';
 
 @Component({
   selector: 'app-test-approval',
@@ -35,25 +35,32 @@ export class TestapprovalComponent implements OnInit {
   approvalResults: any = null;
   isChecked = false;
   isEditModal = false;
-  testresultForm : FormGroup = new FormGroup({});
+  testresultForm: FormGroup = new FormGroup({});
 
- 
   testApprovalResultService = inject(TestapprovalService);
   toastr = inject(ToastrService);
   selectedSampleId: number = 0;
   modalInstance: Modal | null = null;
+  TestApproval: any;
 
 
- constructor(private fb : FormBuilder) {}
+  constructor(private fb: FormBuilder) { }
 
   ngOnInit(): void {
-    this.loadSampleRegisters();
     this.loadService();
     this.setFrom();
   }
 
   loadSampleRegisters(): void {
-    this.testApprovalResultService.getSampleRegister().subscribe({
+    this.searchClicked = true;
+
+    const filter = {
+      name: this.searchCriteria.name?.trim() || '',
+      id: this.searchCriteria.id || null,
+      phoneNumber: this.searchCriteria.code
+    };
+
+    this.testApprovalResultService.getSampleregister(filter).subscribe({
       next: (response) => {
         this.sampleRegisterMaster = response.data || [];
         this.filteredSampleRegister = [...this.sampleRegisterMaster];
@@ -63,6 +70,11 @@ export class TestapprovalComponent implements OnInit {
       },
     });
   }
+
+  //  onToggle(event: any): void {
+  //   const isChecked = event.target.checked;
+  //   console.log('Toggle is now:', isChecked);
+  // }
 
 
   loadService(): void {
@@ -91,6 +103,7 @@ export class TestapprovalComponent implements OnInit {
     this.selectedServices = [];
   }
 
+
   openModal(selected: any): void {
     const modal = document.getElementById('myModal');
 
@@ -111,27 +124,40 @@ export class TestapprovalComponent implements OnInit {
 
     this.testApprovalResultService.getTestApprovalBySampleId(sampleRegisterId).subscribe({
       next: (response: any) => {
-        this.SampleRegister = response.data;
-        this.selectedSampleId = sampleRegisterId;
+        this.SampleRegister = response.data || [];
 
+        const hasTests = Array.isArray(this.SampleRegister?.tests) && this.SampleRegister.tests.length > 0;
+        if (!hasTests) {
+          this.showError("Data is Not available for this sample");
+          if (this.modalInstance) {
+            this.modalInstance.hide();
+          }
+          if (this.modal != null) {
+            this.modal.nativeElement.style.display = "none";
+          }
+          return;
+        }
+
+        this.selectedSampleId = sampleRegisterId;
 
         const sampleServiceIds = this.SampleRegister.serviceMappings?.map((s: any) => s.serviceId) || [];
         console.log('Sample Service IDs:', sampleServiceIds);
 
+
         const backendTestsMap = new Map<number, any>(
-          (this.SampleRegister.tests || []).map((test: any) => [test.testId,test])
+          (this.SampleRegister.tests || []).map((test: any) => [test.testId, test])
         );
         console.log('Backend Tests Map:', backendTestsMap);
 
-      
+
         if (this.serviceMappings && this.SampleRegister && Array.isArray(this.SampleRegister.serviceMappings)) {
           this.selectTest = this.SampleRegister.serviceMappings
             .map((sampleService: any) => {
               const service = this.serviceMappings.find((s: any) => s.serviceId === sampleService.serviceId);
-                return {
-                  serviceId: sampleService.serviceId,
-                  serviceName: service?.serviceName || sampleService.serviceName,
-                  tests: (this.SampleRegister?.tests || [])
+              return {
+                serviceId: sampleService.serviceId,
+                serviceName: service?.serviceName || sampleService.serviceName,
+                tests: (this.SampleRegister?.tests || [])
                   .filter((test: any) => test.serviceId === sampleService.serviceId)
                   .map((test: any) => ({
                     testId: test.testId,
@@ -140,22 +166,23 @@ export class TestapprovalComponent implements OnInit {
                     validationStatus: test.validationStatus ?? '',
                     isActive: test.isActive ?? true
                   }))
-                };
+              };
             });
         } else {
           this.selectTest = [];
         }
-        console.log('Sample Register:', this.SampleRegister);
-          console.log('servicename', this.selectTest.map((s: any) => s?.serviceName));
-          console.log('testmappings', this.selectTest.flatMap((s: any) => s?.tests || []));
-          console.log('Sample Register Tests:', this.SampleRegister.tests);
-          console.log('Selected Sample ID:', this.selectedSampleId);
-          console.log('selectedtest:', this.selectTest);
 
-        
+        console.log('Sample Register:', this.SampleRegister);
+        console.log('servicename', this.selectTest.map((s: any) => s?.serviceName));
+        console.log('testmappings', this.selectTest.flatMap((s: any) => s?.tests || []));
+        console.log('Sample Register Tests:', this.SampleRegister.tests);
+        console.log('Selected Sample ID:', this.selectedSampleId);
+        console.log('selectedtest:', this.selectTest);
+
+
         this.selectedServices = this.selectTest.map(s => s.serviceName);
 
-       
+
         this.isEditModal = (this.SampleRegister.tests?.length ?? 0) > 0;
 
 
@@ -171,7 +198,7 @@ export class TestapprovalComponent implements OnInit {
   closeModal() {
     this.SampleRegister = null;
     this.searchClicked = true;
-      if (this.modalInstance) {
+    if (this.modalInstance) {
       this.modalInstance.hide();
     }
 
@@ -180,7 +207,7 @@ export class TestapprovalComponent implements OnInit {
     }
   }
 
-   getrowvalue() {
+  getrowvalue() {
     const serviceMapping = this.selectTest.map(service => ({
       serviceId: service.serviceId,
       serviceName: service.serviceName,
@@ -188,7 +215,7 @@ export class TestapprovalComponent implements OnInit {
         testId: test.testId,
         testName: test.testName,
         resultValue: test.resultValue,
-        validationStatus: test.validationStatus ? 'A' : 'V',
+        validationStatus: test.validationStatus,
         createdBy: test.createdBy || '',
         validateBy: test.validateBy || '',
         isActive: test.isActive || true
@@ -248,7 +275,7 @@ export class TestapprovalComponent implements OnInit {
     this.toastr.error(message, 'Error');
   }
 
-   setFrom() {
+  setFrom() {
     this.testresultForm = this.fb.group({
       testResultId: [{ value: 0, disabled: true }],
       sampleRegisterId: [null, Validators.required],
@@ -263,6 +290,7 @@ export class TestapprovalComponent implements OnInit {
   }
 
   generatePDF(selectedSampleId: number) {
+
     console.log("🔍 Generating PDF for Sample ID:", selectedSampleId);
 
     if (!selectedSampleId) {
@@ -276,14 +304,22 @@ export class TestapprovalComponent implements OnInit {
       return;
     }
 
+    console.log("test Approval", this.sampleRegisterMaster)
     // Find the matched sample from sampleRegisterMaster
-    const matchedSample = this.sampleRegisterMaster.find(s => s.sampleRegisterId === selectedSampleId);
+    const matchedSample = this.sampleRegisterMaster.find((s: { sampleRegisterId: number; }) => s.sampleRegisterId === selectedSampleId);
 
     if (!matchedSample) {
       this.showError("No sample data found for the selected ID.");
       console.error("🚨 No sample data found for ID:", selectedSampleId);
       return;
     }
+
+    // const allValidated = Array.isArray(this.SampleRegister?.tests) &&
+    //       this.SampleRegister.tests.every((test: any) => test.validationStatus === 'A');
+    //     if (!allValidated) {
+    //       this.showError("Report Under Process");
+    //       return;
+    //     }
 
     console.log("📄 Matched Sample:", matchedSample);
 
@@ -332,6 +368,13 @@ export class TestapprovalComponent implements OnInit {
     // Adding test results
     const pageHeight = doc.internal.pageSize.height;
 
+    const allResult = this.sampleRegisterMaster.every((sample: any) =>
+      Array.isArray(sample.tests) && sample.tests.every((test: any) => test.validationStatus === 'A')
+    );
+    if(!allResult){
+      this.showError("report undet process");
+    }
+
     matchedSample?.serviceMapping?.forEach((serviceMapping: any) => {
       if (finalY > pageHeight - 20) {
         doc.addPage();
@@ -355,22 +398,24 @@ export class TestapprovalComponent implements OnInit {
         }))
       }));
 
-      services.forEach((serviceId) => {
-        serviceId.tests?.forEach((test: any) => {
-          if (finalY > pageHeight - 20) {
-            doc.addPage();
-            finalY = 20;
-          }
 
-          doc.setFont("helvetica", "normal");
-          doc.text(test.testName || "", 12, finalY);
-          doc.text(test.resultValue?.toString() || "", 90, finalY);
-          // If you have unit and refInterval, add them here; otherwise, remove these lines
-          doc.text(test.unit || "", 140, finalY);
-          doc.text(test.refInterval || "", 170, finalY);
-          finalY += 8;
-        });
+      // Only include tests for the current serviceMapping.serviceId
+      const currentService = services.find(s => s.serviceId === serviceMapping.serviceId);
+      currentService?.tests?.forEach((test: any) => {
+        if (finalY > pageHeight - 20) {
+          doc.addPage();
+          finalY = 20;
+        }
+
+        doc.setFont("helvetica", "normal");
+        doc.text(test.testName || "", 12, finalY);
+        doc.text(test.resultValue?.toString() || "", 90, finalY);
+        // If you have unit and refInterval, add them here; otherwise, remove these lines
+        // doc.text(test.unit || "", 140, finalY);
+        // doc.text(test.refInterval || "", 170, finalY);
+        finalY += 8;
       });
+
     });
     doc.text("------------------- End Of Report -------------------", 73, finalY);
 

@@ -3601,7 +3601,7 @@ namespace LIMSAPI.RepositryLayer
                             response.TestId = Convert.ToInt32(reader["TestId"]);
                             response.TestName = reader["TestName"].ToString();
                             response.ResultValue = reader["ResultValue"].ToString();
-                            response.ValidationStatus = reader["ValidationStatus"].ToString();
+                            response.ValidationStatus = Convert.ToBoolean(reader["ValidationStatus"]);
                             response.CreatedBy = reader["CreatedBy"].ToString();
                             response.ValidateBy = reader["ValidateBy"].ToString();
                             response.IsActive = Convert.ToBoolean(reader["IsActive"]);
@@ -3676,7 +3676,6 @@ namespace LIMSAPI.RepositryLayer
             }
             return response;
         }
-
 
         public TestResultDto AddUpdateTestResults(TestResultDto testResults)
         {
@@ -3778,7 +3777,7 @@ namespace LIMSAPI.RepositryLayer
                                 TestId = Convert.ToInt32(reader["TestId"]),
                                 TestName = reader["TestName"].ToString(),
                                 ResultValue = reader["ResultValue"].ToString(),
-                                ValidationStatus = reader["ValidationStatus"].ToString(),
+                                ValidationStatus = Convert.ToBoolean(reader["ValidationStatus"]),
                                 CreatedBy = reader["CreatedBy"].ToString(),
                                 ValidateBy = reader["ValidateBy"].ToString(),
                                 IsActive = Convert.ToBoolean(reader["IsActive"])
@@ -3814,7 +3813,6 @@ namespace LIMSAPI.RepositryLayer
             return results;
         }
 
-
         public List<TestResultModal> GetTestResultsById(int sampleRegisterId)
         {
             var response = new List<TestResultModal>();
@@ -3849,7 +3847,7 @@ namespace LIMSAPI.RepositryLayer
                                   TestId = Convert.ToInt32(reader["TestId"]),
                                   TestName = reader["TestName"].ToString(),
                                   ResultValue = reader["ResultValue"].ToString(),
-                                  ValidationStatus = reader["ValidationStatus"].ToString(),
+                                  ValidationStatus = Convert.ToBoolean(reader["ValidationStatus"]),
                                   CreatedBy = reader["CreatedBy"].ToString(),
                                   ValidateBy = reader["ValidateBy"].ToString(),
                                   IsActive = Convert.ToBoolean(reader["IsActive"])
@@ -3870,6 +3868,8 @@ namespace LIMSAPI.RepositryLayer
             return response;
         }
 
+
+        // TEST APPROVAL
         public TestApprovalResultModal GetApprovalResultBySampleRegisterId(int sampleRegisterId)
         {
             var testApprovalResultModal = new TestApprovalResultModal();
@@ -3971,7 +3971,7 @@ namespace LIMSAPI.RepositryLayer
                                 TestId = Convert.ToInt32(testReader["TestId"]),
                                 TestName = testReader["TestName"]?.ToString(),
                                 ResultValue = testReader["ResultValue"]?.ToString(),
-                                ValidationStatus = testReader["ValidationStatus"]?.ToString(),
+                                ValidationStatus = Convert.ToBoolean(testReader["ValidationStatus"]),
                                 IsActive = testReader["IsActive"] != DBNull.Value && Convert.ToBoolean(testReader["IsActive"]),
                                 ServiceId = Convert.ToInt32(testReader["ServiceId"]),
                             };

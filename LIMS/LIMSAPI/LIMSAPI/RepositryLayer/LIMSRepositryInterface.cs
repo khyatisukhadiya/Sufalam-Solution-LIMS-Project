@@ -185,5 +185,7 @@ namespace LIMSAPI.RepositryLayer
         List<TestResultModal> GetTestResultsById(int SampleRegisterId);
 
         TestApprovalResultModal GetApprovalResultBySampleRegisterId(int sampleRegisterId);
+
+
     }
 }

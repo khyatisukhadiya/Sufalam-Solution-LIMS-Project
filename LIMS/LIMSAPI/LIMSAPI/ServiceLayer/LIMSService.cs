@@ -378,5 +378,7 @@ namespace LIMSAPI.ServiceLayer
         {
             return _lIMSRepositryInterface.GetApprovalResultBySampleRegisterId(sampleRegisterId);
         }
+
+      
     }
 }

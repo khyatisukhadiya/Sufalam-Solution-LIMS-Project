@@ -33,7 +33,9 @@
         public int TestId { get; set; }
         public string TestName { get; set; }
         public string ResultValue { get; set; }
-        public string ValidationStatus { get; set; }
+
+        public bool ValidationStatus { get; set; }
+
         public bool IsActive { get; set; }
 
         public int ServiceId { get; set; }

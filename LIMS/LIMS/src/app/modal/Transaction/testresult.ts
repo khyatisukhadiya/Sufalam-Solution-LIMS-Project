@@ -4,7 +4,7 @@ export interface testresult {
     serviceId : number;
     testId : number;
     resultValue : string;
-    validationStatus : string;
+    validationStatus : boolean;
     createdBy : string;
     validateBy : string;
     isActive : boolean;

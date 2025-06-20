@@ -19,7 +19,7 @@ namespace LIMSAPI.Models.Transaction
 
         public string ResultValue { get; set; }
 
-        public string ValidationStatus { get; set; }
+        public bool ValidationStatus { get; set; }
 
         public string? ValidateBy { get; set; }
 

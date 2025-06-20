@@ -182,7 +182,7 @@ export class TestresultComponent implements OnInit {
         testId: test.testId,
         testName: test.testName,
         resultValue: test.resultValue,
-        validationStatus: test.validationStatus ? 'V' : 'N',
+        validationStatus: test.validationStatus,
         createdBy: test.createdBy || '',
         validateBy: test.validateBy || '',
         isActive :  test.isActive || true
@@ -212,10 +212,10 @@ export class TestresultComponent implements OnInit {
     this.errorMessage = '';
     this.validationErrors = [];
 
-     if (this.testresultForm.invalid) {
-      this.showError('Please fill all t estResult fields correctly.');
-      return;
-    }
+    //  if (this.testresultForm.invalid) {
+    //   this.showError('Please fill all testResult fields correctly.');
+    //   return;
+    // }
 
 
     if (!this.selectedServices || !Array.isArray(this.selectedServices) || this.selectedServices.length === 0) {
@@ -240,6 +240,8 @@ export class TestresultComponent implements OnInit {
         } else if (res.errors) {
           this.validationErrors = res.errors;
         }
+
+
       },
       error: (err) => {
         console.error('API error:', err);

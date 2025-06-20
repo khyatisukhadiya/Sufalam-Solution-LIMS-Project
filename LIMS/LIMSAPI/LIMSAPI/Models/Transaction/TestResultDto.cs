@@ -23,7 +23,7 @@
         public int TestId { get; set; }
         public string TestName { get; set; }
         public string ResultValue { get; set; }
-        public string ValidationStatus { get; set; }
+        public bool ValidationStatus { get; set; }
         public string CreatedBy { get; set; }
         public string ValidateBy { get; set; }
         public bool IsActive { get; set; }
