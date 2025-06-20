@@ -8,6 +8,7 @@ import { TestapprovalService } from '../../service/TransactionService/testapprov
 import { Modal } from 'bootstrap';
 import autoTable from 'jspdf-autotable';
 import { every } from 'rxjs';
+import JsBarcode from 'jsbarcode';
 
 @Component({
   selector: 'app-test-approval',
@@ -289,8 +290,8 @@ export class TestapprovalComponent implements OnInit {
     });
   }
 
-  generatePDF(selectedSampleId: number) {
 
+  generatePDF(selectedSampleId: number) {
     console.log("🔍 Generating PDF for Sample ID:", selectedSampleId);
 
     if (!selectedSampleId) {
@@ -314,14 +315,31 @@ export class TestapprovalComponent implements OnInit {
       return;
     }
 
-    // const allValidated = Array.isArray(this.SampleRegister?.tests) &&
-    //       this.SampleRegister.tests.every((test: any) => test.validationStatus === 'A');
-    //     if (!allValidated) {
-    //       this.showError("Report Under Process");
-    //       return;
-    //     }
-
     console.log("📄 Matched Sample:", matchedSample);
+
+
+     const services = this.selectTest.map(service => ({
+        serviceId: service.serviceId,
+        serviceName: service.serviceName,
+        tests: service.tests.map((test: any) => ({
+          testId: test.testId,
+          testName: test.testName,
+          resultValue: test.resultValue,
+          validationStatus: test.validationStatus ? 'A' : 'V',
+          createdBy: test.createdBy || '',
+          validateBy: test.validateBy || '',
+          isActive: test.isActive || true
+        }))
+      }));
+
+    const allResult = this.selectTest.every((selectTest: any) =>
+      Array.isArray(selectTest.tests) && selectTest.tests.every((test: any) => test.validationStatus === true)
+    );
+    if (!allResult) {
+      this.showError("Report under process");
+      return;
+    }
+
 
     // Generate PDF using jsPDF
     const doc = new jsPDF();
@@ -368,13 +386,6 @@ export class TestapprovalComponent implements OnInit {
     // Adding test results
     const pageHeight = doc.internal.pageSize.height;
 
-    const allResult = this.sampleRegisterMaster.every((sample: any) =>
-      Array.isArray(sample.tests) && sample.tests.every((test: any) => test.validationStatus === 'A')
-    );
-    if(!allResult){
-      this.showError("report undet process");
-    }
-
     matchedSample?.serviceMapping?.forEach((serviceMapping: any) => {
       if (finalY > pageHeight - 20) {
         doc.addPage();
@@ -384,22 +395,21 @@ export class TestapprovalComponent implements OnInit {
       doc.setFont("helvetica", "bold").text(serviceMapping.serviceName, 10, finalY);
       finalY += 6;
 
-      const services = this.selectTest.map(service => ({
-        serviceId: service.serviceId,
-        serviceName: service.serviceName,
-        tests: service.tests.map((test: any) => ({
-          testId: test.testId,
-          testName: test.testName,
-          resultValue: test.resultValue,
-          validationStatus: test.validationStatus ? 'A' : 'V',
-          createdBy: test.createdBy || '',
-          validateBy: test.validateBy || '',
-          isActive: test.isActive || true
-        }))
-      }));
+      // const services = this.selectTest.map(service => ({
+      //   serviceId: service.serviceId,
+      //   serviceName: service.serviceName,
+      //   tests: service.tests.map((test: any) => ({
+      //     testId: test.testId,
+      //     testName: test.testName,
+      //     resultValue: test.resultValue,
+      //     validationStatus: test.validationStatus ? 'A' : 'V',
+      //     createdBy: test.createdBy || '',
+      //     validateBy: test.validateBy || '',
+      //     isActive: test.isActive || true
+      //   }))
+      // }));
 
 
-      // Only include tests for the current serviceMapping.serviceId
       const currentService = services.find(s => s.serviceId === serviceMapping.serviceId);
       currentService?.tests?.forEach((test: any) => {
         if (finalY > pageHeight - 20) {
