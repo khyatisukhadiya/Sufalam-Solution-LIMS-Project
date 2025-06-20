@@ -2750,7 +2750,7 @@ namespace LIMSAPI.RepositryLayer
                     common.Parameters.AddWithValue("@DOB", sampleRegister.DOB);
                     common.Parameters.AddWithValue("@Age", sampleRegister.Age);
                     common.Parameters.AddWithValue("@Gender", sampleRegister.Gender);
-                    common.Parameters.AddWithValue("@Email", sampleRegister.Email ?? (object)DBNull.Value);
+                    common.Parameters.AddWithValue("@Email", sampleRegister.Email);
                     common.Parameters.AddWithValue("@CityId", sampleRegister.CityId ?? (object)DBNull.Value);
                     common.Parameters.AddWithValue("@AreaId", sampleRegister.AreaId ?? (object)DBNull.Value);
                     common.Parameters.AddWithValue("@Address", sampleRegister.Address ?? (object)DBNull.Value);
@@ -2784,7 +2784,7 @@ namespace LIMSAPI.RepositryLayer
                         response.DOB = Convert.ToDateTime(reader["DOB"]);
                         response.Age = Convert.ToInt32(reader["Age"]);
                         response.Gender = reader["Gender"].ToString();
-                        response.Email = reader["Email"] != DBNull.Value ? reader["Email"].ToString() : null;
+                        response.Email = reader["Email"].ToString();
                         response.CityId = reader["CityId"] != DBNull.Value ? Convert.ToInt32(reader["CityId"]) : null;
                         response.CityName = reader["CityName"].ToString();
                         response.AreaId = reader["AreaId"] != DBNull.Value ? Convert.ToInt32(reader["AreaId"]) : null;
@@ -2828,7 +2828,7 @@ namespace LIMSAPI.RepositryLayer
                     common.Parameters.AddWithValue("@DOB", sampleRegister.DOB);
                     common.Parameters.AddWithValue("@Age", sampleRegister.Age);
                     common.Parameters.AddWithValue("@Gender", sampleRegister.Gender);
-                    common.Parameters.AddWithValue("@Email", sampleRegister.Email ?? (object)DBNull.Value);
+                    common.Parameters.AddWithValue("@Email", sampleRegister.Email);
                     common.Parameters.AddWithValue("@CityId", sampleRegister.CityId ?? (object)DBNull.Value);
                     common.Parameters.AddWithValue("@AreaId", sampleRegister.AreaId ?? (object)DBNull.Value);
                     common.Parameters.AddWithValue("@Address", sampleRegister.Address ?? (object)DBNull.Value);

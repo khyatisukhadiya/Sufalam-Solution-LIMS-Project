@@ -111,7 +111,7 @@ namespace LIMSAPI.Controllers.MasterController
 
             catch (Exception ex)
             {
-                return Error("Error while test status: " + ex.Message, HttpStatusCode.InternalServerError);
+                return Error("Error while service status: " + ex.Message, HttpStatusCode.InternalServerError);
             }
         }
 

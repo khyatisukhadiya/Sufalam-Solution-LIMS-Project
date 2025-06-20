@@ -317,7 +317,6 @@ export class TestapprovalComponent implements OnInit {
 
     console.log("📄 Matched Sample:", matchedSample);
 
-
      const services = this.selectTest.map(service => ({
         serviceId: service.serviceId,
         serviceName: service.serviceName,

@@ -116,7 +116,7 @@ namespace LIMSAPI.Controllers.MasterController
 
                 if (DoctorId <= 0)
                 {
-                    return BadRequest("Invalid branch ID.");
+                    return BadRequest("Invalid doctor ID.");
                 }
 
 

@@ -112,7 +112,7 @@ namespace LIMSAPI.Controllers.MasterController
 
             catch (Exception ex)
             {
-                return Error("Error while country status: " + ex.Message, HttpStatusCode.InternalServerError);
+                return Error("Error while state status: " + ex.Message, HttpStatusCode.InternalServerError);
             }
         }
 

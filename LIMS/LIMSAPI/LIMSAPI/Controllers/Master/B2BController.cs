@@ -107,7 +107,7 @@ namespace LIMSAPI.Controllers.MasterController
 
             catch (Exception ex)
             {
-                return Error("Error while branch status: " + ex.Message, HttpStatusCode.InternalServerError);
+                return Error("Error while b2b status: " + ex.Message, HttpStatusCode.InternalServerError);
             }
         }
 

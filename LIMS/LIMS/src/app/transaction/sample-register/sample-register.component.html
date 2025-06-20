@@ -272,7 +272,7 @@
                                             <input type="email" class="form-control" formControlName="email"
                                                 placeholder="abc@gmail.com" (input)="onInputChange()">
                                             <ng-container *ngFor="let error of validationErrors">
-                                                <small *ngIf="error.toLowerCase().includes('email')"
+                                                <small *ngIf="error.toLowerCase().includes('invalid')"
                                                     class="text-danger">
                                                     {{ error }}
                                                 </small>
