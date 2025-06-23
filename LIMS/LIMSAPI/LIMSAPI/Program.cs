@@ -1,7 +1,10 @@
 ﻿using Azure.Core;
 using LIMSAPI.Helpers;
+using LIMSAPI.Helpers.Email;
 using LIMSAPI.RepositryLayer;
 using LIMSAPI.ServiceLayer;
+using LIMSAPI.ServiceLayer.Email.EmailRepositry;
+using LIMSAPI.ServiceLayer.Email.EmailService;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 
@@ -10,6 +13,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<DuplicateChecker>();
 builder.Services.AddScoped<LIMSRepositryInterface, LIMSRepositry>();
 builder.Services.AddScoped<LIMSServiceInterface, LIMSService>();
+builder.Services.AddScoped<IMailRepositry, MailRepositry>();
+builder.Services.AddScoped<IMailService, MailService>();
+builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
 builder.Services.AddScoped<SqlConnection>(sp =>
 {
     var configuration = builder.Configuration;

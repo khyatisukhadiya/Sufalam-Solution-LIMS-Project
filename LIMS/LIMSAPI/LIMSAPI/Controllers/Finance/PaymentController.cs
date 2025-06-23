@@ -2,6 +2,7 @@
 using LIMSAPI.Models;
 using LIMSAPI.Models.FinanceModal;
 using LIMSAPI.RepositryLayer;
+using LIMSAPI.ServiceLayer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,9 +12,9 @@ namespace LIMSAPI.Controllers.Finance
     [ApiController]
     public class PaymentController : BaseAPIController
     {
-        public LIMSRepositryInterface _payment;
+        public LIMSServiceInterface _payment;
 
-        public PaymentController(LIMSRepositryInterface payment, IConfiguration configuration) : base(configuration)
+        public PaymentController(LIMSServiceInterface payment, IConfiguration configuration) : base(configuration)
         {
             _payment = payment;
         }

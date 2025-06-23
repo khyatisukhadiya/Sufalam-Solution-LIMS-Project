@@ -2769,7 +2769,7 @@ namespace LIMSAPI.RepositryLayer
                     if (reader.Read())
                     {
                         response.SampleRegisterId = Convert.ToInt32(reader["SampleRegisterId"]);
-                        response.Date = Convert.ToDateTime(reader["Date"]);
+                        response.Date = DateOnly.FromDateTime(Convert.ToDateTime(reader["Date"]));
                         response.BranchId = Convert.ToInt32(reader["BranchId"]);
                         response.BranchName = reader["BranchName"].ToString();
                         response.TotalAmount = Convert.ToInt32(reader["TotalAmount"]);
@@ -2781,7 +2781,7 @@ namespace LIMSAPI.RepositryLayer
                         response.FirstName = reader["FirstName"].ToString();
                         response.MiddleName = reader["MiddleName"].ToString();
                         response.LastName = reader["LastName"].ToString();
-                        response.DOB = Convert.ToDateTime(reader["DOB"]);
+                        response.DOB = DateOnly.FromDateTime(Convert.ToDateTime(reader["DOB"]));
                         response.Age = Convert.ToInt32(reader["Age"]);
                         response.Gender = reader["Gender"].ToString();
                         response.Email = reader["Email"].ToString();
@@ -3048,7 +3048,7 @@ namespace LIMSAPI.RepositryLayer
                     mapFunc: reader => new SampleRegister
                     {
                         SampleRegisterId = Convert.ToInt32(reader["SampleRegisterId"]),
-                        Date = Convert.ToDateTime(reader["Date"]),
+                        Date = DateOnly.FromDateTime(Convert.ToDateTime(reader["Date"])),
                         BranchId = Convert.ToInt32(reader["BranchId"]),
                         BranchName = reader["BranchName"].ToString(),
                         TotalAmount = Convert.ToInt32(reader["TotalAmount"]),
@@ -3060,7 +3060,7 @@ namespace LIMSAPI.RepositryLayer
                         FirstName = reader["FirstName"].ToString(),
                         MiddleName = reader["MiddleName"].ToString(),
                         LastName = reader["LastName"].ToString(),
-                        DOB = Convert.ToDateTime(reader["DOB"]),
+                        DOB = DateOnly.FromDateTime(Convert.ToDateTime(reader["DOB"])),
                         Age = Convert.ToInt32(reader["Age"]),
                         Gender = reader["Gender"].ToString(),
                         Email = reader["Email"] != DBNull.Value ? reader["Email"].ToString() : null,
@@ -3204,7 +3204,7 @@ namespace LIMSAPI.RepositryLayer
                         if (reader.Read())
                         {
                             response.SampleRegisterId = Convert.ToInt32(reader["SampleRegisterId"]);
-                            response.Date = Convert.ToDateTime(reader["Date"]);
+                            response.Date = DateOnly.FromDateTime(Convert.ToDateTime(reader["Date"]));
                             response.BranchId = Convert.ToInt32(reader["BranchId"]);
                             response.BranchName = reader["BranchName"].ToString();
                             response.TotalAmount = Convert.ToInt32(reader["TotalAmount"]);
@@ -3216,7 +3216,7 @@ namespace LIMSAPI.RepositryLayer
                             response.FirstName = reader["FirstName"].ToString();
                             response.MiddleName = reader["MiddleName"].ToString();
                             response.LastName = reader["LastName"].ToString();
-                            response.DOB = Convert.ToDateTime(reader["DOB"]);
+                            response.DOB = DateOnly.FromDateTime(Convert.ToDateTime(reader["DOB"]));
                             response.Age = Convert.ToInt32(reader["Age"]);
                             response.Gender = reader["Gender"].ToString();
                             response.Email = reader["Email"] != DBNull.Value ? reader["Email"].ToString() : null;
@@ -3881,7 +3881,7 @@ namespace LIMSAPI.RepositryLayer
                 string query = @"
                                  SELECT 
                                      sr.SampleRegisterId, sr.Title, sr.FirstName, sr.MiddleName, sr.Gender, sr.Age, sr.DOB, sr.Date, sr.PhoneNumber,
-                                     sr.BranchId, b.BranchName,
+                                     sr.BranchId, b.BranchName, sr.Email,
                                      sr.B2BId, bb.B2BName
                                  FROM SampleRegister sr
                                  LEFT JOIN Branch b ON sr.BranchId = b.BranchId
@@ -3906,13 +3906,14 @@ namespace LIMSAPI.RepositryLayer
                                 MiddleName = reader["MiddleName"]?.ToString(),
                                 Gender = reader["Gender"]?.ToString(),
                                 Age = Convert.ToInt32(reader["Age"]),
-                                DOB = (DateTime)(reader["DOB"] as DateTime?),
-                                Date = (DateTime)(reader["Date"] as DateTime?),
+                                DOB = DateOnly.FromDateTime(Convert.ToDateTime(reader["DOB"])),
+                                Date = DateOnly.FromDateTime(Convert.ToDateTime(reader["Date"])),
                                 PhoneNumber = reader["PhoneNumber"]?.ToString(),
                                 BranchId = reader["BranchId"] as int?,
                                 BranchName = reader["BranchName"]?.ToString(),
                                 B2BId = reader["B2BId"] as int?,
-                                B2BName = reader["B2BName"]?.ToString()
+                                B2BName = reader["B2BName"]?.ToString(),
+                                Email = reader["Email"]?.ToString()
                             };
                         }
                         else

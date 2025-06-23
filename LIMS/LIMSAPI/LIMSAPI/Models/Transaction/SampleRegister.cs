@@ -10,7 +10,7 @@ namespace LIMSAPI.Models.TransactionModal
 
         public int SampleRegisterId { get; set; }
 
-        public DateTime Date { get; set; }
+        public DateOnly Date { get; set; }
 
 
         // BRANCH
@@ -58,7 +58,7 @@ namespace LIMSAPI.Models.TransactionModal
 
 
         [Required(ErrorMessage = "Date of Birth is required.")]
-        public DateTime DOB { get; set; }
+        public DateOnly DOB { get; set; }
 
         public int Age { get; set; }
 

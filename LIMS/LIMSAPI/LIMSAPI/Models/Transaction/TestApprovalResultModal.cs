@@ -10,13 +10,15 @@
         public string MiddleName { get; set; }
         public string Gender { get; set; }
         public int Age { get; set; }
-        public DateTime DOB { get; set; }
-        public DateTime Date { get; set; }
+        public DateOnly DOB { get; set; }
+        public DateOnly Date { get; set; }
         public string PhoneNumber { get; set; }
         public int? BranchId { get; set; }
         public string? BranchName { get; set; }
         public int? B2BId { get; set; }
         public string? B2BName { get; set; }
+
+        public string? Email { get; set; }
 
         public List<serviceMapping> serviceMappings { get; set; } = new List<serviceMapping>();
         public List<Test> Tests { get; set; } = new List<Test>();

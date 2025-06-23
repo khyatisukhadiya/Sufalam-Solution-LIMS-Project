@@ -7,7 +7,7 @@ import { SliderbarComponent } from "../../component/sliderbar/sliderbar.componen
 import { TestapprovalService } from '../../service/TransactionService/testapproval/testapproval.service';
 import { Modal } from 'bootstrap';
 import autoTable from 'jspdf-autotable';
-import { every } from 'rxjs';
+import { every, Subject } from 'rxjs';
 import JsBarcode from 'jsbarcode';
 
 @Component({
@@ -317,19 +317,19 @@ export class TestapprovalComponent implements OnInit {
 
     console.log("📄 Matched Sample:", matchedSample);
 
-     const services = this.selectTest.map(service => ({
-        serviceId: service.serviceId,
-        serviceName: service.serviceName,
-        tests: service.tests.map((test: any) => ({
-          testId: test.testId,
-          testName: test.testName,
-          resultValue: test.resultValue,
-          validationStatus: test.validationStatus ? 'A' : 'V',
-          createdBy: test.createdBy || '',
-          validateBy: test.validateBy || '',
-          isActive: test.isActive || true
-        }))
-      }));
+    const services = this.selectTest.map(service => ({
+      serviceId: service.serviceId,
+      serviceName: service.serviceName,
+      tests: service.tests.map((test: any) => ({
+        testId: test.testId,
+        testName: test.testName,
+        resultValue: test.resultValue,
+        validationStatus: test.validationStatus ? 'A' : 'V',
+        createdBy: test.createdBy || '',
+        validateBy: test.validateBy || '',
+        isActive: test.isActive || true
+      }))
+    }));
 
     const allResult = this.selectTest.every((selectTest: any) =>
       Array.isArray(selectTest.tests) && selectTest.tests.every((test: any) => test.validationStatus === true)
@@ -358,7 +358,7 @@ export class TestapprovalComponent implements OnInit {
       ["Name", `: ${matchedSample.title || ''} ${matchedSample.firstName || ''} ${matchedSample.middleName || ''}`, "Sex/Age", `: ${matchedSample.gender || ''} / ${matchedSample.age || ''} Years`],
       ["Case ID", `: ${matchedSample.sampleRegisterId || ''}`, "Mobile", `: ${matchedSample.phoneNumber || ''}`],
       ["Branch", `: ${matchedSample.branchName || ''}`, "B2B", `: ${matchedSample.b2BName || ''}`],
-      ["Reg Date and Time", `: ${matchedSample.date || ''}`, "Report Date and Time", `: ${today}`],
+      ["Reg Date", `: ${matchedSample.date || ''}`, "Report Date", `: ${today}`],
 
     ];
 
@@ -430,5 +430,35 @@ export class TestapprovalComponent implements OnInit {
 
     // Save PDF
     doc.save(`Test_Report_CaseID_${selectedSampleId}.pdf`);
-  }
+
+    const toEmail = matchedSample?.email;
+    console.log("Email", matchedSample.email);
+    const subject = `Test Report for Case ID ${selectedSampleId}`;
+    const body = "Dear Customer,<br/><br/>I have attached your test report please check it.<br/><br/>Best regards,<br/>LIMS Team";
+    const pdfBlob = doc.output('blob');
+
+    const formData = new FormData();
+    formData.append('toEmail', toEmail);
+    formData.append('subject', subject);
+    formData.append('body', body);
+    formData.append('attachments', pdfBlob, `Test_Report_CaseID_${selectedSampleId}.pdf`);
+
+    this.testApprovalResultService.sendResportByEmail(
+      toEmail,
+      subject,
+      body,
+      pdfBlob,
+      `Test_Report_CaseID_${selectedSampleId}.pdf`
+    ).subscribe({
+      next: (res) => {
+        console.log(res);
+        this.showSuccess("Report sent successfully");
+      },
+      error: (err) => {
+        console.error(err);
+        this.showError("Error sending report");
+      }
+    });
+  };
+
 }

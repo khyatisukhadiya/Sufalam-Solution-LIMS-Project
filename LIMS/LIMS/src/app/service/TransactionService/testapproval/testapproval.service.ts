@@ -1,18 +1,19 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TestapprovalService {
 
-  constructor(private http : HttpClient) { }
+  constructor(private http: HttpClient) { }
 
-  getTestApprovalList(sampleRegisterId : number) {
-    return this.http.get<any[]>('https://localhost:7161/api/TestResult/GetTestResultById?SampleRegisterId='+ sampleRegisterId);
+  getTestApprovalList(sampleRegisterId: number) {
+    return this.http.get<any[]>('https://localhost:7161/api/TestResult/GetTestResultById?SampleRegisterId=' + sampleRegisterId);
   }
 
-  getSampleregister(filter : any){
+  getSampleregister(filter: any) {
     let params = new HttpParams();
 
     if (filter.name) {
@@ -30,23 +31,36 @@ export class TestapprovalService {
     if (filter.isActive !== null && filter.isActive !== undefined) {
       params = params.set('isActive', filter.isActive.toString());
     }
-    return this.http.get<any>('https://localhost:7161/api/SampleRegister/GetSampleByFilter', {params});
+    return this.http.get<any>('https://localhost:7161/api/SampleRegister/GetSampleByFilter', { params });
   }
 
 
-    getServices() {
+  getServices() {
     return this.http.get<any>('https://localhost:7161/api/Service/GetServiceIsActive');
   }
 
-  getTestApprovalById(sampleRegisterId : number) {
+  getTestApprovalById(sampleRegisterId: number) {
     return this.http.get<any>('https://localhost:7161/api/TestResult/GetTestResultsById?SampleRegisterId=' + sampleRegisterId);
   }
 
-    addUpdatedTestResult(data: any) {
+  addUpdatedTestResult(data: any) {
     return this.http.post<any>('https://localhost:7161/api/TestResult/AddUpdateTestResult', data);
   }
 
   getTestApprovalBySampleId(sampleRegisterId: number) {
     return this.http.get<any>('https://localhost:7161/api/TestApprovalResult?sampleRegisterId=' + sampleRegisterId);
   }
+
+
+ sendResportByEmail(toEmail: string, subject: string, body: string, pdfBlob: Blob, fileName: string) {
+  const formData = new FormData();
+  formData.append("toEmail", toEmail);
+  formData.append("subject", subject);
+  formData.append("body", body);
+  formData.append("attachments", pdfBlob, fileName); 
+
+  return this.http.post<any>('https://localhost:7161/api/Email/SendEmail', formData);
+}
+
+
 }
