@@ -2,8 +2,8 @@
 using System.Net.Mail;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Http;
-using LIMSAPI.ServiceLayer.Email.EmailRepositry;
 using LIMSAPI.Helpers.Email;
+using LIMSAPI.RepositryLayer.Email.EmailRepositry;
 
 namespace LIMSAPI.ServiceLayer.Email.EmailService
 {

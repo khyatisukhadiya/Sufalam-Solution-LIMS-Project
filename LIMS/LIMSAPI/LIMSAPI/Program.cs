@@ -1,10 +1,13 @@
 ﻿using Azure.Core;
 using LIMSAPI.Helpers;
 using LIMSAPI.Helpers.Email;
+using LIMSAPI.Helpers.SMS;
 using LIMSAPI.RepositryLayer;
+using LIMSAPI.RepositryLayer.Email.EmailRepositry;
+using LIMSAPI.RepositryLayer.SMSRepository;
 using LIMSAPI.ServiceLayer;
-using LIMSAPI.ServiceLayer.Email.EmailRepositry;
 using LIMSAPI.ServiceLayer.Email.EmailService;
+using LIMSAPI.ServiceLayer.SMS.SMSService;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 
@@ -16,6 +19,10 @@ builder.Services.AddScoped<LIMSServiceInterface, LIMSService>();
 builder.Services.AddScoped<IMailRepositry, MailRepositry>();
 builder.Services.AddScoped<IMailService, MailService>();
 builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
+
+builder.Services.AddScoped<ISMSRepository, SMSRepository>();
+builder.Services.AddScoped<ISMSService, SMSService>();
+builder.Services.Configure<SMSSettings>(builder.Configuration.GetSection("SMSSettings"));
 builder.Services.AddScoped<SqlConnection>(sp =>
 {
     var configuration = builder.Configuration;

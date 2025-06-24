@@ -3,7 +3,7 @@ using System.Net;
 using Microsoft.Extensions.Options;
 using LIMSAPI.Helpers.Email;
 
-namespace LIMSAPI.ServiceLayer.Email.EmailRepositry
+namespace LIMSAPI.RepositryLayer.Email.EmailRepositry
 {
     public class MailRepositry : IMailRepositry
     {
@@ -30,11 +30,13 @@ namespace LIMSAPI.ServiceLayer.Email.EmailRepositry
 
             using (var message = new MailMessage())
             {
+
                 message.From = new MailAddress(_mailSettings.Mail, _mailSettings.DisplayName);
+
 
                 if (!string.IsNullOrWhiteSpace(mailRequest.ToEmail))
                 {
-                    message.To.Add(new MailAddress(mailRequest.ToEmail));
+                    message.To.Add(new MailAddress(mailRequest?.ToEmail));
                 }
 
 
@@ -59,7 +61,7 @@ namespace LIMSAPI.ServiceLayer.Email.EmailRepositry
                 {
                     smtp.EnableSsl = true;
                     smtp.Credentials = new NetworkCredential(_mailSettings.Mail, _mailSettings.Password);
-
+                        
                     try
                     {
                         smtp.Send(message);

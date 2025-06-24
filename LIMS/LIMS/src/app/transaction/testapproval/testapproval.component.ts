@@ -431,6 +431,8 @@ export class TestapprovalComponent implements OnInit {
     // Save PDF
     doc.save(`Test_Report_CaseID_${selectedSampleId}.pdf`);
 
+
+    // Send report in Email
     const toEmail = matchedSample?.email;
     console.log("Email", matchedSample.email);
     const subject = `Test Report for Case ID ${selectedSampleId}`;
@@ -443,22 +445,38 @@ export class TestapprovalComponent implements OnInit {
     formData.append('body', body);
     formData.append('attachments', pdfBlob, `Test_Report_CaseID_${selectedSampleId}.pdf`);
 
-    this.testApprovalResultService.sendResportByEmail(
-      toEmail,
-      subject,
-      body,
-      pdfBlob,
-      `Test_Report_CaseID_${selectedSampleId}.pdf`
-    ).subscribe({
+    this.testApprovalResultService.sendResportByEmail(toEmail, subject, body, pdfBlob, `Test_Report_CaseID_${selectedSampleId}.pdf`).subscribe({
       next: (res) => {
         console.log(res);
-        this.showSuccess("Report sent successfully");
+        this.showSuccess(res.message);
       },
       error: (err) => {
         console.error(err);
         this.showError("Error sending report");
       }
     });
-  };
+
+
+      // send SMS
+      const toPhoneNumber = matchedSample?.phoneNumber;
+      const messageBody = `Hello Dear Customer ${matchedSample.middleName} ${matchedSample.firstName}. Please Collect Your report.`;
+      const formDatas = new FormData();
+      formDatas.append("toPhoneNumber", toPhoneNumber);
+      formDatas.append("messageBody", messageBody);
+      this.testApprovalResultService.sendSMS(toPhoneNumber, messageBody).subscribe({
+        next: (res) =>
+        {
+          console.log(res),
+          this.showSuccess(res.message); 
+        },
+        error: (err) =>{
+          console.error(err); 
+          this.showError("Error sending SMS");
+        }
+      });
+    
+  }
+
+
 
 }

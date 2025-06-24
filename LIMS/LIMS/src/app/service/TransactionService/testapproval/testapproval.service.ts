@@ -62,5 +62,11 @@ export class TestapprovalService {
   return this.http.post<any>('https://localhost:7161/api/Email/SendEmail', formData);
 }
 
+sendSMS(toPhoneNumber: string , messageBody: string ){
+  const formDatas = new FormData();
+  formDatas.append("toPhoneNumber", toPhoneNumber);
+  formDatas.append("messageBody", messageBody);
+  return this.http.post<any>('https://localhost:7161/api/SMS/sendSMS', formDatas);
+}
 
 }

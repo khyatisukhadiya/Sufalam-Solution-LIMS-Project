@@ -1,6 +1,6 @@
 ﻿using LIMSAPI.Helpers.Email;
 
-namespace LIMSAPI.ServiceLayer.Email.EmailRepositry
+namespace LIMSAPI.RepositryLayer.Email.EmailRepositry
 {
     public interface IMailRepositry
     {
