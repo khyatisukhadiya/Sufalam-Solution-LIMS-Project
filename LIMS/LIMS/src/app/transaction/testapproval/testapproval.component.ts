@@ -7,8 +7,6 @@ import { SliderbarComponent } from "../../component/sliderbar/sliderbar.componen
 import { TestapprovalService } from '../../service/TransactionService/testapproval/testapproval.service';
 import { Modal } from 'bootstrap';
 import autoTable from 'jspdf-autotable';
-import { every, Subject } from 'rxjs';
-import JsBarcode from 'jsbarcode';
 
 @Component({
   selector: 'app-test-approval',
@@ -21,6 +19,7 @@ import JsBarcode from 'jsbarcode';
 export class TestapprovalComponent implements OnInit {
 
   @ViewChild('myModal') modal !: ElementRef;
+  // @ViewChild('autofocus') autofocus!: ElementRef;
 
   searchClicked = false;
   sampleRegisterMaster: any[] = [];
@@ -110,6 +109,11 @@ export class TestapprovalComponent implements OnInit {
 
     if (modal != null) {
       modal.style.display = "block";
+      // modal.addEventListener('shown.bs.modal', () => {
+      //   if (this.autofocus) {
+      //     this.autofocus.nativeElement.focus();
+      //   }
+      // });
     }
 
     if (this.modal?.nativeElement) {
@@ -120,7 +124,6 @@ export class TestapprovalComponent implements OnInit {
       this.modalInstance.show();
     }
 
-
     const sampleRegisterId = selected.sampleRegisterId;
 
     this.testApprovalResultService.getTestApprovalBySampleId(sampleRegisterId).subscribe({
@@ -129,7 +132,7 @@ export class TestapprovalComponent implements OnInit {
 
         const hasTests = Array.isArray(this.SampleRegister?.tests) && this.SampleRegister.tests.length > 0;
         if (!hasTests) {
-          this.showError("Data is Not available for this sample");
+          this.showError("Data is not available for this sample");
           if (this.modalInstance) {
             this.modalInstance.hide();
           }
@@ -331,8 +334,16 @@ export class TestapprovalComponent implements OnInit {
       }))
     }));
 
-    const allResult = this.selectTest.every((selectTest: any) =>
-      Array.isArray(selectTest.tests) && selectTest.tests.every((test: any) => test.validationStatus === true)
+
+    if (!this.selectTest || this.selectTest.length === 0) {
+      this.showError("Data is not available to generate the report.");
+      return;
+    }
+
+    const allResult = this.selectTest.every(
+      (selectTest: any) =>
+      Array.isArray(selectTest.tests) &&
+      selectTest.tests.every((test: any) => test.validationStatus === true)
     );
     if (!allResult) {
       this.showError("Report under process");
@@ -341,7 +352,7 @@ export class TestapprovalComponent implements OnInit {
 
 
     // Generate PDF using jsPDF
-    const doc = new jsPDF();
+    const doc = new jsPDF()
     const today = new Date().toISOString().split('T')[0];
 
     // Report Title
@@ -426,6 +437,8 @@ export class TestapprovalComponent implements OnInit {
       });
 
     });
+
+
     doc.text("------------------- End Of Report -------------------", 73, finalY);
 
     // Save PDF
@@ -473,10 +486,7 @@ export class TestapprovalComponent implements OnInit {
           console.error(err); 
           this.showError("Error sending SMS");
         }
-      });
-    
+      }); 
   }
-
-
 
 }

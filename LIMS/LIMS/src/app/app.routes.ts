@@ -13,6 +13,8 @@ import { PaymentComponent } from './finance/payment/payment.component';
 import { SampleRegisterComponent } from './transaction/sample-register/sample-register.component';
 import { TestresultComponent } from './transaction/testresult/testresult.component';
 import { TestapprovalComponent } from './transaction/testapproval/testapproval.component';
+import { UserregistrationService } from './service/AccountService/userregistration/userregistration.service';
+import { RegistrationComponent } from './Main/UserRegistration/registration/registration.component';
 
 export const routes: Routes = [
     {
@@ -70,5 +72,9 @@ export const routes: Routes = [
     {
        path : 'testapproval',
        component : TestapprovalComponent
+    },
+    {
+        path : 'registration',
+        component : RegistrationComponent
     }
 ];

@@ -1,4 +1,5 @@
-﻿using LIMSAPI.Helpers.Email;
+﻿using System.Net;
+using LIMSAPI.Helpers.Email;
 using LIMSAPI.Helpers.SMS;
 using LIMSAPI.ServiceLayer.SMS.SMSService;
 using Microsoft.AspNetCore.Http;
@@ -22,8 +23,26 @@ namespace LIMSAPI.Controllers.SMS
         [HttpPost]
         public IActionResult sendSMS([FromForm]SMSReruest sMSReruest)
         {
-            _sMSService.sendSMS(sMSReruest);
-            return Ok(new { message = "SMS Sent Successfully" });
+            if (!ModelState.IsValid)
+            {
+                var validationErrors = ModelState.Values
+                    .Select(v => v.Errors[0])
+                    .Select(e => e.ErrorMessage)
+                    .ToList();
+
+                return BadRequest(new { success = false, errors = validationErrors });
+            }
+
+            try
+            {
+                _sMSService.sendSMS(sMSReruest);
+                return Ok(new { message = "SMS Sent Successfully" });
+            }
+            catch (Exception ex)
+            {
+                return Error(ex.Message, HttpStatusCode.InternalServerError);
+            }
+           
         }
     }
 }

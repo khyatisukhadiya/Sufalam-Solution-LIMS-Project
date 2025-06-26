@@ -1,5 +1,7 @@
-﻿using Azure.Core;
+﻿using System.Net;
+using Azure.Core;
 using LIMSAPI.Helpers.Email;
+using LIMSAPI.Models.FinanceModal;
 using LIMSAPI.ServiceLayer.Email.EmailService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -22,8 +24,25 @@ namespace LIMSAPI.Controllers.Email
         [HttpPost]
         public IActionResult SendEmail([FromForm] MailRequest mailRequest)
         {
-            _mailService.SendEmail(mailRequest);
-            return Ok(new { message = "Email Sent Successfully" });
+            if (!ModelState.IsValid)
+            {
+                var validationErrors = ModelState.Values
+                    .Select(v => v.Errors[0])
+                    .Select(e => e.ErrorMessage)
+                    .ToList();
+
+                return BadRequest(new { success = false, errors = validationErrors });
+            }
+
+            try
+            {
+                _mailService.SendEmail(mailRequest);
+                return Ok(new { message = "Email Sent Successfully" });
+            }
+            catch (Exception ex)
+            {
+                return Error(ex.Message, HttpStatusCode.InternalServerError);
+            }
         }
     }
 }

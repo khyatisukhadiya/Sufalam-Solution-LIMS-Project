@@ -13,5 +13,5 @@ export const appConfig: ApplicationConfig = {
       positionClass : 'toast-bottom-right',
       timeOut : 3000,
       preventDuplicates : true
-    })]
+    }), provideAnimations()]
 };

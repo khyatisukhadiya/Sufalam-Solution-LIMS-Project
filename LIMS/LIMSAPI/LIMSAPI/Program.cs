@@ -3,9 +3,11 @@ using LIMSAPI.Helpers;
 using LIMSAPI.Helpers.Email;
 using LIMSAPI.Helpers.SMS;
 using LIMSAPI.RepositryLayer;
+using LIMSAPI.RepositryLayer.Account.UserRegistration;
 using LIMSAPI.RepositryLayer.Email.EmailRepositry;
 using LIMSAPI.RepositryLayer.SMSRepository;
 using LIMSAPI.ServiceLayer;
+using LIMSAPI.ServiceLayer.Account.UserRegistration;
 using LIMSAPI.ServiceLayer.Email.EmailService;
 using LIMSAPI.ServiceLayer.SMS.SMSService;
 using Microsoft.AspNetCore.Mvc;
@@ -16,6 +18,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<DuplicateChecker>();
 builder.Services.AddScoped<LIMSRepositryInterface, LIMSRepositry>();
 builder.Services.AddScoped<LIMSServiceInterface, LIMSService>();
+
+builder.Services.AddScoped<IUserRegistrationRL, UserRegistrationRL>();
+builder.Services.AddScoped<IUserRegistrationSL, UserRegistrationSL>();
+
 builder.Services.AddScoped<IMailRepositry, MailRepositry>();
 builder.Services.AddScoped<IMailService, MailService>();
 builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
