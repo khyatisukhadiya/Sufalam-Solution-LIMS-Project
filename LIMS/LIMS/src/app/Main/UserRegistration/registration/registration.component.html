@@ -1,160 +1,206 @@
 <section class="vh-100" style="background-color: rgba(203, 218, 222, 0.2); font-family: Helvetica, Arial, sans-serif;">
-    <div class="container h-80">
+    <div class="container h-80 ">
         <div class="row d-flex justify-content-center align-items-center h-100">
-            <div class="col-sm-10 col-md-5">
-                <div class="card text-black  mt-4" style="border-radius: 25px;">
-                    <div class="card-body p-md-2 mt-3">
+            <div class="col-md-10 col-lg-5">
+                <div class="card text-black mt-2" style="border-radius: 25px;">
+                    <div class="card-body p-md-2">
                         <div class="row justify-content-center">
                             <div class="col-sm-6 col-md-8 col-lg-10 order-2 order-lg-1">
 
-                                <p class="text-center h1 fw-bold mb-5 mx-1 mx-md-3">Sign up</p>
+                                <p class="text-center h1 fw-bold mb-5 mx-1 mx-md-2 mt-4">Sign up</p>
 
-                                <form class="mx-1 mx-md-4">
+                                <form [formGroup]="userRegisterForm" class="mx-1 mx-md-4" (ngSubmit)="onSubmit()">
 
-                                    <!-- <div class="d-flex"> -->
                                     <div class="d-flex flex-row align-items-center mb-4">
                                         <i class="fas fa-user fa-lg me-3 fa-fw"></i>
-                                        <div data-mdb-input-init class="form-outline flex-fill mb-0"
-                                            data-mdb-input-initialized="true">
-                                            <mdb-form-control>
-                                                <input mdbInput type="text" id="form" class="form-control" />
-                                                <label mdbLabel class="form-label" style="margin-left: 0px;-left: 0;"
-                                                    for="form">Your User Name</label>
-                                            </mdb-form-control>
+                                        <div class="flex-fill mb-0">
+                                            <!-- <label for="username" class="form-label">Your User Name</label> -->
+                                            <input type="text" id="username" formControlName="userName"
+                                                placeholder="Your User Name" name="username" class="form-control"(change)="onInputChange()" />
+
+                                            <ng-container *ngFor="let error of validationErrors">
+                                                <small *ngIf="error.toLowerCase().includes('username')"
+                                                    class="text-danger">
+                                                    {{ error }}
+                                                </small>
+                                            </ng-container>
+
+                                             <small
+                                                *ngIf="userRegisterForm.controls['userName']?.errors?.['required'] && submitted"
+                                                class="text-danger">
+                                                Username is required.
+                                            </small>
                                         </div>
                                     </div>
 
                                     <div class="d-flex flex-row align-items-center mb-4">
                                         <i class="fas fa-user fa-lg me-3 fa-fw"></i>
-                                        <div data-mdb-input-init class="form-outline flex-fill mb-0"
-                                            data-mdb-input-initialized="true">
-                                            <mdb-form-control>
-                                                <input mdbInput type="text" id="form" class="form-control" />
-                                                <label mdbLabel class="form-label" style="margin-left: 0px;-left: 0;"
-                                                    for="form">Your Name</label>
-                                            </mdb-form-control>
-                                            <!-- <input mdbInput type="text" id="form3Example1c" class="form-control" />
-                                            <label mdbLabel class="form-label" for="form3Example1c"
-                                                style="margin-left: 0px;-left: 0;">YouNamer </label> -->
+                                        <div class="flex-fill mb-0">
+                                            <!-- <label for="fullname" class="form-label">Your Name</label> -->
+                                            <input type="text" formControlName="fullName" placeholder="Your Full Name"
+                                                id="fullname" name="fullname" class="form-control" (change)="onInputChange()" />
+
+                                            <ng-container *ngFor="let error of validationErrors">
+                                                <small *ngIf="error.toLowerCase().includes('fullname')"
+                                                    class="text-danger">
+                                                    {{ error }}
+                                                </small>
+                                            </ng-container>
+
+                                             <small
+                                                *ngIf="userRegisterForm.controls['fullName']?.errors?.['required'] && submitted"
+                                                class="text-danger">
+                                                FullName is required.
+                                            </small>
                                         </div>
                                     </div>
-                                    <!-- </div> -->
 
-                                    <!-- <div class="d-flex"> -->
                                     <div class="d-flex flex-row align-items-center mb-4">
                                         <i class="fas fa-envelope fa-lg me-3 fa-fw"></i>
-                                        <div data-mdb-input-init class="form-outline flex-fill mb-0">
-                                            <mdb-form-control>
-                                                <input mdbInput type="email" id="form" class="form-control" />
-                                                <label mdbLabel class="form-label" style="margin-left: 0px;-left: 0;"
-                                                    for="form">Your Email</label>
-                                            </mdb-form-control>
-                                            <!-- <input type="email" id="form3Example3c" class="form-control" />
-                                            <label class="form-label" for="form3Example3c">Your Email</label> -->
+                                        <div class="flex-fill mb-0">
+                                            <!-- <label for="email" class="form-label">Your Email</label> -->
+                                            <input type="email" id="email" formControlName="email" placeholder="Your Email"
+                                                name="email" class="form-control" (change)="onInputChange()" />
+
+                                            <ng-container *ngFor="let error of validationErrors">
+                                                <small *ngIf="error.toLowerCase().includes('email')"
+                                                    class="text-danger">
+                                                    {{ error }}
+                                                </small>
+                                            </ng-container>
+
+                                              <small
+                                                *ngIf="userRegisterForm.controls['email']?.errors?.['required'] && submitted"
+                                                class="text-danger">
+                                                Email is required.
+                                            </small>
                                         </div>
                                     </div>
 
                                     <div class="d-flex flex-row align-items-center mb-4">
                                         <i class="fas fa-phone fa-lg me-3 fa-fw"></i>
-                                        <div data-mdb-input-init class="form-outline flex-fill mb-0">
-                                            <mdb-form-control>
-                                                <input mdbInput type="number" id="form" class="form-control" />
-                                                <label mdbLabel class="form-label" style="margin-left: 0px;-left: 0;"
-                                                    for="form">Your Phone Number</label>
-                                            </mdb-form-control>
-                                            <!-- <input type="email" id="form3Example3c" class="form-control" />
-                                            <label class="form-label" for="form3Example3c">Your Phone Number</label> -->
+                                        <div class="flex-fill mb-0">
+                                            <!-- <label for="phone" class="form-label">Your Phone Number</label> -->
+                                            <input type="tel" id="phone" formControlName="phoneNumber"
+                                                placeholder="Your Phone Number" name="phone" class="form-control" (change)="onInputChange()" />
+
+                                            <ng-container *ngFor="let error of validationErrors">
+                                                <small *ngIf="error.toLowerCase().includes('phone')"
+                                                    class="text-danger">
+                                                    {{ error }}
+                                                </small>
+                                            </ng-container>
+
+                                             <small
+                                                *ngIf="userRegisterForm.controls['phoneNumber']?.errors?.['required'] && submitted"
+                                                class="text-danger">
+                                                Phone Number is required.
+                                            </small>
                                         </div>
                                     </div>
-                                    <!-- </div> -->
 
-                                    <!-- <div class="d-flex"> -->
                                     <div class="d-flex flex-row align-items-center mb-4">
                                         <i class="fa-solid fa-venus-mars fa-lg me-3 fa-fw"></i>
-                                        <div data-mdb-select-init class="form-outline flex-fill mb-0">
-                                            <mdb-form-control>
-                                                <select mdbselect class="form-control">
-                                                    <option value="F">Female</option>
-                                                    <option value="M">Male</option>
-                                                    <option value="O">Other</option>
-                                                </select>
-                                                <label mdbLabel class="form-label select-label" style="margin-left: 0px;-left: 0;"
-                                                    for="form">Gender</label>
-                                            </mdb-form-control>
-                                            <!-- <input type="text" id="form3Example4c" class="form-control" />
-                                            <label class="form-label" for="form3Example4c">Gender</label> -->
+                                        <div class=" flex-fill mb-0">
+                                            <!-- <label for="gender" class="form-label">Gender</label> -->
+                                            <select id="gender" formControlName="gender" name="gender" (change)="onInputChange()"
+                                                class="form-select">
+                                                <option value="F">Female</option>
+                                                <option value="M">Male</option>
+                                                <option value="O">Other</option>
+                                            </select> 
+
+                                            <ng-container *ngFor="let error of validationErrors">
+                                                <small *ngIf="error.toLowerCase().includes('gender')"
+                                                    class="text-danger">
+                                                    {{ error }}
+                                                </small>
+                                            </ng-container>
+
+                                              <small
+                                                *ngIf="userRegisterForm.controls['gender']?.errors?.['required'] && submitted"
+                                                class="text-danger">
+                                                Gender is required.
+                                            </small>
                                         </div>
                                     </div>
 
                                     <div class="d-flex flex-row align-items-center mb-4">
                                         <i class="fas fa-cake-candles fa-lg me-3 fa-fw"></i>
-                                        <div class="form-outline datepicker" data-mdb-format="dd/mm/yyyy"
-                                            data-mdb-input-init class="form-outline flex-fill mb-0">
-                                            <mdb-form-control>
-                                                <input mdbInput type="text" id="form" class="form-control" />
-                                                <label mdbLabel class="form-label" style="margin-left: 0px;-left: 0;"
-                                                    for="form">DOB</label>
-                                            </mdb-form-control>
-                                            <!-- <input type="text" class="form-control" id="exampleDatepicker4"
-                                                placeholder="dd/mm/yyyy">
-                                            <label for="exampleDatepicker4" class="form-label">DOB</label> -->
+                                        <div class="flex-fill mb-0">
+                                            <!-- <label for="dob" class="form-label">DOB</label> -->
+                                            <input type="date" formControlName="dOB" id="dob" name="dob"
+                                                class="form-control" (change)="onInputChange()" />
+
+                                            <ng-container *ngFor="let error of validationErrors">
+                                                <small *ngIf="error.toLowerCase().includes('dob')" class="text-danger">
+                                                    {{ error }}
+                                                </small>
+                                            </ng-container>
+
+                                            <small
+                                                *ngIf="userRegisterForm.controls['dOB']?.errors?.['required'] && submitted"
+                                                class="text-danger">
+                                                DOB is required.
+                                            </small>
                                         </div>
                                     </div>
-                                    <!-- </div> -->
 
-                                    <!-- <div class="d-flex"> -->
                                     <div class="d-flex flex-row align-items-center mb-4">
                                         <i class="fas fa-lock fa-lg me-3 fa-fw"></i>
-                                        <div data-mdb-input-init class="form-outline flex-fill mb-0">
-                                            <mdb-form-control>
-                                                <input mdbInput type="password" id="form" class="form-control" />
-                                                <label mdbLabel class="form-label" style="margin-left: 0px;-left: 0;"
-                                                    for="form">Password</label>
-                                            </mdb-form-control>
-                                            <!-- <input type="password" id="form3Example4c" class="form-control" />
-                                            <label class="form-label" for="form3Example4c">Password</label> -->
+                                        <div class="flex-fill mb-0">
+                                            <!-- <label for="password" class="form-label">Password</label> -->
+                                            <input type="password" formControlName="password" id="password"
+                                                placeholder="Enter Password" name="password" class="form-control" (change)="onInputChange()" />
+
+                                            <small
+                                                *ngIf="userRegisterForm.controls['password']?.errors?.['required'] && submitted"
+                                                class="text-danger">
+                                                Password is required.
+                                            </small>
+
+                                            <ng-container *ngFor="let error of validationErrors">
+                                                <small *ngIf="error.toLowerCase().includes('please enter password')"
+                                                    class="text-danger">
+                                                    {{ error }}
+                                                </small>
+                                            </ng-container>
                                         </div>
                                     </div>
 
                                     <div class="d-flex flex-row align-items-center mb-4">
                                         <i class="fas fa-key fa-lg me-3 fa-fw"></i>
-                                        <div data-mdb-input-init class="form-outline flex-fill mb-0">
-                                            <mdb-form-control>
-                                                <input mdbInput type="password" id="form" class="form-control" />
-                                                <label mdbLabel class="form-label" style="margin-left: 0px;-left: 0;"
-                                                    for="form">Repeat your password</label>
-                                            </mdb-form-control>
-                                            <!-- <input type="password" id="form3Example4cd" class="form-control" />
-                                            <label class="form-label" for="form3Example4cd">Repeat your
-                                                password</label> -->
+                                        <div class=" flex-fill mb-0">
+                                            <!-- <label for="confirmPassword" class="form-label">Repeat your password</label> -->
+                                            <input type="password" formControlName="confirmPassword"
+                                                placeholder="Enter confirmPassword" id="confirmPassword"
+                                                name="confirmPassword" class="form-control" (change)="onInputChange()" />
+
+                                            <small
+                                                *ngIf="userRegisterForm.controls['confirmPassword']?.errors?.['required'] && submitted"
+                                                class="text-danger">
+                                                confirmPassword is required.
+                                            </small>
+
+                                            <ng-container *ngFor="let error of validationErrors">
+                                                <small *ngIf="error.toLowerCase().includes('not match')"
+                                                    class="text-danger">
+                                                    {{ error }}
+                                                </small>
+                                            </ng-container>
                                         </div>
                                     </div>
-                                    <!-- </div> -->
-
-                                    <!-- <div class="form-check d-flex justify-content-center mb-5">
-                                        <input class="form-check-input me-2" type="checkbox" value=""
-                                            id="form2Example3c" />
-                                        <label class="form-check-label" for="form2Example3">
-                                            I agree all statements in <a href="#!">Terms of service</a>
-                                        </label>
-                                    </div> -->
-
 
                                     <div class="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
-                                        <button type="button" data-mdb-button-init data-mdb-ripple-init
-                                            class="btn btn-primary btn-md">Register</button>
+                                        <button type="submit" class="btn btn-primary btn-md">Register</button>
                                     </div>
 
                                 </form>
-                                <p class="text-center mt-3">Already have an account? <a routerLink="/login"
+
+                                <p class="text-center mt-3">Already have an account? <a href="/login"
                                         class="text-decoration-none">Login</a></p>
+
                             </div>
-                            <!-- <div class="col-md-10 col-lg-6 col-xl-7 d-flex align-items-center order-1 order-lg-2">
-
-                                <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-registration/draw1.webp"
-                                    class="img-fluid" alt="Sample image">
-
-                            </div> -->
                         </div>
                     </div>
                 </div>

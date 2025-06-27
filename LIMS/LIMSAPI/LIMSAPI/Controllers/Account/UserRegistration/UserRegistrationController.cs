@@ -8,7 +8,7 @@ using Twilio.TwiML.Messaging;
 
 namespace LIMSAPI.Controllers.Account.UserRegistration
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[Action]")]
     [ApiController]
     public class UserRegistrationController : BaseAPIController
     {

@@ -29,9 +29,9 @@ namespace LIMSAPI.Models.Account.UserRegistration
 
 
 
-        [Required(ErrorMessage = "Please Enter Mobile No")]
+        [Required(ErrorMessage = "Please Enter Phone No")]
         [Display(Name = "PhoneNumber")]
-        [StringLength(10, ErrorMessage = "The Mobile must contains 10 characters", MinimumLength = 10)]
+        [StringLength(10, ErrorMessage = "The Phone must contains 10 characters", MinimumLength = 10)]
         public string PhoneNumber { get; set; }
 
 
