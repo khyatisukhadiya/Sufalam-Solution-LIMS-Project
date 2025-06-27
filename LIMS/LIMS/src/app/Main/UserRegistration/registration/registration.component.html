@@ -1,4 +1,4 @@
-<section class="vh-100" style="background-color: rgba(203, 218, 222, 0.2); font-family: Helvetica, Arial, sans-serif;">
+<section class="vh-100" style="background-color: rgba(203, 218, 222, 0.2);">
     <div class="container h-80 ">
         <div class="row d-flex justify-content-center align-items-center h-100">
             <div class="col-md-10 col-lg-5">
@@ -64,6 +64,12 @@
 
                                             <ng-container *ngFor="let error of validationErrors">
                                                 <small *ngIf="error.toLowerCase().includes('email')"
+                                                    class="text-danger">
+                                                    {{ error }}
+                                                </small>
+                                            </ng-container>
+                                             <ng-container *ngFor="let error of validationErrors">
+                                                <small *ngIf="error.toLowerCase().includes('user already')"
                                                     class="text-danger">
                                                     {{ error }}
                                                 </small>

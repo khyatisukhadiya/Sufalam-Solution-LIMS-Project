@@ -2,6 +2,7 @@
 using System.Net;
 using Microsoft.Extensions.Options;
 using LIMSAPI.Helpers.Email;
+using Microsoft.Extensions.Configuration;
 
 namespace LIMSAPI.RepositryLayer.Email.EmailRepositry
 {
@@ -9,6 +10,7 @@ namespace LIMSAPI.RepositryLayer.Email.EmailRepositry
     {
 
         public readonly MailSettings _mailSettings;
+        public readonly IConfiguration _configuration;
 
         public MailRepositry(IOptions<MailSettings> mailSettings)
         {
@@ -17,6 +19,7 @@ namespace LIMSAPI.RepositryLayer.Email.EmailRepositry
 
         public Task SendEmail(MailRequest mailRequest)
         {
+
             if (string.IsNullOrWhiteSpace(_mailSettings.Mail))
             {
                 throw new InvalidOperationException("Sender email address (_mailSettings.Mail) is not configured.");
@@ -39,9 +42,6 @@ namespace LIMSAPI.RepositryLayer.Email.EmailRepositry
                     message.To.Add(new MailAddress(mailRequest?.ToEmail));
                 }
 
-
-                //mailRequest.Subject = mailRequest.;
-                //mailRequest.Body = "Dear Customer,<br/><br/>I have attached your test report please check it.<br/><br/>Best regards,<br/>LIMS Team";
                 message.Subject = mailRequest.Subject;
                 message.Body = mailRequest.Body;
                 message.IsBodyHtml = true;
@@ -74,6 +74,42 @@ namespace LIMSAPI.RepositryLayer.Email.EmailRepositry
 
                 return Task.CompletedTask;
             }
+        }
+
+        public string GenerateOtp()
+        {
+            Random random = new Random();
+            return random.Next(100000, 999999).ToString();
+        }
+
+        public Task SendEmailOtp(string email, string otp)
+        {
+            var settings = _mailSettings;
+            var smtpClient = new SmtpClient(settings.Host)
+            {
+                Port = settings.Port,
+                Credentials = new NetworkCredential(settings.Mail, settings.Password),
+                EnableSsl = true 
+            };
+
+            var mailMessage = new MailMessage
+            {
+                From = new MailAddress(settings.Mail),
+                Subject = "Your OTP Code",
+                Body = $"Your OTP code is {otp}",
+                IsBodyHtml = true 
+            };
+
+            mailMessage.To.Add(email);
+            smtpClient.Send(mailMessage);
+
+            return Task.CompletedTask;
+        }
+
+
+        public bool VerifyOtp(string enteredOtp, string storedOtp, DateTime timestamp)
+        {
+            return enteredOtp == storedOtp && DateTime.Now < timestamp.AddMinutes(10); 
         }
     }
 }

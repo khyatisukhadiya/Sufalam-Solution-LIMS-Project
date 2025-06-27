@@ -44,5 +44,23 @@ namespace LIMSAPI.Controllers.Email
                 return Error(ex.Message, HttpStatusCode.InternalServerError);
             }
         }
+
+
+        [HttpPost] 
+        public IActionResult SendOtpEmail(string toEmail)
+        {
+            string otp = _mailService.GenerateOtp();
+
+            try
+            {
+                _mailService.SendEmailOtp(toEmail, otp);
+                return Ok(new { message = "OTP Sent Successfully" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Failed to send OTP email.");
+            }
+        }
+
     }
 }

@@ -16,9 +16,28 @@ namespace LIMSAPI.ServiceLayer.Email.EmailService
             _emailRepositry = emailRepositry;
         }
 
+
+        public string GenerateOtp()
+        {
+            return _emailRepositry.GenerateOtp();
+        }
+
+
         public Task SendEmail(MailRequest mailRequest)
         {
             return _emailRepositry.SendEmail(mailRequest);
+        }
+
+
+        public Task SendEmailOtp(string toEmail, string otp) 
+        {
+            return _emailRepositry.SendEmailOtp(toEmail, otp);
+        }
+
+
+        public bool VerifyOtp(string enteredOtp, string storedOtp, DateTime timestamp)
+        {
+            return _emailRepositry.VerifyOtp(enteredOtp, storedOtp, timestamp);
         }
     }
 }

@@ -54,15 +54,15 @@ namespace LIMSAPI.Models.Account.UserRegistration
 
 
 
-        [Required(ErrorMessage = "Please Enter Gender")]
-        [Display(Name = "Gender")]
-        public char Gender { get; set; }
+        //[Required(ErrorMessage = "Please Enter Gender")]
+        //[Display(Name = "Gender")]
+        public char? Gender { get; set; }
 
 
 
-        [Required(ErrorMessage = "Please Enter DOB")]
-        [Display(Name = "DOB")]
-        public DateOnly DOB { get; set; }
+        //[Required(ErrorMessage = "Please Enter DOB")]
+        //[Display(Name = "DOB")]
+        public DateOnly? DOB { get; set; }
 
 
     }

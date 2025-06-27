@@ -56,8 +56,8 @@ export class RegistrationComponent implements OnInit {
       phoneNumber: ['', Validators.required],
       password: ['', Validators.required, Validators.minLength(6)],
       confirmPassword: ['', Validators.required, Validators.minLength(6)],
-      gender: ['', Validators.required],
-      dOB: ['', Validators.required],
+      gender: [null],
+      dOB: [null],
     });
   }
 

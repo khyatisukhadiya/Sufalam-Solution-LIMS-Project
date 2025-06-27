@@ -38,8 +38,8 @@ namespace LIMSAPI.RepositryLayer.Account.UserRegistration
                     _sqlConnection.Open();
                 }
 
-                string query = @"INSERT INTO userRegistration(UserName, FullName, PhoneNumber, Email, Password, ConfirmPassword, Gender, DOB) OUTPUT INSERTED.UserId 
-                 VALUES (@UserName, @FullName, @PhoneNumber, @Email, @Password, @ConfirmPassword, @Gender, @DOB)";
+                string query = @"INSERT INTO userRegistration(UserName, FullName, PhoneNumber, Email, Password, Gender, DOB) OUTPUT INSERTED.UserId 
+                 VALUES (@UserName, @FullName, @PhoneNumber, @Email, @Password, @Gender, @DOB)";
 
 
                 SqlCommand command = new SqlCommand(query, _sqlConnection);
@@ -48,9 +48,9 @@ namespace LIMSAPI.RepositryLayer.Account.UserRegistration
                 command.Parameters.AddWithValue("@PhoneNumber", userRegistrationModal.PhoneNumber);
                 command.Parameters.AddWithValue("@Email", userRegistrationModal.Email);
                 command.Parameters.AddWithValue("@Password", userRegistrationModal.Password);
-                command.Parameters.AddWithValue("@ConfirmPassword", userRegistrationModal.ConfirmPassword);
-                command.Parameters.AddWithValue("@Gender", userRegistrationModal.Gender);
-                command.Parameters.AddWithValue("@DOB", userRegistrationModal.DOB);
+                //command.Parameters.AddWithValue("@ConfirmPassword", userRegistrationModal.ConfirmPassword);
+                command.Parameters.AddWithValue("@Gender", userRegistrationModal.Gender ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@DOB", userRegistrationModal.DOB ?? (object)DBNull.Value);
 
 
                 int insertedId = (int)command.ExecuteScalar();

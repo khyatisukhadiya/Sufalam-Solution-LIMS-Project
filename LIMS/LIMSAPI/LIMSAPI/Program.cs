@@ -3,10 +3,12 @@ using LIMSAPI.Helpers;
 using LIMSAPI.Helpers.Email;
 using LIMSAPI.Helpers.SMS;
 using LIMSAPI.RepositryLayer;
+using LIMSAPI.RepositryLayer.Account.UserLogin;
 using LIMSAPI.RepositryLayer.Account.UserRegistration;
 using LIMSAPI.RepositryLayer.Email.EmailRepositry;
 using LIMSAPI.RepositryLayer.SMSRepository;
 using LIMSAPI.ServiceLayer;
+using LIMSAPI.ServiceLayer.Account.UserLogin;
 using LIMSAPI.ServiceLayer.Account.UserRegistration;
 using LIMSAPI.ServiceLayer.Email.EmailService;
 using LIMSAPI.ServiceLayer.SMS.SMSService;
@@ -21,6 +23,9 @@ builder.Services.AddScoped<LIMSServiceInterface, LIMSService>();
 
 builder.Services.AddScoped<IUserRegistrationRL, UserRegistrationRL>();
 builder.Services.AddScoped<IUserRegistrationSL, UserRegistrationSL>();
+
+builder.Services.AddScoped<IUserLoginSL, UserLoginSL>();
+builder.Services.AddScoped<IUserLoginRL, UserLoginRL>();
 
 builder.Services.AddScoped<IMailRepositry, MailRepositry>();
 builder.Services.AddScoped<IMailService, MailService>();
