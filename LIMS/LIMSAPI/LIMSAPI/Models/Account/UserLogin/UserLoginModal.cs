@@ -4,11 +4,13 @@ namespace LIMSAPI.Models.Account.UserLogin
 {
     public class UserLoginModal
     {
-        [Required(ErrorMessage = " Please Enter Email")]
-        [EmailAddress]
+
         [Display(Name = "Email")]
         [RegularExpression(".+@.+\\..+", ErrorMessage = "Please Enter Correct Email Address")]
         public string Email { get; set; }
+
+        public string UserName { get; set; }
+
 
 
         [Required(ErrorMessage = "Please Enter Password")]

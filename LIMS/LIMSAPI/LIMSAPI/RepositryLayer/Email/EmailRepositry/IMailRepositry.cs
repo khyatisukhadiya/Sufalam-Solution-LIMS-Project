@@ -12,9 +12,5 @@ namespace LIMSAPI.RepositryLayer.Email.EmailRepositry
 
         //string VerifyOtp(string enteredOtp);
 
-
-        string GenerateOtp();
-
-       
     }
 }

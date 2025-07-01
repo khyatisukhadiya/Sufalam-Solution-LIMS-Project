@@ -22,7 +22,18 @@ export class UserloginService {
   }
 
 
-  VerifyOtp(enteredOtp : string){
-    return this.http.post<any>('https://localhost:7161/api/Email/VerifyOtp?enteredOtp=', enteredOtp)
+  VerifyOtp(toEmail : string, enteredOtp : string){
+    const formData = new FormData();
+    formData.append('toEmail', toEmail);
+    formData.append('enteredOtp', enteredOtp);
+    return this.http.post<any>('https://localhost:7161/api/Email/VerifyOtp?enteredOtp=', formData)
+  }
+
+
+  updateUserLoginPassword(toEmail : string, newPassword : string,){
+    const formData = new FormData();
+    formData.append('toEmail', toEmail);
+    formData.append('newPassword', newPassword);
+     return this.http.post<any>('https://localhost:7161/api/UserLogin/ChangeUserPassword?newPassword=', formData)
   }
 }

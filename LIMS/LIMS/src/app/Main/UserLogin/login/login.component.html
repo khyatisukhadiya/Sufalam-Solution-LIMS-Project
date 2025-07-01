@@ -3,18 +3,26 @@
     <div class="card p-4 shadow-lg rounded-3 text-white" style="max-width: 400px; margin: auto;">
 
       <!-- LOGIN FORM -->
-      <form [formGroup]="loginFrom" *ngIf="!showForgotPassword && !showOtpForm && !showChangePassword" (ngSubmit)="onSubmit()">
+      <form [formGroup]="loginFrom" *ngIf="!showForgotPassword && !showOtpForm && !showChangePassword"
+        (ngSubmit)="onSubmit()">
         <h4 class="text-center text-dark fw-bold">Login</h4>
         <p class="text-center text-dark ">Access your account</p>
 
         <div class="mb-3">
-          <input type="email" class="form-control" placeholder="Enter Email" formControlName="email" required />
+          <input type="text" class="form-control" placeholder="Enter userName" formControlName="userName" required />
         </div>
 
         <div class="mb-3">
-          <input type="password" class="form-control" placeholder="Enter Password" formControlName="password" required />
+          <input type="password" class="form-control" placeholder="Enter Password" formControlName="password"
+            required />
         </div>
 
+        <ng-container *ngFor="let error of validationErrors">
+          <small *ngIf="error.toLowerCase().includes('userName')" class="text-danger">
+            {{ error }}
+          </small>
+        </ng-container>
+        
         <div *ngIf="errorMessage" class="text-danger text-center mb-3">{{ errorMessage }}</div>
 
         <div class="d-flex justify-content-between align-items-center mb-3">
@@ -22,15 +30,16 @@
             <input type="checkbox" class="form-check-input" formControlName="rememberMe" />
             <label class="form-check-label text-dark">Remember Me</label>
           </div>
-          <a href="#" class="text-primary"  (click)="toggleForgotPassword($event)">Forgot Password?</a>
+          <a href="#" class="text-primary" (click)="toggleForgotPassword($event)">Forgot Password?</a>
         </div>
 
         <div class="d-grid gap-2">
-          <button type="submit" class="btn btn-primary btn-md shadow-sm" >Login</button>
+          <button type="submit" class="btn btn-primary btn-md shadow-sm">Login</button>
           <!-- <button type="button" class="btn btn-outline-light btn-lg" (click)="onClear()">Clear</button> -->
         </div>
 
-        <p class="text-center text-dark mt-3">Don't have an account? <a  href="/registration" class="text-primary text-decoration-none">Sign Up</a></p>
+        <p class="text-center text-dark mt-3">Don't have an account? <a href="/registration"
+            class="text-primary text-decoration-none">Sign Up</a></p>
       </form>
 
       <!-- FORGOT PASSWORD FORM -->
@@ -38,15 +47,17 @@
         <h5 class="text-center text-dark">Forgot Password</h5>
         <p class="text-center text-dark">Enter your email to receive OTP</p>
 
-      <form [formGroup]="loginFrom">
+        <form [formGroup]="forgotPasswordForm">
           <div class="mb-3">
-          <input type="email" formControlName="email" class="form-control " placeholder="Enter Email"  name="resetEmail" required />
-        </div>
-      </form>
+            <input type="email" formControlName="email" class="form-control " placeholder="Enter Email"
+              name="resetEmail" required />
+          </div>
+        </form>
 
         <div class="d-grid gap-2">
           <button type="button" class="btn btn-primary btn-md" (click)="sentOtp()">Send OTP</button>
-          <button type="button" class="btn btn-secondary btn-md" (click)="showForgotPassword = false">Back to Login</button>
+          <button type="button" class="btn btn-secondary btn-md" (click)="showForgotPassword = false">Back to
+            Login</button>
         </div>
       </form>
 
@@ -55,11 +66,11 @@
         <h5 class="text-center text-primary">Verify OTP</h5>
         <p class="text-center text-dark">Enter the OTP sent to your email</p>
 
-       <form [formGroup]="loginFrom">
-         <div class="mb-3">
-          <input type="text" formControlName="otp" class="form-control" placeholder="Enter OTP" name="otp" required />
-        </div>
-       </form>
+        <form [formGroup]="forgotPasswordForm">
+          <div class="mb-3">
+            <input type="text" formControlName="otp" class="form-control" placeholder="Enter OTP" name="otp" required />
+          </div>
+        </form>
 
         <div class="d-grid gap-2">
           <button type="button" class="btn btn-primary btn-md" (click)="VerifyOtp()">Verify OTP</button>
@@ -68,18 +79,25 @@
 
       <!-- CHANGE PASSWORD FORM -->
       <form *ngIf="showChangePassword">
-        <h5 class="text-center text-info">Change Password</h5>
-        <p class="text-center text-white">Enter your new password</p>
+        <h5 class="text-center text-primary">Change Password</h5>
+        <p class="text-center text-black">Enter your new password</p>
 
-        <div class="mb-3">
-          <input type="password" class="form-control text-white" placeholder="Enter New Password"  name="newPassword" required />
-        </div>
+        <form [formGroup]="forgotPasswordForm">
+          <div class="mb-3">
+            <input type="password" class="form-control text-dark" formControlName="newPassword"
+              placeholder="Enter New Password" name="Password" required />
+            <ng-container *ngFor="let error of validationErrors">
+              <small *ngIf="error.toLowerCase().includes('gender')" class="text-danger">
+                {{ error }}
+              </small>
+            </ng-container>
+          </div>
+        </form>
 
         <div class="d-grid gap-2">
-          <button type="button" class="btn btn-info btn-lg" >Change Password</button>
+          <button type="button" class="btn btn-primary btn-md" (click)="updatePassword()">Change Password</button>
         </div>
       </form>
     </div>
   </div>
 </div>
-

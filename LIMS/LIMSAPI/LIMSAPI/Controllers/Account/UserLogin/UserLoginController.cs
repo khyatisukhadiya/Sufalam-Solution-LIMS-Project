@@ -45,22 +45,32 @@ namespace LIMSAPI.Controllers.Account.UserLogin
 
 
         [HttpPost]
-        public IActionResult ChangeUserPassword(string Email, string Password)
+        public IActionResult ChangeUserPassword([FromForm] string newPassword, [FromForm]string toEmail)
         {
 
-            if (!ModelState.IsValid)
-            {
-                var validationErrors = ModelState.Values
-                    .Select(v => v.Errors[0])
-                    .Select(e => e.ErrorMessage)
-                    .ToList();
+            //if (!ModelState.IsValid)
+            //{
+            //    var validationErrors = ModelState.Values
+            //        .SelectMany(v => v.Errors)
+            //        .Select(e => e.ErrorMessage)
+            //        .ToList();
 
-                return BadRequest(new { success = false, errors = validationErrors });
-            }
+            //    return BadRequest(new { success = false, errors = validationErrors });
+            //}
+
+            //if (string.IsNullOrEmpty(toEmail))
+            //{
+            //    throw new ArgumentException("ToEMail is required");
+            //}
+
+            //if (string.IsNullOrEmpty(newPassword))
+            //{
+            //    throw new ArgumentException("newPassWord is required");
+            //}
 
             try
             {
-                _userLoginSL.ChangeUserPassword(Email, Password);
+                _userLoginSL.ChangeUserPassword(toEmail, newPassword);
                 return Ok(new { message = "Password Update successfully" });
             }
             catch(Exception ex)

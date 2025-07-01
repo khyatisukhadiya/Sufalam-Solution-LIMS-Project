@@ -20,6 +20,10 @@ import { LoginComponent } from './Main/UserLogin/login/login.component';
 export const routes: Routes = [
     {
         path : '',
+        component : LoginComponent
+    },
+    {
+        path : 'slidebar',
         component : SliderbarComponent
     },
     {
@@ -77,10 +81,6 @@ export const routes: Routes = [
     {
         path : 'registration',
         component : RegistrationComponent
-    },
-    {
-        path : 'login',
-        component : LoginComponent
     }
   
 ];

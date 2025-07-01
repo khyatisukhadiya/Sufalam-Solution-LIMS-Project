@@ -6,6 +6,6 @@ namespace LIMSAPI.RepositryLayer.Account.UserLogin
     {
         UserLoginModal UserLogin(UserLoginModal userLoginModal);
 
-        Task ChangeUserPassword(string Email, string Password);
+        string ChangeUserPassword(string toEmail, string newPassword);
     }
 }

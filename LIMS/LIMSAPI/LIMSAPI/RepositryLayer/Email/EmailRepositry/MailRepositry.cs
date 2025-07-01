@@ -13,6 +13,7 @@ namespace LIMSAPI.RepositryLayer.Email.EmailRepositry
         public readonly MailSettings _mailSettings;
         public readonly IConfiguration _configuration;
 
+
         public MailRepositry(IOptions<MailSettings> mailSettings)
         {
             _mailSettings = mailSettings.Value;
@@ -77,11 +78,6 @@ namespace LIMSAPI.RepositryLayer.Email.EmailRepositry
             }
         }
 
-        public string GenerateOtp()
-        {
-            Random random = new Random();
-            return random.Next(100000, 999999).ToString();
-        }
 
         public Task SendEmailOtp(string toEmail, string otp)
         {
@@ -118,6 +114,10 @@ namespace LIMSAPI.RepositryLayer.Email.EmailRepositry
         //{
         //    return enteredOtp;
         //}
+
+
+
+     
 
     }
 }

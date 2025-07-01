@@ -68,18 +68,19 @@
                                                     {{ error }}
                                                 </small>
                                             </ng-container>
-                                             <ng-container *ngFor="let error of validationErrors">
-                                                <small *ngIf="error.toLowerCase().includes('user already')"
-                                                    class="text-danger">
-                                                    {{ error }}
-                                                </small>
-                                            </ng-container>
 
                                               <small
                                                 *ngIf="userRegisterForm.controls['email']?.errors?.['required'] && submitted"
                                                 class="text-danger">
                                                 Email is required.
                                             </small>
+
+                                             <ng-container *ngFor="let error of validationErrors">
+                                                <small *ngIf="error.toLowerCase().includes('user already')"
+                                                    class="text-danger">
+                                                    {{ error }}
+                                                </small>
+                                            </ng-container>
                                         </div>
                                     </div>
 

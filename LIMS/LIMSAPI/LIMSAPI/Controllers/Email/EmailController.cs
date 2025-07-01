@@ -2,7 +2,9 @@
 using Azure.Core;
 using LIMSAPI.Helpers.Email;
 using LIMSAPI.Models.FinanceModal;
+using LIMSAPI.RepositryLayer.OTP.OTPRespository;
 using LIMSAPI.ServiceLayer.Email.EmailService;
+using LIMSAPI.ServiceLayer.OTP.OTPService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,12 +17,16 @@ namespace LIMSAPI.Controllers.Email
 
         private readonly IMailService _mailService;
         public readonly IHttpContextAccessor _httpContextAccessor;
+        public readonly IOTPService _oTPService;
+        public readonly IOTPRepository _oTPRepository;
         //private readonly TimeSpan _optTimeOut = TimeSpan.FromMinutes(5);
 
-        public EmailController(IMailService mailService, IHttpContextAccessor httpContextAccessor , IConfiguration configuration): base(configuration)
+        public EmailController(IMailService mailService, IHttpContextAccessor httpContextAccessor, IOTPService oTPService,IOTPRepository oTPRepository ,IConfiguration configuration): base(configuration)
         {
             _mailService = mailService;
             _httpContextAccessor = httpContextAccessor;
+            _oTPService = oTPService;
+            _oTPRepository = oTPRepository;
         }
 
 
@@ -53,17 +59,19 @@ namespace LIMSAPI.Controllers.Email
         public IActionResult SendOtpToEmail([FromForm] string toEmail)
         {
 
-            string otp = _mailService.GenerateOtp();
+            string otp = _oTPService.GenerateOtp();
+            DateTime expiry = DateTime.Now.AddMinutes(5);
+
+            _oTPService.SaveOtp(toEmail, otp, expiry);
+
+            //var httpContext = _httpContextAccessor.HttpContext;
+            //if (httpContext?.Session == null)
+            //{
+            //    return StatusCode(500, "Session is not available.");
+            //}
 
 
-            var httpContext = _httpContextAccessor.HttpContext;
-            if (httpContext?.Session == null)
-            {
-                return StatusCode(500, "Session is not available.");
-            }
-
-            
-            _httpContextAccessor.HttpContext?.Session.SetString("OTP", otp);
+            //_httpContextAccessor.HttpContext?.Session.SetString("OTP", otp);
 
             //_httpContextAccessor.HttpContext.Session.SetString("OtpTimeOut", DateTime.Now.ToString());
 
@@ -80,28 +88,26 @@ namespace LIMSAPI.Controllers.Email
 
 
         [HttpPost]
-        public IActionResult VerifyOtp([FromQuery] string enteredOtp)
+        public IActionResult VerifyOtp([FromForm] string toEmail, string enteredOtp)
         {
 
-            var httpContext = _httpContextAccessor.HttpContext;
+            //var httpContext = _httpContextAccessor.HttpContext;
 
-            if (httpContext?.Session == null )
-            {
-                return StatusCode(500, "Session is not available.");
-            }
+            //if (httpContext?.Session == null )
+            //{
+            //    return StatusCode(500, "Session is not available.");
+            //}
 
-            string storedOtp = _httpContextAccessor.HttpContext.Session.GetString("OTP");
+            string storedOtp = _oTPRepository.VerifyOTP(toEmail, enteredOtp);
 
 
-            if (string.IsNullOrEmpty(storedOtp))
-            {
-                return BadRequest(new { Message = "OTP not found." });
-            }
+            //if (string.IsNullOrEmpty(storedOtp))
+            //{
+            //    return BadRequest(new { Message = "OTP not found." });
+            //}
 
             if (enteredOtp == storedOtp)
             {
-                _httpContextAccessor.HttpContext.Session.Remove("OTP");
-                _httpContextAccessor.HttpContext.Session.Remove("OtpTimeOut");
                 return Ok(new {message = "OTP verified successfully!" });
             }
             else
@@ -109,6 +115,7 @@ namespace LIMSAPI.Controllers.Email
                 throw new Exception("Invalid Otp");
             }
         }
+
 
     }
 }

@@ -28,11 +28,12 @@ namespace LIMSAPI.RepositryLayer.Account.UserLogin
                     _sqlConnection.Open();
                 }
 
-                string query = "SELECT COUNT(*) FROM userRegistration WHERE Email = @Email AND Password = @Password";
+                string query = "SELECT COUNT(*) FROM userRegistration WHERE (Email = @Email OR UserName = @UserName) AND Password = @Password";
 
                 using (SqlCommand command = new SqlCommand(query, _sqlConnection))
                 {
-                    command.Parameters.AddWithValue("@Email", userLoginModal.Email);
+                    command.Parameters.AddWithValue("@Email", string.IsNullOrEmpty(userLoginModal.Email) ? (object)DBNull.Value : userLoginModal.Email);
+                    command.Parameters.AddWithValue("@UserName", string.IsNullOrEmpty(userLoginModal.UserName) ? (object)DBNull.Value : userLoginModal.UserName);
                     command.Parameters.AddWithValue("@Password", userLoginModal.Password);
 
                     int count = (int)command.ExecuteScalar();
@@ -41,6 +42,7 @@ namespace LIMSAPI.RepositryLayer.Account.UserLogin
                     {
                        
                         response.Email = userLoginModal.Email;
+                        response.UserName = userLoginModal.UserName;
                         response.Password = userLoginModal.Password;
                         response.RememberMe = userLoginModal.RememberMe;
                         
@@ -49,7 +51,7 @@ namespace LIMSAPI.RepositryLayer.Account.UserLogin
                     }
                     else
                     {
-                        throw new Exception("UserId & Password is not correct. Try again.");
+                        throw new Exception("Please Check the Input data . Try again.");
                     }
                 }
             }
@@ -63,7 +65,7 @@ namespace LIMSAPI.RepositryLayer.Account.UserLogin
             }
         }
 
-        public Task ChangeUserPassword(string Email, string Password)
+        public string ChangeUserPassword(string toEmail, string newPassword)
         {
             
             try
@@ -77,16 +79,16 @@ namespace LIMSAPI.RepositryLayer.Account.UserLogin
 
                 using (SqlCommand command = new SqlCommand(query, _sqlConnection))
                 {
-                    command.Parameters.AddWithValue("Password", Password);
-                    command.Parameters.AddWithValue("Email", Email);
+                    command.Parameters.AddWithValue("@Email", toEmail);
+                    command.Parameters.AddWithValue("@Password", newPassword);
                     command.ExecuteNonQuery();
                 }
             }
             catch(Exception ex)
             {
-                throw new Exception("Password chnage failed", ex);
+                throw new Exception("Password change failed", ex);
             }
-            return Task.CompletedTask;
+            return null;
         }
     }
 }

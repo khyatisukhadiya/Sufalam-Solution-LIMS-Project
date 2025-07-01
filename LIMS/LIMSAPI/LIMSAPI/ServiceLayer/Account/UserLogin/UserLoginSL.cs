@@ -12,9 +12,9 @@ namespace LIMSAPI.ServiceLayer.Account.UserLogin
             _userLoginRL = userLoginRL;
         }
 
-        public Task ChangeUserPassword(string Email, string Password)
+        public string ChangeUserPassword(string toEmail, string newPassword)
         {
-            return _userLoginRL.ChangeUserPassword(Email, Password);
+            return _userLoginRL.ChangeUserPassword(toEmail, newPassword);
         }
 
         public UserLoginModal UserLogin(UserLoginModal userLoginModal)

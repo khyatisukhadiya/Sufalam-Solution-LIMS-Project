@@ -6,11 +6,13 @@ using LIMSAPI.RepositryLayer;
 using LIMSAPI.RepositryLayer.Account.UserLogin;
 using LIMSAPI.RepositryLayer.Account.UserRegistration;
 using LIMSAPI.RepositryLayer.Email.EmailRepositry;
+using LIMSAPI.RepositryLayer.OTP.OTPRespository;
 using LIMSAPI.RepositryLayer.SMSRepository;
 using LIMSAPI.ServiceLayer;
 using LIMSAPI.ServiceLayer.Account.UserLogin;
 using LIMSAPI.ServiceLayer.Account.UserRegistration;
 using LIMSAPI.ServiceLayer.Email.EmailService;
+using LIMSAPI.ServiceLayer.OTP.OTPService;
 using LIMSAPI.ServiceLayer.SMS.SMSService;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
@@ -30,6 +32,9 @@ builder.Services.AddScoped<IUserLoginRL, UserLoginRL>();
 builder.Services.AddScoped<IMailRepositry, MailRepositry>();
 builder.Services.AddScoped<IMailService, MailService>();
 builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
+
+builder.Services.AddScoped<IOTPService, OTPService>();
+builder.Services.AddScoped<IOTPRepository, OTPRepository>();
 
 builder.Services.AddScoped<ISMSRepository, SMSRepository>();
 builder.Services.AddScoped<ISMSService, SMSService>();

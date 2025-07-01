@@ -13,7 +13,6 @@ namespace LIMSAPI.ServiceLayer.Email.EmailService
         //string VerifyOtp(string enteredOtp);
 
 
-        string GenerateOtp();
 
     }
 
