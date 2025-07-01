@@ -2,9 +2,10 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
+
 @Component({
   selector: 'app-sliderbar',
-  imports: [CommonModule],
+  imports: [CommonModule,RouterModule],
   templateUrl: './sliderbar.component.html',
   styleUrls: ['./sliderbar.component.css']
 })

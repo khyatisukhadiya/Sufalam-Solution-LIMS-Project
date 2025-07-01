@@ -46,29 +46,13 @@ export class LoginComponent implements OnInit {
 
   setFrom() {
     this.loginFrom = this.fb.group({
-       // usernameOrEmail: ['', [Validators.required, this.usernameOrEmailValidator()]],
-      email: ['', Validators.email],
       userName : ['', Validators.required],
       password: ['', Validators.required],
       rememberMe: [false],
     });
   }
 
-  //    usernameOrEmailValidator(control: AbstractControl): ValidationErrors | null {
-  //    const value = control.value;
-  //    if (!value) {
-  //      return null; // Or return { required: true } if required
-  //    }
 
-  //    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-  //    const usernameRegex = /^[a-zA-Z0-9_-]{3,16}$/; // Example: 3-16 characters, letters, numbers, underscore, hyphen
-
-  //    if (emailRegex.test(value) || usernameRegex.test(value)) {
-  //      return null;
-  //    } else {
-  //      return { 'usernameOrEmail': true };
-  //    }
-  //  }
 
   toggleForgotPassword(event?: Event): void {
     if (event) {

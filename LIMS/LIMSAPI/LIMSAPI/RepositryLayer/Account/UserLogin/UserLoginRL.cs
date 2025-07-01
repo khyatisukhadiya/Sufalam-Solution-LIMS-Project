@@ -28,12 +28,12 @@ namespace LIMSAPI.RepositryLayer.Account.UserLogin
                     _sqlConnection.Open();
                 }
 
-                string query = "SELECT COUNT(*) FROM userRegistration WHERE (Email = @Email OR UserName = @UserName) AND Password = @Password";
+                string query = "SELECT COUNT(*) FROM userRegistration WHERE UserName = @UserName AND Password = @Password";
 
                 using (SqlCommand command = new SqlCommand(query, _sqlConnection))
                 {
-                    command.Parameters.AddWithValue("@Email", string.IsNullOrEmpty(userLoginModal.Email) ? (object)DBNull.Value : userLoginModal.Email);
-                    command.Parameters.AddWithValue("@UserName", string.IsNullOrEmpty(userLoginModal.UserName) ? (object)DBNull.Value : userLoginModal.UserName);
+                    //command.Parameters.AddWithValue("@Email", string.IsNullOrEmpty(userLoginModal.Email) ? (object)DBNull.Value : userLoginModal.Email);
+                    command.Parameters.AddWithValue("@UserName", userLoginModal.UserName);
                     command.Parameters.AddWithValue("@Password", userLoginModal.Password);
 
                     int count = (int)command.ExecuteScalar();
@@ -41,7 +41,7 @@ namespace LIMSAPI.RepositryLayer.Account.UserLogin
                     if (count > 0)
                     {
                        
-                        response.Email = userLoginModal.Email;
+                        //response.Email = userLoginModal.Email;
                         response.UserName = userLoginModal.UserName;
                         response.Password = userLoginModal.Password;
                         response.RememberMe = userLoginModal.RememberMe;
