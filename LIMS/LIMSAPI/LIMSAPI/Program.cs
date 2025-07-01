@@ -34,6 +34,15 @@ builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailS
 builder.Services.AddScoped<ISMSRepository, SMSRepository>();
 builder.Services.AddScoped<ISMSService, SMSService>();
 builder.Services.Configure<SMSSettings>(builder.Configuration.GetSection("SMSSettings"));
+
+builder.Services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(5);
+});
+
 builder.Services.AddScoped<SqlConnection>(sp =>
 {
     var configuration = builder.Configuration;
@@ -83,6 +92,7 @@ app.UseCors(policy =>  // Browsers block requests from one origin to another(for
                             .AllowAnyOrigin()  // Allow requests from any domain (e.g., http://localhost:4200)
                             .AllowAnyMethod()); // Allow all HTTP methods (GET, POST, PUT, DELETE, etc.)
 
+app.UseSession();
 
 app.MapControllers();
 

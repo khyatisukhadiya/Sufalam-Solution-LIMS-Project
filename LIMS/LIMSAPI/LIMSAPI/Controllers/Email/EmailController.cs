@@ -14,10 +14,13 @@ namespace LIMSAPI.Controllers.Email
     {
 
         private readonly IMailService _mailService;
+        public readonly IHttpContextAccessor _httpContextAccessor;
+        //private readonly TimeSpan _optTimeOut = TimeSpan.FromMinutes(5);
 
-        public EmailController(IMailService mailService, IConfiguration configuration): base(configuration)
+        public EmailController(IMailService mailService, IHttpContextAccessor httpContextAccessor , IConfiguration configuration): base(configuration)
         {
             _mailService = mailService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
 
@@ -47,9 +50,22 @@ namespace LIMSAPI.Controllers.Email
 
 
         [HttpPost] 
-        public IActionResult SendOtpEmail(string toEmail)
+        public IActionResult SendOtpToEmail([FromForm] string toEmail)
         {
+
             string otp = _mailService.GenerateOtp();
+
+
+            var httpContext = _httpContextAccessor.HttpContext;
+            if (httpContext?.Session == null)
+            {
+                return StatusCode(500, "Session is not available.");
+            }
+
+            
+            _httpContextAccessor.HttpContext?.Session.SetString("OTP", otp);
+
+            //_httpContextAccessor.HttpContext.Session.SetString("OtpTimeOut", DateTime.Now.ToString());
 
             try
             {
@@ -59,6 +75,38 @@ namespace LIMSAPI.Controllers.Email
             catch (Exception ex)
             {
                 return StatusCode(500, "Failed to send OTP email.");
+            }
+        }
+
+
+        [HttpPost]
+        public IActionResult VerifyOtp([FromQuery] string enteredOtp)
+        {
+
+            var httpContext = _httpContextAccessor.HttpContext;
+
+            if (httpContext?.Session == null )
+            {
+                return StatusCode(500, "Session is not available.");
+            }
+
+            string storedOtp = _httpContextAccessor.HttpContext.Session.GetString("OTP");
+
+
+            if (string.IsNullOrEmpty(storedOtp))
+            {
+                return BadRequest(new { Message = "OTP not found." });
+            }
+
+            if (enteredOtp == storedOtp)
+            {
+                _httpContextAccessor.HttpContext.Session.Remove("OTP");
+                _httpContextAccessor.HttpContext.Session.Remove("OtpTimeOut");
+                return Ok(new {message = "OTP verified successfully!" });
+            }
+            else
+            {
+                throw new Exception("Invalid Otp");
             }
         }
 

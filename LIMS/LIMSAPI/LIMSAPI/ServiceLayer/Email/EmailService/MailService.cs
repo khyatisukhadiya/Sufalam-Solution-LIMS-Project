@@ -35,9 +35,9 @@ namespace LIMSAPI.ServiceLayer.Email.EmailService
         }
 
 
-        public bool VerifyOtp(string enteredOtp, string storedOtp, DateTime timestamp)
-        {
-            return _emailRepositry.VerifyOtp(enteredOtp, storedOtp, timestamp);
-        }
+        //public string VerifyOtp(string enteredOtp)
+        //{
+        //    return _emailRepositry.VerifyOtp(enteredOtp);
+        //}
     }
 }

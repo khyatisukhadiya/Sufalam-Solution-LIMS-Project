@@ -5,5 +5,7 @@ namespace LIMSAPI.RepositryLayer.Account.UserLogin
     public interface IUserLoginRL
     {
         UserLoginModal UserLogin(UserLoginModal userLoginModal);
+
+        Task ChangeUserPassword(string Email, string Password);
     }
 }

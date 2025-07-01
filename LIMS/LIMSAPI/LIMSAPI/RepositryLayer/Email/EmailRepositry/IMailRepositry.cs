@@ -10,8 +10,11 @@ namespace LIMSAPI.RepositryLayer.Email.EmailRepositry
         Task SendEmailOtp(string toEmail, string otp);
        
 
-        bool VerifyOtp(string enteredOtp, string storedOtp, DateTime timestamp);
+        //string VerifyOtp(string enteredOtp);
+
 
         string GenerateOtp();
+
+       
     }
 }

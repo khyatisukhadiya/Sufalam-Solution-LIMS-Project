@@ -62,7 +62,6 @@ export class RegistrationComponent implements OnInit {
   }
 
   onSubmit() {
-    
     this.submitted = true;
     this.errorMessage = '';
     this.validationErrors = [];
@@ -75,7 +74,9 @@ export class RegistrationComponent implements OnInit {
     const payload = this.userRegisterForm.getRawValue();
 
     this.userRegistrationService.AddUserRegistartion(payload).subscribe({
-      next: (res : any) => {
+      next: (res) => {
+        console.log(res);
+        this.toastr.success(res.message);
         if (res.success) {
           this.showSuccess(res.message);
         } else if (res.errors) {

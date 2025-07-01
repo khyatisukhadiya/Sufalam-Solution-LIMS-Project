@@ -3,6 +3,7 @@ using System.Net;
 using Microsoft.Extensions.Options;
 using LIMSAPI.Helpers.Email;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace LIMSAPI.RepositryLayer.Email.EmailRepositry
 {
@@ -82,8 +83,14 @@ namespace LIMSAPI.RepositryLayer.Email.EmailRepositry
             return random.Next(100000, 999999).ToString();
         }
 
-        public Task SendEmailOtp(string email, string otp)
+        public Task SendEmailOtp(string toEmail, string otp)
         {
+
+            if (string.IsNullOrWhiteSpace(toEmail))
+            {
+                throw new ArgumentException("Email address is required.");
+            }
+
             var settings = _mailSettings;
             var smtpClient = new SmtpClient(settings.Host)
             {
@@ -100,16 +107,17 @@ namespace LIMSAPI.RepositryLayer.Email.EmailRepositry
                 IsBodyHtml = true 
             };
 
-            mailMessage.To.Add(email);
+            mailMessage.To.Add(toEmail);
             smtpClient.Send(mailMessage);
 
             return Task.CompletedTask;
         }
 
 
-        public bool VerifyOtp(string enteredOtp, string storedOtp, DateTime timestamp)
-        {
-            return enteredOtp == storedOtp && DateTime.Now < timestamp.AddMinutes(10); 
-        }
+        //public string VerifyOtp(string enteredOtp)
+        //{
+        //    return enteredOtp;
+        //}
+
     }
 }

@@ -1,6 +1,6 @@
-﻿using LIMSAPI.Models.Account.UserLogin;
+﻿using System.Net;
+using LIMSAPI.Models.Account.UserLogin;
 using LIMSAPI.ServiceLayer.Account.UserLogin;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LIMSAPI.Controllers.Account.UserLogin
@@ -16,11 +16,57 @@ namespace LIMSAPI.Controllers.Account.UserLogin
             _userLoginSL = userLoginSL;
         }
 
+
         [HttpPost]
-        public IActionResult login(UserLoginModal loginModal)
+        public IActionResult UserLogin(UserLoginModal loginModal)
         {
-            _userLoginSL.UserLogin(loginModal);
-            return Ok(new { message = "successfully login" });
+
+            if (!ModelState.IsValid)
+            {
+                var validationErrors = ModelState.Values
+                    .Select(v => v.Errors[0])
+                    .Select(e => e.ErrorMessage)
+                    .ToList();
+
+                return BadRequest(new { success = false, errors = validationErrors });
+            }
+
+            try
+            {
+                _userLoginSL.UserLogin(loginModal);
+                return Ok(new { message = "successfully login" });
+            }
+            catch(Exception ex)
+            {
+                return Error(ex.Message, HttpStatusCode.InternalServerError);
+            }
+          
+        }
+
+
+        [HttpPost]
+        public IActionResult ChangeUserPassword(string Email, string Password)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                var validationErrors = ModelState.Values
+                    .Select(v => v.Errors[0])
+                    .Select(e => e.ErrorMessage)
+                    .ToList();
+
+                return BadRequest(new { success = false, errors = validationErrors });
+            }
+
+            try
+            {
+                _userLoginSL.ChangeUserPassword(Email, Password);
+                return Ok(new { message = "Password Update successfully" });
+            }
+            catch(Exception ex)
+            {
+                return Error(ex.Message, HttpStatusCode.InternalServerError);
+            }
         }
     }
 }

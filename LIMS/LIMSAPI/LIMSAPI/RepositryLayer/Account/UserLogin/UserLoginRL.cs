@@ -1,4 +1,5 @@
 ﻿using LIMSAPI.Models.Account.UserLogin;
+using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.Data.SqlClient;
 
 namespace LIMSAPI.RepositryLayer.Account.UserLogin
@@ -14,6 +15,7 @@ namespace LIMSAPI.RepositryLayer.Account.UserLogin
             _sqlConnection = new SqlConnection(_configuration["ConnectionStrings:DefaultConnection"]);
         }
 
+      
 
         public UserLoginModal UserLogin(UserLoginModal userLoginModal)
         {
@@ -43,6 +45,7 @@ namespace LIMSAPI.RepositryLayer.Account.UserLogin
                         response.RememberMe = userLoginModal.RememberMe;
                         
                         return response;
+                       
                     }
                     else
                     {
@@ -60,6 +63,30 @@ namespace LIMSAPI.RepositryLayer.Account.UserLogin
             }
         }
 
+        public Task ChangeUserPassword(string Email, string Password)
+        {
+            
+            try
+            {
+                if(_sqlConnection.State != System.Data.ConnectionState.Open)
+                {
+                    _sqlConnection.Open();
+                }
 
+                string query = "UPDATE userRegistration SET Password = @Password WHERE Email = @Email";
+
+                using (SqlCommand command = new SqlCommand(query, _sqlConnection))
+                {
+                    command.Parameters.AddWithValue("Password", Password);
+                    command.Parameters.AddWithValue("Email", Email);
+                    command.ExecuteNonQuery();
+                }
+            }
+            catch(Exception ex)
+            {
+                throw new Exception("Password chnage failed", ex);
+            }
+            return Task.CompletedTask;
+        }
     }
 }
