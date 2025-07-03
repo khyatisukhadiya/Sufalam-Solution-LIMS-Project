@@ -18,12 +18,12 @@
         </div>
 
         <ng-container *ngFor="let error of validationErrors">
-          <small *ngIf="error.toLowerCase().includes('userName')" class="text-danger">
+          <small *ngIf="error.toLowerCase().includes('invalid username')" class="text-danger">
             {{ error }}
           </small>
         </ng-container>
         
-        <div *ngIf="errorMessage" class="text-danger text-center mb-3">{{ errorMessage }}</div>
+        <!-- <div *ngIf="errorMessage" class="text-danger text-center mb-3">{{ errorMessage }}</div> -->
 
         <div class="d-flex justify-content-between align-items-center mb-3">
           <div class="form-check">

@@ -1,4 +1,5 @@
 ﻿using LIMSAPI.Models.Account.UserLogin;
+using LIMSAPI.Models.Account.UserRegistration;
 using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.Data.SqlClient;
 
@@ -57,7 +58,7 @@ namespace LIMSAPI.RepositryLayer.Account.UserLogin
             }
             catch (Exception ex)
             {
-                throw; 
+                throw new Exception("Invalid Username or Password", ex);
             }
             finally
             {
@@ -86,9 +87,58 @@ namespace LIMSAPI.RepositryLayer.Account.UserLogin
             }
             catch(Exception ex)
             {
-                throw new Exception("Password change failed", ex);
+                throw new Exception("Password change to failed", ex);
             }
             return null;
         }
+        
+
+        public UserRegistrationModal GetUserLoginDetails(string UserName, string Password)
+        {
+            var response = new UserRegistrationModal();
+            try
+            {
+                if(_sqlConnection.State != System.Data.ConnectionState.Open)
+                {
+                    _sqlConnection.Open();
+                }
+
+                string query = "SELECT * FROM userRegistration WHERE UserName = @UserName AND Password = @Password";
+
+                using (SqlCommand command = new SqlCommand(query, _sqlConnection))
+                {
+
+                    command.Parameters.AddWithValue("@UserName", UserName);
+                    command.Parameters.AddWithValue("@Password", Password);
+
+                    var reader = command.ExecuteReader();
+
+                    if (reader.Read())
+                    {
+                        response.UserId = Convert.ToInt32(reader["UserId"]);
+                        response.UserName = reader["UserName"].ToString();
+                        response.Email = reader["Email"].ToString();
+                        response.DOB = DateOnly.FromDateTime(Convert.ToDateTime(reader["DOB"]));
+                        response.PhoneNumber = reader["PhoneNumber"].ToString();
+                        response.Gender = Convert.ToChar(reader["Gender"]);
+                        response.FullName = reader["FullName"].ToString();
+                    }
+                    else
+                    {
+                        throw new Exception("Please Check the Input data . Try again.");
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                throw new Exception("error accour to fetch UserregisterModal by Username", ex);
+            }
+            finally
+            {
+                _sqlConnection.Close();
+            }
+            return response;
+        }
+
     }
 }

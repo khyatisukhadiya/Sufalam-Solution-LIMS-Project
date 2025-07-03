@@ -61,8 +61,8 @@ a {
 }
 
 .header_img {
-  width: 35px;
-  height: 35px;
+  width: 45px;
+  height: 45px;
   display: flex;
   justify-content: center;
   border-radius: 50%;
@@ -70,7 +70,7 @@ a {
 }
 
 .header_img img {
-  width: 40px;
+  width: 50px;
 }
 
 /* ========================== */
@@ -222,13 +222,30 @@ button {
   }
 
   /* Toggle sidebar open/close */
-.show {
-  width: calc(var(--nav-width) + 156px); /* Or adjust as needed */
-}
+  .show {
+    width: calc(var(--nav-width) + 156px);
+    /* Or adjust as needed */
+  }
 
 
- .body-pd {
-  padding-left: calc(var(--nav-width) + 188px); /* Adjust to match .show */
-}
+  .body-pd {
+    padding-left: calc(var(--nav-width) + 188px);
+    /* Adjust to match .show */
+  }
 
+  .btn {
+    color: black;
+  }
+
+  .btn:hover {
+    background-color: white;
+    color: black;
+  }
+
+  .card{
+    width: 18rem;
+    float: right;
+    margin: 20px;
+    top: 50px;
+  }
 }

@@ -8,7 +8,9 @@ namespace LIMSAPI.RepositryLayer.Email.EmailRepositry
 
 
         Task SendEmailOtp(string toEmail, string otp);
-       
+
+
+        bool EmailExists(string toEmail);
 
         //string VerifyOtp(string enteredOtp);
 

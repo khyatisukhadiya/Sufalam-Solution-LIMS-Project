@@ -16,7 +16,12 @@ namespace LIMSAPI.ServiceLayer.Email.EmailService
             _emailRepositry = emailRepositry;
         }
 
-        
+        public bool EmailExists(string toEmail)
+        {
+            return _emailRepositry.EmailExists(toEmail);
+        }
+
+
         // EMAIL
         public Task SendEmail(MailRequest mailRequest)
         {

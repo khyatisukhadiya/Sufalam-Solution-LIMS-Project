@@ -2,6 +2,7 @@
 using LIMSAPI.Models.Account.UserLogin;
 using LIMSAPI.ServiceLayer.Account.UserLogin;
 using Microsoft.AspNetCore.Mvc;
+using Twilio.TwiML.Messaging;
 
 namespace LIMSAPI.Controllers.Account.UserLogin
 {
@@ -31,10 +32,18 @@ namespace LIMSAPI.Controllers.Account.UserLogin
                 return BadRequest(new { success = false, errors = validationErrors });
             }
 
+            var errors = new List<string>();
+
+            if (errors.Any())
+            {
+                return BadRequest(new { errors });
+            }
+
             try
             {
-                _userLoginSL.UserLogin(loginModal);
-                return Ok(new { message = "successfully login" });
+               var result = _userLoginSL.UserLogin(loginModal);
+                string message = "Login Successfully.....";
+                return Success(message,result);
             }
             catch(Exception ex)
             {
@@ -68,10 +77,52 @@ namespace LIMSAPI.Controllers.Account.UserLogin
                 throw new ArgumentException("newPassWord is required");
             }
 
+            var errors = new List<string>();
+
+            if (errors.Any())
+            {
+                return BadRequest(new { errors });
+            }
+
             try
             {
-                _userLoginSL.ChangeUserPassword(toEmail, newPassword);
-                return Ok(new { message = "Password Update successfully" });
+               var result = _userLoginSL.ChangeUserPassword(toEmail, newPassword);
+               string message = "Password Update successfully";
+                return Success(message,result);
+            }
+            catch(Exception ex)
+            {
+                return Error(ex.Message, HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpPost]
+        public IActionResult GetUserLogindetails([FromForm] string UserName, [FromForm]string Password)
+        {
+            if (!ModelState.IsValid)
+            {
+                var validationErrors = ModelState.Values
+                    .SelectMany(v => v.Errors)  
+                    .Select(e => e.ErrorMessage)
+                    .ToList();
+
+                return BadRequest(new { success = false, errors = validationErrors });
+            }
+
+            if (string.IsNullOrEmpty(UserName))
+            {
+                throw new ArgumentException("ToEMail is required");
+            }
+
+            if (string.IsNullOrEmpty(Password))
+            {
+                throw new ArgumentException("newPassWord is required");
+            }
+
+            try
+            {
+                var result = _userLoginSL.GetUserLoginDetails(UserName, Password);
+                return Ok(result);
             }
             catch(Exception ex)
             {

@@ -123,7 +123,8 @@ export class B2BComponent implements OnInit {
           this.searchClick = true;
           this.getB2B();
           this.isEditModal = false;
-        } else if (res.errors) {
+        } 
+        else if (res.errors) {
           this.validationErrors = res.errors;
         }
       },

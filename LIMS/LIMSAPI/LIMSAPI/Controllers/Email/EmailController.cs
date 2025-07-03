@@ -7,6 +7,7 @@ using LIMSAPI.ServiceLayer.Email.EmailService;
 using LIMSAPI.ServiceLayer.OTP.OTPService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Twilio.TwiML.Messaging;
 
 namespace LIMSAPI.Controllers.Email
 {
@@ -43,10 +44,18 @@ namespace LIMSAPI.Controllers.Email
                 return BadRequest(new { success = false, errors = validationErrors });
             }
 
+            var errors = new List<string>();
+
+            if (errors.Any())
+            {
+                return BadRequest(new { errors });
+            }
+
             try
             {
-                _mailService.SendEmail(mailRequest);
-                return Ok(new { message = "Email Sent Successfully" });
+               var result = _mailService.SendEmail(mailRequest);
+                string message = "Email Sent Successfully";
+                return Success(message,result);
             }
             catch (Exception ex)
             {
@@ -59,11 +68,22 @@ namespace LIMSAPI.Controllers.Email
         public IActionResult SendOtpToEmail([FromForm] string toEmail)
         {
 
+
+            bool emailExists = _mailService.EmailExists(toEmail);
+            if (!emailExists)
+            {
+                return BadRequest(new { message = "Email does not exist. Please register first." });
+
+            }
+
+
             string otp = _oTPService.GenerateOtp();
             DateTime expiry = DateTime.Now.AddMinutes(5);
 
             _oTPService.SaveOtp(toEmail, otp, expiry);
 
+
+            
             //var httpContext = _httpContextAccessor.HttpContext;
             //if (httpContext?.Session == null)
             //{
@@ -77,8 +97,10 @@ namespace LIMSAPI.Controllers.Email
 
             try
             {
-                _mailService.SendEmailOtp(toEmail, otp);
-                return Ok(new { message = "OTP Sent Successfully" });
+              
+              var result = _mailService.SendEmailOtp(toEmail, otp);
+              string message = "OTP Sent Successfully;";
+              return Success(message,result);
             }
             catch (Exception ex)
             {
@@ -91,20 +113,13 @@ namespace LIMSAPI.Controllers.Email
         public IActionResult VerifyOtp([FromForm] string toEmail, string enteredOtp)
         {
 
-            //var httpContext = _httpContextAccessor.HttpContext;
-
-            //if (httpContext?.Session == null )
-            //{
-            //    return StatusCode(500, "Session is not available.");
-            //}
-
             string storedOtp = _oTPRepository.VerifyOTP(toEmail, enteredOtp);
 
 
-            //if (string.IsNullOrEmpty(storedOtp))
-            //{
-            //    return BadRequest(new { Message = "OTP not found." });
-            //}
+            if (string.IsNullOrEmpty(storedOtp))
+            {
+                return BadRequest(new { Message = "OTP not found." });
+            }
 
             if (enteredOtp == storedOtp)
             {

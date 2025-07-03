@@ -36,4 +36,11 @@ export class UserloginService {
     formData.append('newPassword', newPassword);
      return this.http.post<any>('https://localhost:7161/api/UserLogin/ChangeUserPassword?newPassword=', formData)
   }
+
+  GetuserLogindetails(UserName : string, Password : string){
+    const formData = new FormData();
+    formData.append('UserName', UserName);
+    formData.append('Password',Password);
+    return this.http.post<any>('https://localhost:7161/api/UserLogin/GetUserLogindetails',formData)
+  }
 }

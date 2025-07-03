@@ -4,6 +4,7 @@ using Microsoft.Extensions.Options;
 using LIMSAPI.Helpers.Email;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.Data.SqlClient;
 
 namespace LIMSAPI.RepositryLayer.Email.EmailRepositry
 {
@@ -14,10 +15,14 @@ namespace LIMSAPI.RepositryLayer.Email.EmailRepositry
         public readonly IConfiguration _configuration;
 
 
-        public MailRepositry(IOptions<MailSettings> mailSettings)
+
+        public MailRepositry(IOptions<MailSettings> mailSettings,IConfiguration configuration)
         {
             _mailSettings = mailSettings.Value;
+            _configuration = configuration;
         }
+
+
 
         public Task SendEmail(MailRequest mailRequest)
         {
@@ -79,6 +84,35 @@ namespace LIMSAPI.RepositryLayer.Email.EmailRepositry
         }
 
 
+
+        public bool EmailExists(string toEmail)
+        {
+            try
+            {
+                string query = "SELECT COUNT(*) FROM userRegistration WHERE Email = @Email";
+
+                using (SqlConnection connection = new SqlConnection(_configuration["ConnectionStrings:DefaultConnection"]))
+                {
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@Email", toEmail);
+                        connection.Open();
+
+                        int count = (int)command.ExecuteScalar();
+                        return count > 0;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while checking the email.", ex);
+            }
+        }
+
+
+
+
+
         public Task SendEmailOtp(string toEmail, string otp)
         {
 
@@ -86,6 +120,20 @@ namespace LIMSAPI.RepositryLayer.Email.EmailRepositry
             {
                 throw new ArgumentException("Email address is required.");
             }
+
+            //string connectionString = "";
+            //string query = "SELECT COUNT(*) FROM userRegistration WHERE Email = @Email";
+
+            //using (SqlConnection connection = new SqlConnection(connectionString))
+            //{
+            //    using (SqlCommand command = new SqlCommand(query, connection))
+            //    {
+            //        command.Parameters.AddWithValue("@Email", toEmail);
+            //        connection.Open();
+            //        int count = (int)command.ExecuteScalar();
+            //        return null;
+            //    }
+            //}
 
             var settings = _mailSettings;
             var smtpClient = new SmtpClient(settings.Host)
@@ -100,11 +148,31 @@ namespace LIMSAPI.RepositryLayer.Email.EmailRepositry
                 From = new MailAddress(settings.Mail),
                 Subject = "Your OTP Code",
                 Body = $"Your OTP code is {otp}",
-                IsBodyHtml = true 
+                IsBodyHtml = true,
             };
 
             mailMessage.To.Add(toEmail);
-            smtpClient.Send(mailMessage);
+            mailMessage.DeliveryNotificationOptions = DeliveryNotificationOptions.OnFailure;
+
+            try
+            {
+              smtpClient.Send(mailMessage);
+            }
+            catch(SmtpFailedRecipientsException ex)
+            {
+                foreach (SmtpFailedRecipientException recipientEx in ex.InnerExceptions)
+                {
+                    Console.WriteLine($"Failed recipient: {recipientEx.FailedRecipient}, Error: {recipientEx.Message}");
+                }
+            }
+            catch(SmtpException ex)
+            {
+                throw new Exception("SMTP error", ex);
+            }
+            catch(Exception ex)
+            {
+                throw new Exception("General error", ex);
+            }
 
             return Task.CompletedTask;
         }

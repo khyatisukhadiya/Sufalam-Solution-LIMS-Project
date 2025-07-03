@@ -12,8 +12,7 @@ namespace LIMSAPI.ServiceLayer.Email.EmailService
 
         //string VerifyOtp(string enteredOtp);
 
-
-
+        bool EmailExists(string toEmail);
     }
 
 }

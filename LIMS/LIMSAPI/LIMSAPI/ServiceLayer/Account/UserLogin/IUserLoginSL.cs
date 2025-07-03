@@ -1,4 +1,5 @@
 ﻿using LIMSAPI.Models.Account.UserLogin;
+using LIMSAPI.Models.Account.UserRegistration;
 
 namespace LIMSAPI.ServiceLayer.Account.UserLogin
 {
@@ -7,5 +8,6 @@ namespace LIMSAPI.ServiceLayer.Account.UserLogin
         UserLoginModal UserLogin(UserLoginModal userLoginModal);
 
         string ChangeUserPassword(string toEmail, string newPassword);
+        UserRegistrationModal GetUserLoginDetails(string UserName, string Password);
     }
 }

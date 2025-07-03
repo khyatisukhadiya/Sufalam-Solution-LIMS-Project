@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { ToastrService } from 'ngx-toastr';
 import { UserloginService } from '../../../service/AccountService/userLogin/userlogin.service';
 import { Router, RouterModule, RouterOutlet } from '@angular/router';
+import { userregistration } from '../../../modal/AccountModal/UserRegistrationModal/userregistraionmodal';
 
 @Component({
   selector: 'app-login',
@@ -13,10 +14,10 @@ import { Router, RouterModule, RouterOutlet } from '@angular/router';
 })
 export class LoginComponent implements OnInit {
   loginFrom: FormGroup = new FormGroup({});
-  forgotPasswordForm : FormGroup = new FormGroup({});
+  forgotPasswordForm: FormGroup = new FormGroup({});
 
   errorMessage: string = '';
-
+  detailsList: userregistration[] = [];
   // Forgot password states
   showForgotPassword: boolean = false;
   showOtpForm: boolean = false;
@@ -34,19 +35,20 @@ export class LoginComponent implements OnInit {
   ngOnInit(): void {
     this.setFrom();
     this.setFrom2();
+    // this.GetUserLoginDetails();
   }
 
-  setFrom2(){
+  setFrom2() {
     this.forgotPasswordForm = this.fb.group({
       email: ['', Validators.required],
       otp: ['', Validators.required],
       newPassword: ['', Validators.required],
-      });
+    });
   }
 
   setFrom() {
     this.loginFrom = this.fb.group({
-      userName : ['', Validators.required],
+      userName: ['', Validators.required],
       password: ['', Validators.required],
       rememberMe: [false],
     });
@@ -87,24 +89,25 @@ export class LoginComponent implements OnInit {
 
     this.userLoginService.UserLogin(payload).subscribe({
       next: (res) => {
-        console.log(res);
-        this.showSuccess(res.message);
-        this.router.navigate(['/slidebar']);
-
-        const user = this.loginFrom.get('userName')?.value;
-        sessionStorage.setItem('loggedInUser', JSON.stringify(user));
-
-        // if (res.success) {
-        //   this.showSuccess(res.message);
-        // } else if (res.errors) {
-        //   this.validationErrors = res.errors;
-        // }
-        // this.showError(res.message);
+        if (res.success) {
+          console.log(res);
+          this.showSuccess(res.message);
+          this.router.navigate(['/slidebar']);
+          this.GetUserLoginDetails();
+          const user = this.loginFrom.get('userName')?.value;
+          sessionStorage.setItem('loggedInUser', JSON.stringify(user));
+        }
+        else if (res.errors) {
+          this.validationErrors = res.errors;
+        }
       },
       error: (err) => {
         if (err.status === 400 && err.error?.errors) {
           this.validationErrors = err.error.errors;
-        } else {
+        } else if (err.status === 500 && err.error?.message) {
+          this.showError(err.error.message);
+        }
+        else {
           this.errorMessage = 'An unexpected error occurred.';
           this.showError(this.errorMessage);
         }
@@ -138,6 +141,10 @@ export class LoginComponent implements OnInit {
       error: (err) => {
         if (err.status === 400 && err.error?.errors) {
           this.validationErrors = err.error.errors;
+        } else if (err.status === 400 && err.error?.message) {
+          this.showError(err.error.message);
+        } else if (err.status === 500 && err.error?.message) {
+          this.showError(err.error.message);
         } else {
           this.errorMessage = 'An unexpected error occurred.';
           this.showError(this.errorMessage);
@@ -146,7 +153,7 @@ export class LoginComponent implements OnInit {
     })
   }
 
-  VerifyOtp(){
+  VerifyOtp() {
     this.submitted = true;
     this.errorMessage = '';
     this.validationErrors = [];
@@ -158,17 +165,18 @@ export class LoginComponent implements OnInit {
     formData.append('toEmail', toEmail);
     formData.append('enteredOtp', enteredOtp);
 
-    this.userLoginService.VerifyOtp(toEmail,enteredOtp).subscribe({
-      next: (res) =>
-        {
-          console.log(res);
-          this.showSuccess(res.message);
-          this.showOtpForm = false;
-          this.showChangePassword = true;
-        },
-        error: (err) => {
+    this.userLoginService.VerifyOtp(toEmail, enteredOtp).subscribe({
+      next: (res) => {
+        console.log(res);
+        this.showSuccess(res.message);
+        this.showOtpForm = false;
+        this.showChangePassword = true;
+      },
+      error: (err) => {
         if (err.status === 400 && err.error?.errors) {
           this.validationErrors = err.error.errors;
+        } else if (err.status === 500 && err.error?.message) {
+          this.showError(err.error.message);
         } else {
           this.errorMessage = 'An unexpected error occurred';
           this.showError(this.errorMessage);
@@ -178,7 +186,7 @@ export class LoginComponent implements OnInit {
   }
 
 
-  updatePassword(){
+  updatePassword() {
     this.submitted = true;
     this.errorMessage = '';
     this.validationErrors = [];
@@ -192,22 +200,39 @@ export class LoginComponent implements OnInit {
     formData.append('newPassword', newPassword);
 
     this.userLoginService.updateUserLoginPassword(toEmail, newPassword).subscribe({
-      next: (res) =>
-        { 
-          console.log(res);
-          this.showSuccess(res.message);
-          this.showChangePassword = false;
-          this.showForgotPassword = false;
-          this.router.navigate(['']);
-        },
-        error: (err) => {
+      next: (res) => {
+        console.log(res);
+        this.showSuccess(res.message);
+        this.showChangePassword = false;
+        this.showForgotPassword = false;
+        this.router.navigate(['']);
+      },
+      error: (err) => {
         if (err.status === 400 && err.error?.errors) {
           this.validationErrors = err.error.errors;
+        } else if (err.status === 500 && err.error?.message) {
+          this.showError(err.error.message);
         } else {
           this.errorMessage = 'An unexpected error occurred';
           this.showError(this.errorMessage);
         }
-  }});
+      }
+    });
   }
 
+  GetUserLoginDetails() {
+    const UserName = this.loginFrom.get('userName')?.value;
+    const Password = this.loginFrom.get('password')?.value;
+
+    const formData = new FormData();
+    formData.append('UserName', UserName);
+    formData.append('Password', Password);
+
+    this.userLoginService.GetuserLogindetails(UserName, Password).subscribe({
+      next: (response) => {
+        console.log(response);
+        this.detailsList = response;
+      },
+    })
+  }
 }
