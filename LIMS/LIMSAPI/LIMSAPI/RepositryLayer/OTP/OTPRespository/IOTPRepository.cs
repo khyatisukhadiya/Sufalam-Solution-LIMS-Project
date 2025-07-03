@@ -6,6 +6,6 @@
 
         Task SaveOtp(string toEmail, string otp, DateTime expiry);
 
-        string VerifyOTP(string toEmail, string enteredOtp);
+        bool VerifyOTP(string toEmail, string enteredOtp);
     }
 }

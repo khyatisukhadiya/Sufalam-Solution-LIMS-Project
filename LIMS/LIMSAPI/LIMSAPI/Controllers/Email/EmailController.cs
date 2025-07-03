@@ -110,7 +110,7 @@ namespace LIMSAPI.Controllers.Email
 
 
         [HttpPost]
-        public IActionResult VerifyOtp([FromForm] string toEmail, string enteredOtp)
+        public IActionResult VerifyOtp([FromForm] string toEmail, [FromForm]string enteredOtp)
         {
 
             string storedOtp = _oTPRepository.VerifyOTP(toEmail, enteredOtp);

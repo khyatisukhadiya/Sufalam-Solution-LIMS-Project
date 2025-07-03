@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, ElementRef, inject, input, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { UserloginService } from '../../../service/AccountService/userLogin/userlogin.service';
@@ -13,6 +13,8 @@ import { userregistration } from '../../../modal/AccountModal/UserRegistrationMo
   styleUrl: './login.component.css'
 })
 export class LoginComponent implements OnInit {
+ @ViewChild('autofocus') autofocus !: ElementRef;
+
   loginFrom: FormGroup = new FormGroup({});
   forgotPasswordForm: FormGroup = new FormGroup({});
 
@@ -35,8 +37,11 @@ export class LoginComponent implements OnInit {
   ngOnInit(): void {
     this.setFrom();
     this.setFrom2();
-    // this.GetUserLoginDetails();
   }
+
+    ngAfterViewInit() {
+      this.autofocus.nativeElement.focus();
+    }
 
   setFrom2() {
     this.forgotPasswordForm = this.fb.group({
@@ -175,7 +180,9 @@ export class LoginComponent implements OnInit {
       error: (err) => {
         if (err.status === 400 && err.error?.errors) {
           this.validationErrors = err.error.errors;
-        } else if (err.status === 500 && err.error?.message) {
+        }else if (err.status === 400 && err.error?.message) {
+          this.showError(err.error.message);
+          } else if (err.status === 500 && err.error?.message) {
           this.showError(err.error.message);
         } else {
           this.errorMessage = 'An unexpected error occurred';

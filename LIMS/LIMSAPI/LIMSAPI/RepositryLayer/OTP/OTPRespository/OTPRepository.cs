@@ -71,11 +71,17 @@ namespace LIMSAPI.RepositryLayer.OTP.OTPRespository
                         if (reader.Read())
                         {
                             string storedOtp = reader["OTPValue"].ToString();
-                            //DateTime expirationTime = (DateTime)reader["OTPExpiration"];
+
+                            if (string.Equals(storedOtp, enteredOtp, StringComparison.OrdinalIgnoreCase))
+                            {
+                                return storedOtp; // OTP is valid
+                            }
                         }
-                    }
+                    } 
                 }
             return null; // OTP is invalid or not found
         }
+
+
     }
 }

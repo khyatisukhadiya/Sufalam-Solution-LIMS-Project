@@ -16,6 +16,7 @@ import { TestapprovalComponent } from './transaction/testapproval/testapproval.c
 import { UserregistrationService } from './service/AccountService/userregistration/userregistration.service';
 import { RegistrationComponent } from './Main/UserRegistration/registration/registration.component';
 import { LoginComponent } from './Main/UserLogin/login/login.component';
+import { ProfileComponent } from './component/profile/profile.component';
 
 export const routes: Routes = [
     {
@@ -81,6 +82,10 @@ export const routes: Routes = [
     {
         path : 'registration',
         component : RegistrationComponent
+    },
+    {
+        path : 'profile',
+        component : ProfileComponent
     }
   
 ];

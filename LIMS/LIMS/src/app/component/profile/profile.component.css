@@ -1,0 +1,57 @@
+.container {
+   margin: auto;
+   justify-content: center;
+}
+
+.main{
+    margin-top: 85px;
+    margin-left: 60px;
+}
+
+
+img{
+    width: 1300px;
+    height: 300px;
+    object-fit: cover;
+}
+
+.container1 {
+  position: relative;
+  text-align: center;
+  color: white;
+  justify-content: center;
+}
+
+.bottom-left {
+  position: absolute;
+  bottom: 8px;
+  left: 40px;
+  color:  black;
+}
+
+.bottom-right {
+  position: absolute;
+  bottom: 8px;
+  right: 10px;
+  color:  black;
+}
+
+
+.about{
+    margin-top: 30px;
+}
+
+h1{
+    font-weight: bold;
+}
+
+.details{
+   background-color: rgb(152, 163, 173);
+   width: 1300px;
+   padding:40px;
+   justify-content: space-between;
+   display: flex;
+}
+
+
+

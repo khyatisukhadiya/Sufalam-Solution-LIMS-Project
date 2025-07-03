@@ -1,27 +1,21 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { UserloginService } from '../../service/AccountService/userLogin/userlogin.service';
-import { userregistration } from '../../modal/AccountModal/UserRegistrationModal/userregistraionmodal';
 
 
 @Component({
   selector: 'app-sliderbar',
-  imports: [CommonModule, RouterModule,FormsModule,ReactiveFormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, ReactiveFormsModule],
   templateUrl: './sliderbar.component.html',
   styleUrls: ['./sliderbar.component.css']
 })
 export class SliderbarComponent implements OnInit {
 
+  ngOnInit(): void {}
 
-  detailsList : userregistration[] = [];
-  router: any;
-
-
-  ngOnInit(): void {
-
-  }
+  constructor(private router : Router){}
 
  loginFrom : FormGroup = new FormGroup({});
 
@@ -62,10 +56,8 @@ export class SliderbarComponent implements OnInit {
   }
 
    signOut(): void {
-    sessionStorage.clear();  
-    localStorage.clear();    
-
-    this.router.navigate(['/login']);
+     sessionStorage.removeItem('loggedInUser');   
+      this.router.navigate(['']);
   }
 }
 
