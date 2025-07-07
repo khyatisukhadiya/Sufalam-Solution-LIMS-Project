@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -37,7 +38,7 @@ export class UserloginService {
      return this.http.post<any>('https://localhost:7161/api/UserLogin/ChangeUserPassword?newPassword=', formData)
   }
 
-  GetuserLogindetails(UserName : string, Password : string){
+  GetuserLogindetails(UserName : string, Password : string): Observable<any>{
     const formData = new FormData();
     formData.append('UserName', UserName);
     formData.append('Password',Password);

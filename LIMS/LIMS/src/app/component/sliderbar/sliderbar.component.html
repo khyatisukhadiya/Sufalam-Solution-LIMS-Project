@@ -6,8 +6,8 @@
     </div>
     <div class="btn-group" (click)="toggleProfile()">
       <button class="btn btn-sm dropdown-toggle nav-link" type="button" data-toggle="dropdown" aria-haspopup="true"
-        aria-expanded="false">
-        khushi
+        aria-expanded="false" *ngIf="userProfile">
+        {{userProfile.userName}}
       </button>
       <div class="dropdown-menu" aria-labelledby="dropdownMenuOffset" style="top: 40px; left: -60px;">
         <a class="dropdown-item" routerLink="/profile">My Profile</a>

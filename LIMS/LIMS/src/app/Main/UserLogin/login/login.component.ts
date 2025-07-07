@@ -101,6 +101,10 @@ export class LoginComponent implements OnInit {
           this.GetUserLoginDetails();
           const user = this.loginFrom.get('userName')?.value;
           sessionStorage.setItem('loggedInUser', JSON.stringify(user));
+
+          const userName = this.loginFrom.get('userName')?.value;
+          const password = this.loginFrom.get('password')?.value;
+          localStorage.setItem('loginDetails',JSON.stringify({userName,password}));
         }
         else if (res.errors) {
           this.validationErrors = res.errors;

@@ -12,10 +12,25 @@ import { UserloginService } from '../../service/AccountService/userLogin/userlog
   styleUrls: ['./sliderbar.component.css']
 })
 export class SliderbarComponent implements OnInit {
+userProfile: any;
 
-  ngOnInit(): void {}
+  
+constructor( private userService: UserloginService, private router : Router ) { }
 
-  constructor(private router : Router){}
+  ngOnInit(): void {   const loginDetails = JSON.parse(localStorage.getItem('loginDetails') || '{}');
+   
+  console.log('username',loginDetails.userName);
+  console.log('password',loginDetails.password);
+
+    this.userService.GetuserLogindetails(loginDetails.userName,loginDetails.password).subscribe(
+      (data) => {
+        this.userProfile = data;
+      },
+      (error) => {
+        console.error('Error fetching user profile', error);
+      }
+    );
+  }
 
  loginFrom : FormGroup = new FormGroup({});
 
@@ -56,7 +71,8 @@ export class SliderbarComponent implements OnInit {
   }
 
    signOut(): void {
-     sessionStorage.removeItem('loggedInUser');   
+     sessionStorage.removeItem('loggedInUser'); 
+     localStorage.removeItem('loginDetails'); 
       this.router.navigate(['']);
   }
 }

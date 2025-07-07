@@ -1,21 +1,37 @@
 <app-sliderbar></app-sliderbar>
 
 <div class="main">
-    <div class="container">
+    <div class="container" *ngIf="userProfile">
         <div class="container1">
             <img src="https://t4.ftcdn.net/jpg/09/27/94/25/360_F_927942540_BwvsR4YD6jftMa83x1cte33wDg7SY6bj.jpg"
                 alt="Background img">
-            <div class="bottom-left">Bottom Left</div>
-            <button class="bottom-right btn btn-warning" >Forgot PassWord</button>
+            <!-- <img class="centered" [src]="userProfile.profileImage" *ngIf="userProfile.profileImage" alt="Profile Image"> -->
+            <h2 class="bottom-left">{{userProfile.userName}}</h2>
+            <button class="bottom-right btn btn-warning">Forgot PassWord</button>
         </div>
 
         <div class="about">
             <h1>About</h1>
-            <div class="details" *ngFor="let detais of detaisList">
-                <span>{{detais.fullName}}</span>
-                <span>{{detais.email}}</span>
-                <span>{{detais.phoneNumber}}</span>
+            <div class="details">
+                <div>
+                    <h5>Full Name</h5>
+                    <span>{{userProfile.fullName}}</span>
+                </div>
+                <div>
+                    <h5>Email</h5>
+                    <span>{{userProfile.email}}</span>
+                </div>
+                <div>
+                    <h5>Phone Number</h5>
+                    <span>{{userProfile.phoneNumber}}</span>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- <div class="details" *ngIf="userProfile">
+                <span>{{userProfile.fullName}}</span>
+                <span>{{userProfile.email}}</span>
+                <span>{{userProfile.phoneNumber}}</span>
+            </div> -->
