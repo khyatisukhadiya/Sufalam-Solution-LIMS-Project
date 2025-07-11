@@ -48,7 +48,7 @@ export class SampleRegisterComponent implements OnInit {
   toastMessage: string = '';
   searchCriteria = { id: '', name: '', code: '' };
   changeDetectorRef: any;
-
+  user: any;
 
   constructor(private fb: FormBuilder, private toastr: ToastrService) { }
 
@@ -56,6 +56,13 @@ export class SampleRegisterComponent implements OnInit {
 
   ngOnInit(): void {
     this.setForm();
+
+   const userData = localStorage.getItem('loginDetails');
+    if (userData) {
+      this.user = JSON.parse(userData);
+      this.sampleRegisterForm.get('createdBy')?.setValue(this.user.userName); 
+    }
+
 
 
     this.sampleRegisterForm.get('dob')?.valueChanges.subscribe((dobValue: string) => {
@@ -130,38 +137,37 @@ export class SampleRegisterComponent implements OnInit {
     this.errorMessage = '';
     this.validationErrors = [];
     this.submitted = false;
-     this.selectedServices = [];
+    this.selectedServices = [];
     this.selectedPayment = '';
 
     this.sampleRegisterForm.reset({
-    sampleRegisterId: 0,
-    date: '',
-    branchId: null,
-    areaId: null,
-    totalAmount: 0,
-    isB2B: false,
-    b2BId: null,
-    phoneNumber: '',
-    title: '',
-    firstName: '',
-    middleName: '',
-    lastName: '',
-    dob: '',
-    age: 0,
-    gender: '',
-    email: '',
-    address: '',
-    cityId: null,
-    doctorId: null,
-    isActive: true,
-    paymentId: '',
-    selectedPayment: [],
-    amount: '',
-    chequeNo: '',
-    chequeDate: '',
-    transactionId: '',
-    regBy: ''
-  });
+      sampleRegisterId: 0,
+      date: '',
+      branchId: null,
+      areaId: null,
+      totalAmount: 0,
+      isB2B: false,
+      b2BId: null,
+      phoneNumber: '',
+      title: '',
+      firstName: '',
+      middleName: '',
+      lastName: '',
+      dob: '',
+      age: 0,
+      gender: '',
+      email: '',
+      address: '',
+      cityId: null,
+      doctorId: null,
+      isActive: true,
+      paymentId: '',
+      selectedPayment: [],
+      amount: '',
+      chequeNo: '',
+      chequeDate: '',
+      transactionId: '',
+    });
 
 
   }
@@ -194,7 +200,7 @@ export class SampleRegisterComponent implements OnInit {
       ChequeNo: [{ value: '', disabled: true }, Validators.required],
       ChequeDate: [{ value: '', disabled: true }, Validators.required],
       TransactionId: [{ value: '', disabled: true }, Validators.required],
-      regBy: ['', Validators.required],
+      createdBy: [{ value: '', disabled: true }, Validators.required],
     });
   }
 
@@ -385,7 +391,7 @@ export class SampleRegisterComponent implements OnInit {
             ChequeDate: res.chequeDate ? formatDate(res.chequeDate, 'yyyy-MM-dd', 'en-US') : null,
             TransactionId: res.transactionId,
             // paymentId: res.paymentMapping?.[0]?.paymentId,
-            regBy: res.createdBy,
+            createdBy: res.createdBy,
             doctorId: res.doctorId,
             paymentId: res.paymentId,
           }
@@ -538,7 +544,7 @@ export class SampleRegisterComponent implements OnInit {
       chequeNo: formValues.ChequeNo || null,
       chequeDate: formValues.ChequeDate || null,
       transactionId: formValues.TransactionId || null,
-      regBy: formValues.regBy || null,
+      createdBy: formValues.createdBy,
       doctorId: formValues.doctorId,
       doctorName: this.doctors.find(d => d.doctorId === formValues.doctorId)?.doctorName || '',
       paymentId: selectedPayment.paymentId,

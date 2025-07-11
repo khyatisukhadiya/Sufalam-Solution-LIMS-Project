@@ -1,6 +1,7 @@
 export interface SampleRegister {
     sampleRegisterId: number;
     date: string;
+    createdBy : string;
     branchId: number;
     totalAmount: number;
     isB2B: boolean;

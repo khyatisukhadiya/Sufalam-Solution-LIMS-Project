@@ -137,7 +137,7 @@
                                     </div>
 
                                 </div>
-
+                                <span class="text-center">Created By : {{ user.userName}}</span>
                             </ng-container>
 
                             <ng-template #noServices>
@@ -162,7 +162,7 @@
 <div class="container my-3 p-3" style="max-width: 96%;margin-left: 60px;">
     <div class="border border-dark rounded-2" *ngIf="searchClick">
         <div class="table-responsive">
-            <table class="table table-bordered table-striped table-hover text-center"
+            <table class="table table-borderless table-striped table-hover text-center"
                 *ngIf="sampleRegisterList.length > 0; else noData">
                 <thead>
                     <tr>

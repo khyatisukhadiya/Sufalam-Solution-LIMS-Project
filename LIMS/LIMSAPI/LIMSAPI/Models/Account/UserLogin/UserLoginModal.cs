@@ -25,27 +25,29 @@ namespace LIMSAPI.Models.Account.UserLogin
         [Display(Name = "Remember me?")]
         public bool RememberMe { get; set; }
 
-        public List<UserRegistrationMapping> UserRegistrations { get; set; } = new List<UserRegistrationMapping>();
+        //public List<UserRegistrationMapping> UserRegistrations { get; set; } = new List<UserRegistrationMapping>();
     }
 
-    public class UserRegistrationMapping
-    {
-        public int UserId { get; set; }
+    //public class UserRegistrationMapping
+    //{
+    //    public int UserId { get; set; }
 
-        public string UserName { get; set; }
+    //    public string UserName { get; set; }
 
-        public string FullName { get; set; }
+    //    public string FullName { get; set; }
 
-        public string Email { get; set; }
+    //    public string Email { get; set; }
 
-        public string PhoneNumber { get; set; }
+    //    public string PhoneNumber { get; set; }
 
-        public string Password { get; set; }
+    //    public string Password { get; set; }
 
-        public string ConfirmPassword { get; set; }
+    //    public string ConfirmPassword { get; set; }
 
-        public char Gender { get; set; }
+    //    public char Gender { get; set; }
 
-        public DateOnly DOB { get; set; }
-    }
+    //    public DateOnly DOB { get; set; }
+    //}
+
+
 }

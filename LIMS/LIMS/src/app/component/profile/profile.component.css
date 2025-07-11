@@ -68,7 +68,7 @@ h1{
 .main {
   /* margin-top: 8px; */
   margin-left: 65px;
- margin-top: 20px;
+  margin-top: 20px;
   padding: 2rem;
   display: flex;
   justify-content: center;
@@ -88,12 +88,14 @@ h1{
   overflow: hidden;
 }
 
+
 .container1 {
   position: relative;
   width: 100%;
   height: auto;
   padding-top: 27px;
 }
+
 
 .container1 img:first-child {
   width: 100%;

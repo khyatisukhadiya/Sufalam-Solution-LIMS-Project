@@ -16,9 +16,8 @@ export class ProfileComponent implements OnInit {
   // userName: string = '';
   // password: string = '';
   
-    constructor(
-        private userService: UserloginService
-      ) { }
+  
+    constructor(private userService: UserloginService ) { }
 
   ngOnInit(): void {
    const loginDetails = JSON.parse(localStorage.getItem('loginDetails') || '{}');

@@ -3953,7 +3953,7 @@ namespace LIMSAPI.RepositryLayer
            
                 string testQuery = @"
                                      SELECT 
-                                         tr.TestId, t.TestName, tr.ResultValue, tr.ValidationStatus, tr.TestResultId, tr.IsActive, s.ServiceId
+                                         tr.TestId, t.TestName, tr.ResultValue,tr.CreatedBy,tr.ValidateBy, tr.ValidationStatus, tr.TestResultId, tr.IsActive, s.ServiceId
                                      FROM testResultDetails tr
                                      INNER JOIN test t ON tr.TestId = t.TestId
                                      INNER JOIN Service s on tr.ServiceId = s.ServiceId
@@ -3975,6 +3975,8 @@ namespace LIMSAPI.RepositryLayer
                                 ValidationStatus = Convert.ToBoolean(testReader["ValidationStatus"]),
                                 IsActive = testReader["IsActive"] != DBNull.Value && Convert.ToBoolean(testReader["IsActive"]),
                                 ServiceId = Convert.ToInt32(testReader["ServiceId"]),
+                                CreatedBy = testReader["CreatedBy"]?.ToString(),
+                                ValidateBy = testReader["ValidateBy"]?.ToString(),
                             };
 
                             testApprovalResultModal.TestresultId = Convert.ToInt32(testReader["TestResultId"]);

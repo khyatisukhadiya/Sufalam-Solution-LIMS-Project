@@ -39,7 +39,7 @@ export class TestresultComponent implements OnInit {
   sampleRegisterServices: any[] = [];
   selectedServices: any[] = [];
   errorMessage: string = '';
-
+  user : any;
   testresultService = inject(TestresultService)
 
 
@@ -48,6 +48,13 @@ export class TestresultComponent implements OnInit {
   ngOnInit(): void {
     this.setFrom();
     this.loadServices();
+
+
+      const userData = localStorage.getItem('loginDetails');
+    if (userData) {
+      this.user = JSON.parse(userData);
+      this.testresultForm.get('createdBy')?.setValue(this.user.userName); 
+    }
   }
 
   loadServices() {
@@ -82,7 +89,6 @@ export class TestresultComponent implements OnInit {
         testId: null,
         resultValue: '',
         validationStatus: '',
-        createdBy: '',
         validateBy: '',
         isActive: true
         }
@@ -178,12 +184,13 @@ export class TestresultComponent implements OnInit {
     const services = this.selectedServices.map(service => ({
       serviceId: service.serviceId,
       serviceName: service.serviceName,
+     
       tests : service.tests.map((test: any) => ({
         testId: test.testId,
         testName: test.testName,
         resultValue: test.resultValue,
         validationStatus: test.validationStatus,
-        createdBy: test.createdBy || '',
+         createdBy : this.user.userName,
         validateBy: test.validateBy || '',
         isActive :  test.isActive || true
       }))

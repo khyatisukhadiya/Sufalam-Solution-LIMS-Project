@@ -42,13 +42,19 @@ export class TestapprovalComponent implements OnInit {
   selectedSampleId: number = 0;
   modalInstance: Modal | null = null;
   TestApproval: any;
-
+user : any;
 
   constructor(private fb: FormBuilder) { }
 
   ngOnInit(): void {
     this.loadService();
     this.setFrom();
+
+    const userData = localStorage.getItem('loginDetails');
+    if (userData) {
+      this.user = JSON.parse(userData);
+      this.testresultForm.get('validateBy')?.setValue(this.user.userName); 
+    }
   }
 
   loadSampleRegisters(): void {
@@ -168,7 +174,9 @@ export class TestapprovalComponent implements OnInit {
                     testName: test.testName ?? '',
                     resultValue: test.resultValue ?? '',
                     validationStatus: test.validationStatus ?? '',
-                    isActive: test.isActive ?? true
+                    isActive: test.isActive ?? true,
+                    createdBy : test.createdBy ?? '',
+                    validateBy : test.validateBy ?? '',
                   }))
               };
             });
@@ -221,7 +229,7 @@ export class TestapprovalComponent implements OnInit {
         resultValue: test.resultValue,
         validationStatus: test.validationStatus,
         createdBy: test.createdBy || '',
-        validateBy: test.validateBy || '',
+        validateBy: this.user.userName || '',
         isActive: test.isActive || true
       }))
     }));
@@ -434,18 +442,26 @@ export class TestapprovalComponent implements OnInit {
         // doc.text(test.unit || "", 140, finalY);
         // doc.text(test.refInterval || "", 170, finalY);
         finalY += 8;
+
+        
       });
 
+      doc.text("------------------- Validate By : " + test.validateBy + " -------------------", 73, finalY);
+      finalY += 10;
+      
     });
 
-
     doc.text("------------------- End Of Report -------------------", 73, finalY);
-
+    
     // Save PDF
     doc.save(`Test_Report_CaseID_${selectedSampleId}.pdf`);
 
 
-    // Send report in Email
+
+
+    
+    // SEND REPORT TO EMAIL
+
     const toEmail = matchedSample?.email;
     console.log("Email", matchedSample.email);
     const subject = `Test Report for Case ID ${selectedSampleId}`;
@@ -470,7 +486,11 @@ export class TestapprovalComponent implements OnInit {
     });
 
 
-      // send SMS
+
+
+
+      // SEND SMS
+
       const toPhoneNumber = matchedSample?.phoneNumber;
       const messageBody = `Hello Dear Customer ${matchedSample.middleName} ${matchedSample.firstName}. Please Collect Your report.`;
       const formDatas = new FormData();
