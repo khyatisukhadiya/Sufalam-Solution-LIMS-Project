@@ -1,40 +1,45 @@
+.main {
+  height: 100vh;
+  /* background: url('https://static.wixstatic.com/media/c837a6_eb322a4179e54d788eef6896e67f05d0~mv2.jpg/v1/fill/w_640,h_652,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/c837a6_eb322a4179e54d788eef6896e67f05d0~mv2.jpghttps://www.lablynx.com/wp-content/uploads/2024/08/Top-10-Ways-the-Right-Lab-Management-System-Can-Save-Your-Laboratory-Money3.jpg') no-repeat center center; */
+  background-size: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* opacity: 0.5; */
+}
 
-  .main {
-    height: 100vh;
-    /* background: url('https://static.wixstatic.com/media/c837a6_eb322a4179e54d788eef6896e67f05d0~mv2.jpg/v1/fill/w_640,h_652,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/c837a6_eb322a4179e54d788eef6896e67f05d0~mv2.jpghttps://www.lablynx.com/wp-content/uploads/2024/08/Top-10-Ways-the-Right-Lab-Management-System-Can-Save-Your-Laboratory-Money3.jpg') no-repeat center center; */
-    background-size: cover;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    /* opacity: 0.5; */
-  }
-  .card {
-    /* background-color: rgba(82, 78, 78, 0.95); */
-    border-radius: 12px;
-    padding: 30px;
-    opacity: 1;
-  }
-  .btn-lg {
-    font-size: 1.1rem;
-    border-radius: 8px;
-  }
-  .form-control {
-    border-radius: 8px;
-    border: none;
-  }
-  .form-control:focus {
-    box-shadow: 0px 0px 8px rgba(255, 255, 255, 0.5);
-  }
-  a {
-    transition: 0.3s;
-  }
-  a:hover {
-    text-decoration: underline;
-  }
-  .card{
-   box-shadow: 0px 1px 2px rgba(0,0,0,0.2),
-               0px 2px 4px rgba(0,0,0,0.2),
-               0px 4px 8px rgba(0,0,0,0.2),
-               0px 8px 16px rgba(0,0,0,0.2)
-  }
- 
+.card {
+  /* background-color: rgba(82, 78, 78, 0.95); */
+  border-radius: 12px;
+  padding: 30px;
+  opacity: 1;
+}
+
+.btn-lg {
+  font-size: 1.1rem;
+  border-radius: 8px;
+}
+
+.form-control {
+  border-radius: 8px;
+  border: none;
+}
+
+.form-control:focus {
+  box-shadow: 0px 0px 8px rgba(255, 255, 255, 0.5);
+}
+
+a {
+  transition: 0.3s;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.card {
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.2),
+    0px 2px 4px rgba(0, 0, 0, 0.2),
+    0px 4px 8px rgba(0, 0, 0, 0.2),
+    0px 8px 16px rgba(0, 0, 0, 0.2)
+}

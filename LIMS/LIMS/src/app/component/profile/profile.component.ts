@@ -13,19 +13,17 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class ProfileComponent implements OnInit {
   userProfile: any;
-  // userName: string = '';
-  // password: string = '';
-  
-  
-    constructor(private userService: UserloginService ) { }
+
+  constructor(private userService: UserloginService) { }
 
   ngOnInit(): void {
-   const loginDetails = JSON.parse(localStorage.getItem('loginDetails') || '{}');
-   
-  console.log('username',loginDetails.userName);
-  console.log('password',loginDetails.password);
+    
+    const loginDetails = JSON.parse(localStorage.getItem('loginDetails') || '{}');
 
-    this.userService.GetuserLogindetails(loginDetails.userName,loginDetails.password).subscribe(
+    console.log('username', loginDetails.userName);
+    console.log('password', loginDetails.password);
+
+    this.userService.GetuserLogindetails(loginDetails.userName, loginDetails.password).subscribe(
       (data) => {
         this.userProfile = data;
       },

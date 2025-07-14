@@ -30,6 +30,13 @@
                                                 class="text-danger">
                                                 Username is required.
                                             </small>
+
+                                            <ng-container *ngFor="let error of validationErrors">
+                                                <small *ngIf="error.toLowerCase().includes('user already')"
+                                                    class="text-danger">
+                                                    {{ error }}
+                                                </small>
+                                            </ng-container>
                                         </div>
                                     </div>
 
@@ -124,11 +131,11 @@
                                                 </small>
                                             </ng-container>
 
-                                              <small
+                                              <!-- <small
                                                 *ngIf="userRegisterForm.controls['gender']?.errors?.['required'] && submitted"
                                                 class="text-danger">
                                                 Gender is required.
-                                            </small>
+                                            </small> -->
                                         </div>
                                     </div>
 
@@ -145,11 +152,11 @@
                                                 </small>
                                             </ng-container>
 
-                                            <small
+                                            <!-- <small
                                                 *ngIf="userRegisterForm.controls['dOB']?.errors?.['required'] && submitted"
                                                 class="text-danger">
                                                 DOB is required.
-                                            </small>
+                                            </small> -->
                                         </div>
                                     </div>
 
@@ -186,8 +193,15 @@
                                             <small
                                                 *ngIf="userRegisterForm.controls['confirmPassword']?.errors?.['required'] && submitted"
                                                 class="text-danger">
-                                                confirmPassword is required.
+                                                Confirm Password is required.
                                             </small>
+
+                                            <ng-container *ngFor="let error of validationErrors">
+                                                <small *ngIf="error.toLowerCase().includes('please enter confirm password')"
+                                                    class="text-danger">
+                                                    {{ error }}
+                                                </small>
+                                            </ng-container>
 
                                             <ng-container *ngFor="let error of validationErrors">
                                                 <small *ngIf="error.toLowerCase().includes('not match')"

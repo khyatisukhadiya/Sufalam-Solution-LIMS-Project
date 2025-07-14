@@ -81,7 +81,7 @@ h1{
   margin: auto;
   justify-content: center;
   width: 100%;
-  max-width: 1000px;
+  max-width: 1400px;
   background-color: #fff;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -133,7 +133,7 @@ h1{
 
 .details {
   display: flex;
-  flex-wrap: wrap;
+  /* flex-wrap: wrap; */
   gap: 2rem;
   justify-content: space-between;
 }

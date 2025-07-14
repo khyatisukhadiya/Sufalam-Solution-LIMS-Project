@@ -42,7 +42,7 @@ export class TestapprovalComponent implements OnInit {
   selectedSampleId: number = 0;
   modalInstance: Modal | null = null;
   TestApproval: any;
-user : any;
+  user: any;
 
   constructor(private fb: FormBuilder) { }
 
@@ -53,7 +53,7 @@ user : any;
     const userData = localStorage.getItem('loginDetails');
     if (userData) {
       this.user = JSON.parse(userData);
-      this.testresultForm.get('validateBy')?.setValue(this.user.userName); 
+      this.testresultForm.get('validateBy')?.setValue(this.user.userName);
     }
   }
 
@@ -111,6 +111,7 @@ user : any;
 
 
   openModal(selected: any): void {
+
     const modal = document.getElementById('myModal');
 
     if (modal != null) {
@@ -129,6 +130,7 @@ user : any;
       });
       this.modalInstance.show();
     }
+
 
     const sampleRegisterId = selected.sampleRegisterId;
 
@@ -175,8 +177,8 @@ user : any;
                     resultValue: test.resultValue ?? '',
                     validationStatus: test.validationStatus ?? '',
                     isActive: test.isActive ?? true,
-                    createdBy : test.createdBy ?? '',
-                    validateBy : test.validateBy ?? '',
+                    createdBy: test.createdBy ?? '',
+                    validateBy: test.validateBy ?? '',
                   }))
               };
             });
@@ -302,31 +304,253 @@ user : any;
   }
 
 
+  // generatePDF(selectedSampleId: number) {
+  //   console.log("🔍 Generating PDF for Sample ID:", selectedSampleId);
+
+  //   if (!selectedSampleId) {
+  //     console.error("🚨 Sample ID is missing!");
+  //     return;
+  //   }
+
+  //   // Check if jsPDF and autoTable are available
+  //   if (typeof jsPDF === 'undefined' || typeof autoTable === 'undefined') {
+  //     console.error("🚨 jsPDF or autoTable is not available!");
+  //     return;
+  //   }
+
+  //   console.log("test Approval", this.sampleRegisterMaster)
+  //   // Find the matched sample from sampleRegisterMaster
+  //   const matchedSample = this.sampleRegisterMaster.find((s: { sampleRegisterId: number; }) => s.sampleRegisterId === selectedSampleId);
+
+  //   if (!matchedSample) {
+  //     this.showError("No sample data found for the selected ID.");
+  //     console.error("🚨 No sample data found for ID:", selectedSampleId);
+  //     return;
+  //   }
+
+  //   console.log("📄 Matched Sample:", matchedSample);
+
+  //   const services = this.selectTest.map(service => ({
+  //     serviceId: service.serviceId,
+  //     serviceName: service.serviceName,
+  //     tests: service.tests.map((test: any) => ({
+  //       testId: test.testId,
+  //       testName: test.testName,
+  //       resultValue: test.resultValue,
+  //       validationStatus: test.validationStatus ? 'A' : 'V',
+  //       createdBy: test.createdBy || '',
+  //       validateBy: test.validateBy || '',
+  //       isActive: test.isActive || true
+  //     }))
+  //   }));
+
+
+  //   if (!this.selectTest || this.selectTest.length === 0) {
+  //     this.showError("Data is not available to generate the report.");
+  //     return;
+  //   }
+
+  //   const allResult = this.selectTest.every(
+  //     (selectTest: any) =>
+  //     Array.isArray(selectTest.tests) &&
+  //     selectTest.tests.every((test: any) => test.validationStatus === true)
+  //   );
+  //   if (!allResult) {
+  //     this.showError("Report under process");
+  //     return;
+  //   }
+
+
+  //   // Generate PDF using jsPDF
+  //   const doc = new jsPDF()
+  //   const today = new Date().toISOString().split('T')[0];
+
+  //   // Report Title
+  //   doc.setFontSize(14).setFont("helvetica", "bold");
+  //   doc.text("LABORATORY REPORT", 105, 24, { align: "center" });
+
+  //   let finalrY = 17;
+  //   doc.line(10, finalrY, 200, finalrY);
+  //   finalrY += 10; // Adjusted to ensure a max 10px gap
+  //   doc.line(10, finalrY, 200, finalrY);
+
+  //   // Patient Details Table
+  //   const patientDetails = [
+  //     ["Name", `: ${matchedSample.title || ''} ${matchedSample.firstName || ''} ${matchedSample.middleName || ''}`, "Sex/Age", `: ${matchedSample.gender || ''} / ${matchedSample.age || ''} Years`],
+  //     ["Case ID", `: ${matchedSample.sampleRegisterId || ''}`, "Mobile", `: ${matchedSample.phoneNumber || ''}`],
+  //     ["Branch", `: ${matchedSample.branchName || ''}`, "B2B", `: ${matchedSample.b2BName || ''}`],
+  //     ["Reg Date", `: ${matchedSample.date || ''}`, "Report Date", `: ${today}`],
+
+  //   ];
+
+  //   autoTable(doc, {
+  //     startY: 31,
+  //     body: patientDetails,
+  //     theme: "plain",
+  //     styles: { fontSize: 9, cellPadding: 1 },
+  //     columnStyles: { 0: { fontStyle: "bold" }, 2: { fontStyle: "bold" } }
+  //   });
+
+  //   let finalY = (doc as any).lastAutoTable.finalY + 8;
+
+  //   // Table Headers
+  //   doc.setFontSize(9).setFont("helvetica", "bold");
+  //   doc.text("Parameter", 10, finalY);
+  //   doc.text("Result", 90, finalY);
+  //   finalY += 2;
+
+
+  //   doc.line(10, finalY, 200, finalY);
+  //   finalY += 8;
+
+  //   // Adding test results
+  //   const pageHeight = doc.internal.pageSize.height;
+
+  //   matchedSample?.serviceMapping?.forEach((serviceMapping: any) => {
+  //     if (finalY > pageHeight - 20) {
+  //       doc.addPage();
+  //       finalY = 20;
+  //     }
+
+  //     doc.setFont("helvetica", "bold").text(serviceMapping.serviceName, 10, finalY);
+  //     finalY += 6;
+
+  //     // const services = this.selectTest.map(service => ({
+  //     //   serviceId: service.serviceId,
+  //     //   serviceName: service.serviceName,
+  //     //   tests: service.tests.map((test: any) => ({
+  //     //     testId: test.testId,
+  //     //     testName: test.testName,
+  //     //     resultValue: test.resultValue,
+  //     //     validationStatus: test.validationStatus ? 'A' : 'V',
+  //     //     createdBy: test.createdBy || '',
+  //     //     validateBy: test.validateBy || '',
+  //     //     isActive: test.isActive || true
+  //     //   }))
+  //     // }));
+
+
+  //     const currentService = services.find(s => s.serviceId === serviceMapping.serviceId);
+  //     currentService?.tests?.forEach((test: any) => {
+  //       if (finalY > pageHeight - 20) {
+  //         doc.addPage();
+  //         finalY = 20;
+  //       }
+
+  //       doc.setFont("helvetica", "normal");
+  //       doc.text(test.testName || "", 12, finalY);
+  //       doc.text(test.resultValue?.toString() || "", 90, finalY);
+  //       // doc.text(test.unit || "", 140, finalY);
+  //       // doc.text(test.refInterval || "", 170, finalY);
+  //       finalY += 8;
+  //     });
+
+  //     doc.text("------------------- Validate By : " + test.validateBy + " -------------------", 73, finalY);
+  //     // finalY += 10;
+
+  //   });
+
+  //   doc.text("------------------- End Of Report -------------------", 73, finalY);
+
+  //   // Save PDF
+  //   doc.save(`Test_Report_CaseID_${selectedSampleId}.pdf`);
+
+
+
+
+
+  //   // SEND REPORT TO EMAIL
+
+  //   const toEmail = matchedSample?.email;
+  //   console.log("Email", matchedSample.email);
+  //   const subject = `Test Report for Case ID ${selectedSampleId}`;
+  //   const body = "Dear Customer,<br/><br/>I have attached your test report please check it.<br/><br/>Best regards,<br/>LIMS Team";
+  //   const pdfBlob = doc.output('blob');
+
+  //   const formData = new FormData();
+  //   formData.append('toEmail', toEmail);
+  //   formData.append('subject', subject);
+  //   formData.append('body', body);
+  //   formData.append('attachments', pdfBlob, `Test_Report_CaseID_${selectedSampleId}.pdf`);
+
+  //   this.testApprovalResultService.sendResportByEmail(toEmail, subject, body, pdfBlob, `Test_Report_CaseID_${selectedSampleId}.pdf`).subscribe({
+  //     next: (res) => {
+  //       console.log(res);
+  //       this.showSuccess(res.message);
+  //     },
+  //     error: (err) => {
+  //       console.error(err);
+  //       this.showError("Error sending report");
+  //     }
+  //   });
+
+
+
+
+
+  //     // SEND SMS
+
+  //     const toPhoneNumber = matchedSample?.phoneNumber;
+  //     const messageBody = `Hello Dear Customer ${matchedSample.middleName} ${matchedSample.firstName}. Please Collect Your report.`;
+  //     const formDatas = new FormData();
+  //     formDatas.append("toPhoneNumber", toPhoneNumber);
+  //     formDatas.append("messageBody", messageBody);
+  //     this.testApprovalResultService.sendSMS(toPhoneNumber, messageBody).subscribe({
+  //       next: (res) =>
+  //       {
+  //         console.log(res),
+  //         this.showSuccess(res.message); 
+  //       },
+  //       error: (err) =>{
+  //         console.error(err); 
+  //         this.showError("Error sending SMS");
+  //       }
+  //     }); 
+  // }
+
+
   generatePDF(selectedSampleId: number) {
     console.log("🔍 Generating PDF for Sample ID:", selectedSampleId);
+
+    if (selectedSampleId !== this.selectedSampleId) {
+      this.showError("Please open the correct modal to generate this report.");
+      return;
+    }
+
 
     if (!selectedSampleId) {
       console.error("🚨 Sample ID is missing!");
       return;
     }
 
-    // Check if jsPDF and autoTable are available
     if (typeof jsPDF === 'undefined' || typeof autoTable === 'undefined') {
       console.error("🚨 jsPDF or autoTable is not available!");
       return;
     }
 
-    console.log("test Approval", this.sampleRegisterMaster)
-    // Find the matched sample from sampleRegisterMaster
-    const matchedSample = this.sampleRegisterMaster.find((s: { sampleRegisterId: number; }) => s.sampleRegisterId === selectedSampleId);
+    const matchedSample = this.sampleRegisterMaster.find(
+      (s: { sampleRegisterId: number }) => s.sampleRegisterId === selectedSampleId
+    );
 
     if (!matchedSample) {
       this.showError("No sample data found for the selected ID.");
-      console.error("🚨 No sample data found for ID:", selectedSampleId);
       return;
     }
 
-    console.log("📄 Matched Sample:", matchedSample);
+    if (!this.selectTest || this.selectTest.length === 0) {
+      this.showError("Data is not available to generate the report.");
+      return;
+    }
+
+    const allResult = this.selectTest.every(
+      (selectTest: any) =>
+        Array.isArray(selectTest.tests) &&
+        selectTest.tests.every((test: any) => test.validationStatus === true)
+    );
+    if (!allResult) {
+      this.showError("Report under process");
+      return;
+    }
 
     const services = this.selectTest.map(service => ({
       serviceId: service.serviceId,
@@ -342,43 +566,29 @@ user : any;
       }))
     }));
 
+    // Extract first validator's name for the footer
+    const firstValidator = services
+      .flatMap(service => service.tests)
+      .find(test => test.validateBy)?.validateBy || "Lab Technician";
 
-    if (!this.selectTest || this.selectTest.length === 0) {
-      this.showError("Data is not available to generate the report.");
-      return;
-    }
-
-    const allResult = this.selectTest.every(
-      (selectTest: any) =>
-      Array.isArray(selectTest.tests) &&
-      selectTest.tests.every((test: any) => test.validationStatus === true)
-    );
-    if (!allResult) {
-      this.showError("Report under process");
-      return;
-    }
-
-
-    // Generate PDF using jsPDF
-    const doc = new jsPDF()
+    const doc = new jsPDF();
     const today = new Date().toISOString().split('T')[0];
 
-    // Report Title
+    // Header Title
     doc.setFontSize(14).setFont("helvetica", "bold");
     doc.text("LABORATORY REPORT", 105, 24, { align: "center" });
 
     let finalrY = 17;
     doc.line(10, finalrY, 200, finalrY);
-    finalrY += 10; // Adjusted to ensure a max 10px gap
+    finalrY += 10;
     doc.line(10, finalrY, 200, finalrY);
 
-    // Patient Details Table
+    // Patient Details
     const patientDetails = [
       ["Name", `: ${matchedSample.title || ''} ${matchedSample.firstName || ''} ${matchedSample.middleName || ''}`, "Sex/Age", `: ${matchedSample.gender || ''} / ${matchedSample.age || ''} Years`],
       ["Case ID", `: ${matchedSample.sampleRegisterId || ''}`, "Mobile", `: ${matchedSample.phoneNumber || ''}`],
       ["Branch", `: ${matchedSample.branchName || ''}`, "B2B", `: ${matchedSample.b2BName || ''}`],
       ["Reg Date", `: ${matchedSample.date || ''}`, "Report Date", `: ${today}`],
-
     ];
 
     autoTable(doc, {
@@ -391,46 +601,30 @@ user : any;
 
     let finalY = (doc as any).lastAutoTable.finalY + 8;
 
-    // Table Headers
+    // Column headers
     doc.setFontSize(9).setFont("helvetica", "bold");
     doc.text("Parameter", 10, finalY);
     doc.text("Result", 90, finalY);
     finalY += 2;
-
-
     doc.line(10, finalY, 200, finalY);
     finalY += 8;
 
-    // Adding test results
     const pageHeight = doc.internal.pageSize.height;
 
     matchedSample?.serviceMapping?.forEach((serviceMapping: any) => {
-      if (finalY > pageHeight - 20) {
+      if (finalY > pageHeight - 30) {
         doc.addPage();
         finalY = 20;
       }
 
-      doc.setFont("helvetica", "bold").text(serviceMapping.serviceName, 10, finalY);
+      doc.setFont("helvetica", "bold");
+      doc.text(serviceMapping.serviceName, 10, finalY);
       finalY += 6;
 
-      // const services = this.selectTest.map(service => ({
-      //   serviceId: service.serviceId,
-      //   serviceName: service.serviceName,
-      //   tests: service.tests.map((test: any) => ({
-      //     testId: test.testId,
-      //     testName: test.testName,
-      //     resultValue: test.resultValue,
-      //     validationStatus: test.validationStatus ? 'A' : 'V',
-      //     createdBy: test.createdBy || '',
-      //     validateBy: test.validateBy || '',
-      //     isActive: test.isActive || true
-      //   }))
-      // }));
-
-
       const currentService = services.find(s => s.serviceId === serviceMapping.serviceId);
+
       currentService?.tests?.forEach((test: any) => {
-        if (finalY > pageHeight - 20) {
+        if (finalY > pageHeight - 30) {
           doc.addPage();
           finalY = 20;
         }
@@ -438,41 +632,32 @@ user : any;
         doc.setFont("helvetica", "normal");
         doc.text(test.testName || "", 12, finalY);
         doc.text(test.resultValue?.toString() || "", 90, finalY);
-        // If you have unit and refInterval, add them here; otherwise, remove these lines
-        // doc.text(test.unit || "", 140, finalY);
-        // doc.text(test.refInterval || "", 170, finalY);
         finalY += 8;
-
-        
       });
-
-      doc.text("------------------- Validate By : " + test.validateBy + " -------------------", 73, finalY);
-      finalY += 10;
-      
     });
 
+    // End-of-report line
     doc.text("------------------- End Of Report -------------------", 73, finalY);
-    
+
+    //  Add validated-by footer to each page
+    const totalPages = doc.getNumberOfPages();
+    for (let i = 1; i <= totalPages; i++) {
+      doc.setPage(i);
+      doc.setFontSize(10).setFont("helvetica", "italic");
+      const footerText = `Approved By : ${firstValidator}`;
+      doc.text(footerText, doc.internal.pageSize.getWidth() / 2, doc.internal.pageSize.getHeight() - 10, { align: "center" });
+    }
+
     // Save PDF
     doc.save(`Test_Report_CaseID_${selectedSampleId}.pdf`);
 
 
 
-
-    
-    // SEND REPORT TO EMAIL
-
+    //  Email Report
     const toEmail = matchedSample?.email;
-    console.log("Email", matchedSample.email);
     const subject = `Test Report for Case ID ${selectedSampleId}`;
-    const body = "Dear Customer,<br/><br/>I have attached your test report please check it.<br/><br/>Best regards,<br/>LIMS Team";
+    const body = "Dear Customer,<br/><br/>I have attached your test report. Please check it.<br/><br/>Best regards,<br/>LIMS Team";
     const pdfBlob = doc.output('blob');
-
-    const formData = new FormData();
-    formData.append('toEmail', toEmail);
-    formData.append('subject', subject);
-    formData.append('body', body);
-    formData.append('attachments', pdfBlob, `Test_Report_CaseID_${selectedSampleId}.pdf`);
 
     this.testApprovalResultService.sendResportByEmail(toEmail, subject, body, pdfBlob, `Test_Report_CaseID_${selectedSampleId}.pdf`).subscribe({
       next: (res) => {
@@ -487,26 +672,21 @@ user : any;
 
 
 
+    //  Send SMS
+    const toPhoneNumber = matchedSample?.phoneNumber;
+    const messageBody = `Hello Dear Customer ${matchedSample.middleName} ${matchedSample.firstName}. Please collect your report.`;
 
-
-      // SEND SMS
-
-      const toPhoneNumber = matchedSample?.phoneNumber;
-      const messageBody = `Hello Dear Customer ${matchedSample.middleName} ${matchedSample.firstName}. Please Collect Your report.`;
-      const formDatas = new FormData();
-      formDatas.append("toPhoneNumber", toPhoneNumber);
-      formDatas.append("messageBody", messageBody);
-      this.testApprovalResultService.sendSMS(toPhoneNumber, messageBody).subscribe({
-        next: (res) =>
-        {
-          console.log(res),
-          this.showSuccess(res.message); 
-        },
-        error: (err) =>{
-          console.error(err); 
-          this.showError("Error sending SMS");
-        }
-      }); 
+    this.testApprovalResultService.sendSMS(toPhoneNumber, messageBody).subscribe({
+      next: (res) => {
+        console.log(res);
+        this.showSuccess(res.message);
+      },
+      error: (err) => {
+        console.error(err);
+        this.showError("Error sending SMS");
+      }
+    });
   }
+
 
 }

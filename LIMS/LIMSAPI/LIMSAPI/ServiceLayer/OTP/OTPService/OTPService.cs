@@ -21,9 +21,9 @@ namespace LIMSAPI.ServiceLayer.OTP.OTPService
             return _oTPRepository.SaveOtp(toEmail, otp, expiry);
         }
 
-        public string VerifyOTP(string toEmail, string enteredOtp)
+        public string VerifyOTP(string toEmail, string enteredOtp, DateTime now)
         {
-            return _oTPRepository.VerifyOTP(toEmail, enteredOtp);
+            return _oTPRepository.VerifyOTP(toEmail, enteredOtp, now);
         }
     }
 }

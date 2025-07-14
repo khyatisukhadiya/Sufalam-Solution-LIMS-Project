@@ -1,36 +1,31 @@
 <div [class.body-pd]="isNavOpen" id="body-pd">
   <!-- Header -->
   <header class="header" id="header" [class.body-pd]="isNavOpen">
+
     <div class="header_toggle" (click)="toggleNavbar()">
       <i class='bx' [class.bx-menu]="!isNavOpen" [class.bx-x]="isNavOpen" id="header-toggle"></i>
     </div>
-    <div class="btn-group" (click)="toggleProfile()">
-      <button class="btn btn-sm dropdown-toggle nav-link" type="button" data-toggle="dropdown" aria-haspopup="true"
-        aria-expanded="false" *ngIf="userProfile">
-        {{userProfile.userName}}
-      </button>
-      <div class="dropdown-menu" aria-labelledby="dropdownMenuOffset" style="top: 40px; left: -60px;">
-        <a class="dropdown-item" routerLink="/profile">My Profile</a>
-        <div class="dropdown-divider"></div>
-        <a class="dropdown-item" (click)="signOut()">SignOut</a>
-      </div>
-    </div>
-  </header>
-  <!-- <div class="card" *ngIf="isShowcard">
-        <div class="header_img" style="margin: auto; justify-content: center; margin-top: 30px;">
-          <img src="https://cdn-icons-png.flaticon.com/512/5951/5951752.png" alt="User Icon" width="100">
-        </div>
 
-        <div class="card-body" style="text-align: center;">
-          <div *ngFor="let details of detailsList">
-            <h5 class="card-title">{{ details.fullName }}</h5>
-            <h6 class="card-text">{{ details.userName }}</h6>
-            <p class="card-text">{{ details.email }}</p>
-            <div class="dropdown-divider"></div>
-          </div>
-          <a class="dropdown-item" href="#" >Sign Out</a>
-        </div>
-      </div> -->
+    <div class="btn-group">
+      <!-- Profile Button -->
+      <button class="btn btn-sm dropdown-toggle nav-link" type="button" (click)="toggleProfile()" *ngIf="userProfile">
+        {{ userProfile.userName }}
+      </button>
+
+      <!-- Dropdown Menu -->
+      <ul class="dropdown-menu" style="width: min-content;margin-left: -64px;" [class.show]="isProfileOpen"
+        aria-labelledby="dropdownMenuOffset">
+
+        <li><a class="dropdown-item" routerLink="/profile">My Profile</a></li>
+
+        <li class="dropdown-divider"></li>
+
+        <li><a class="dropdown-item" (click)="signOut()">SignOut</a></li>
+      </ul>
+    </div>
+    
+  </header>
+  
 </div>
 
 

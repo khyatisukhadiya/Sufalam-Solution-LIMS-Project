@@ -89,7 +89,7 @@ namespace LIMSAPI.RepositryLayer.Email.EmailRepositry
         {
             try
             {
-                string query = "SELECT COUNT(*) FROM userRegistration WHERE Email = @Email";
+                string query = "SELECT COUNT(*) FROM userRegistration WHERE Email = @Email COLLATE Latin1_General_CS_AS";
 
                 using (SqlConnection connection = new SqlConnection(_configuration["ConnectionStrings:DefaultConnection"]))
                 {

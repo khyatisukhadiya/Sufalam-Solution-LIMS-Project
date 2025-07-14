@@ -50,7 +50,7 @@ export class TestresultComponent implements OnInit {
     this.loadServices();
 
 
-      const userData = localStorage.getItem('loginDetails');
+    const userData = localStorage.getItem('loginDetails');
     if (userData) {
       this.user = JSON.parse(userData);
       this.testresultForm.get('createdBy')?.setValue(this.user.userName); 

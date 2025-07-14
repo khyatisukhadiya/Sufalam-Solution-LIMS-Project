@@ -181,6 +181,7 @@ button {
   font-size: 0.95rem;
 }
 
+
 /* ========================== */
 /* Master Button Arrow        */
 /* ========================== */
@@ -237,6 +238,8 @@ button {
     color: black;
   }
 
+
+
   .btn:hover {
     background-color: white;
     color: black;
@@ -248,4 +251,8 @@ button {
     margin: 20px;
     top: 50px;
   }
+}
+
+.dropdown-menu :hover{
+ background-color: #e6e4ea;
 }

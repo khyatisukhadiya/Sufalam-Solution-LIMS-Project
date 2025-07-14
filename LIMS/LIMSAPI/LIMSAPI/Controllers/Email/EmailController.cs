@@ -68,20 +68,18 @@ namespace LIMSAPI.Controllers.Email
         public IActionResult SendOtpToEmail([FromForm] string toEmail)
         {
 
-
             bool emailExists = _mailService.EmailExists(toEmail);
             if (!emailExists)
             {
-                return BadRequest(new { message = "Email does not exist. Please register first." });
+                return BadRequest(new { message = "Email does not exist. Please enter correct email." });
 
             }
 
 
             string otp = _oTPService.GenerateOtp();
-            DateTime expiry = DateTime.Now.AddMinutes(5);
+            DateTime expiry = DateTime.Now.AddMinutes(3);
 
             _oTPService.SaveOtp(toEmail, otp, expiry);
-
 
             
             //var httpContext = _httpContextAccessor.HttpContext;
@@ -102,7 +100,7 @@ namespace LIMSAPI.Controllers.Email
               string message = "OTP Sent Successfully;";
               return Success(message,result);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, "Failed to send OTP email.");
             }
@@ -112,22 +110,22 @@ namespace LIMSAPI.Controllers.Email
         [HttpPost]
         public IActionResult VerifyOtp([FromForm] string toEmail, [FromForm]string enteredOtp)
         {
-
-            string storedOtp = _oTPRepository.VerifyOTP(toEmail, enteredOtp);
-
-
-            if (string.IsNullOrEmpty(storedOtp))
+            try
             {
-                return BadRequest(new { Message = "OTP not found." });
+                string storedOtp = _oTPRepository.VerifyOTP(toEmail, enteredOtp, DateTime.Now);
+
+                if (enteredOtp == storedOtp)
+                {
+                    return Ok(new { message = "OTP verified successfully!" });
+                }
+                else
+                {
+                    return Error(message : "OTP is expired. Please create new otp.", HttpStatusCode.InternalServerError);
+                }
             }
-
-            if (enteredOtp == storedOtp)
+            catch(Exception)
             {
-                return Ok(new {message = "OTP verified successfully!" });
-            }
-            else
-            {
-                throw new Exception("Invalid Otp");
+                throw new Exception("OTP not found.");
             }
         }
 

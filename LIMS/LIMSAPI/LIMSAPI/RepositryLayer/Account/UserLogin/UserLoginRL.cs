@@ -29,7 +29,7 @@ namespace LIMSAPI.RepositryLayer.Account.UserLogin
                     _sqlConnection.Open();
                 }
 
-                string query = "SELECT COUNT(*) FROM userRegistration WHERE UserName = @UserName AND Password = @Password";
+                string query = "SELECT COUNT(*) FROM userRegistration WHERE UserName = @UserName AND Password = @Password COLLATE Latin1_General_CS_AS";
 
                 using (SqlCommand command = new SqlCommand(query, _sqlConnection))
                 {
@@ -68,7 +68,6 @@ namespace LIMSAPI.RepositryLayer.Account.UserLogin
 
         public string ChangeUserPassword(string toEmail, string newPassword)
         {
-            
             try
             {
                 if(_sqlConnection.State != System.Data.ConnectionState.Open)
@@ -76,7 +75,7 @@ namespace LIMSAPI.RepositryLayer.Account.UserLogin
                     _sqlConnection.Open();
                 }
 
-                string query = "UPDATE userRegistration SET Password = @Password WHERE Email = @Email";
+                string query = "UPDATE userRegistration SET Password = @Password WHERE Email = @Email COLLATE Latin1_General_CS_AS";
 
                 using (SqlCommand command = new SqlCommand(query, _sqlConnection))
                 {

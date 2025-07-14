@@ -12,17 +12,19 @@ import { UserloginService } from '../../service/AccountService/userLogin/userlog
   styleUrls: ['./sliderbar.component.css']
 })
 export class SliderbarComponent implements OnInit {
-userProfile: any;
+  userProfile: any;
 
-  
-constructor( private userService: UserloginService, private router : Router ) { }
 
-  ngOnInit(): void {   const loginDetails = JSON.parse(localStorage.getItem('loginDetails') || '{}');
-   
-  console.log('username',loginDetails.userName);
-  console.log('password',loginDetails.password);
+  constructor(private userService: UserloginService, private router: Router) { }
 
-    this.userService.GetuserLogindetails(loginDetails.userName,loginDetails.password).subscribe(
+  ngOnInit(): void {
+
+    const loginDetails = JSON.parse(localStorage.getItem('loginDetails') || '{}');
+
+    console.log('username', loginDetails.userName);
+    console.log('password', loginDetails.password);
+
+    this.userService.GetuserLogindetails(loginDetails.userName, loginDetails.password).subscribe(
       (data) => {
         this.userProfile = data;
       },
@@ -32,9 +34,9 @@ constructor( private userService: UserloginService, private router : Router ) { 
     );
   }
 
- loginFrom : FormGroup = new FormGroup({});
+  loginFrom: FormGroup = new FormGroup({});
 
- userloginService = inject(UserloginService);
+  userloginService = inject(UserloginService);
 
   isNavOpen = false;
   activeLink = 0;
@@ -42,6 +44,8 @@ constructor( private userService: UserloginService, private router : Router ) { 
   isTransactionOpen = false;
   isFinanceOpen = false;
   isShowcard = false;
+  
+  isProfileOpen = false;
 
   toggleNavbar(): void {
     this.isNavOpen = !this.isNavOpen;
@@ -66,14 +70,20 @@ constructor( private userService: UserloginService, private router : Router ) { 
   }
 
 
-  toggleProfile() : void{
-    this.isShowcard = !this.isShowcard;
+  // toggleProfile() : void{
+  //   this.isShowcard = !this.isShowcard;
+  // }
+
+  signOut(): void {
+    sessionStorage.removeItem('loggedInUser');
+    localStorage.removeItem('loginDetails');
+    this.router.navigate(['']);
   }
 
-   signOut(): void {
-     sessionStorage.removeItem('loggedInUser'); 
-     localStorage.removeItem('loginDetails'); 
-      this.router.navigate(['']);
+
+  toggleProfile() : void {
+    this.isProfileOpen = !this.isProfileOpen;
   }
+
 }
 

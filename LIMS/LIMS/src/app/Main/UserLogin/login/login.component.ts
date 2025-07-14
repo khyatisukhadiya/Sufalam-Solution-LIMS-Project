@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, inject, input, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { UserloginService } from '../../../service/AccountService/userLogin/userlogin.service';
-import { Router, RouterModule, RouterOutlet } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { userregistration } from '../../../modal/AccountModal/UserRegistrationModal/userregistraionmodal';
+import { timer } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -12,15 +13,17 @@ import { userregistration } from '../../../modal/AccountModal/UserRegistrationMo
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
-export class LoginComponent implements OnInit {
- @ViewChild('autofocus') autofocus !: ElementRef;
+export class LoginComponent implements OnInit, AfterViewInit {
+  @ViewChild('autofocus') autofocus!: ElementRef<HTMLInputElement>;
+  @ViewChild('forgetinput') forgetinput!: ElementRef<HTMLInputElement>;
+  @ViewChild('otpInput') otpInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('passwordInput') passwordInput!: ElementRef<HTMLInputElement>;
 
   loginFrom: FormGroup = new FormGroup({});
   forgotPasswordForm: FormGroup = new FormGroup({});
 
   errorMessage: string = '';
   detailsList: userregistration[] = [];
-  // Forgot password states
   showForgotPassword: boolean = false;
   showOtpForm: boolean = false;
   showChangePassword: boolean = false;
@@ -39,9 +42,17 @@ export class LoginComponent implements OnInit {
     this.setFrom2();
   }
 
-    ngAfterViewInit() {
-      this.autofocus.nativeElement.focus();
+  ngAfterViewInit() : void {
+   if(this.autofocus){
+     this.autofocus.nativeElement.focus();
+   } else if(this.forgetinput){
+    this.forgetinput.nativeElement.focus();
+   } else if(this.otpInput){
+    this.otpInput.nativeElement.focus();
+   } else if(this.passwordInput){
+    this.passwordInput.nativeElement.focus();
     }
+  }
 
   setFrom2() {
     this.forgotPasswordForm = this.fb.group({
@@ -104,7 +115,7 @@ export class LoginComponent implements OnInit {
 
           const userName = this.loginFrom.get('userName')?.value;
           const password = this.loginFrom.get('password')?.value;
-          localStorage.setItem('loginDetails',JSON.stringify({userName,password}));
+          localStorage.setItem('loginDetails', JSON.stringify({ userName, password }));
         }
         else if (res.errors) {
           this.validationErrors = res.errors;
@@ -184,9 +195,9 @@ export class LoginComponent implements OnInit {
       error: (err) => {
         if (err.status === 400 && err.error?.errors) {
           this.validationErrors = err.error.errors;
-        }else if (err.status === 400 && err.error?.message) {
+        } else if (err.status === 400 && err.error?.message) {
           this.showError(err.error.message);
-          } else if (err.status === 500 && err.error?.message) {
+        } else if (err.status === 500 && err.error?.message) {
           this.showError(err.error.message);
         } else {
           this.errorMessage = 'An unexpected error occurred';

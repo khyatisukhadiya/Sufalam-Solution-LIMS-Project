@@ -24,7 +24,6 @@ namespace LIMSAPI.Controllers.Transaction
 
 
         [HttpPost]
-
         public IActionResult AddUpdateSampleRegister([FromBody]SampleRegister sampleRegister)
         {
 

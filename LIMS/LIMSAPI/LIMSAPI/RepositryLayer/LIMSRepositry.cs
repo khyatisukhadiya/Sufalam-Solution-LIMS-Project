@@ -3668,7 +3668,7 @@ namespace LIMSAPI.RepositryLayer
             }
             catch (Exception ex)
             {
-                throw new Exception(" fetch data in error accure", ex);
+                throw new Exception("fetch data in error accure", ex);
             }
             finally
             {

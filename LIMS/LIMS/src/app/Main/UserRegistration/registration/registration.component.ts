@@ -4,6 +4,8 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { ToastrService } from 'ngx-toastr';
 import { userregistration } from '../../../modal/AccountModal/UserRegistrationModal/userregistraionmodal';
 import { CommonModule } from '@angular/common';
+import { routes } from '../../../app.routes';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-registration',
@@ -22,7 +24,7 @@ export class RegistrationComponent implements OnInit {
   submitted : boolean = false;
 
 
-  constructor(private fb: FormBuilder, private toastr: ToastrService) { }
+  constructor(private fb: FormBuilder, private toastr: ToastrService,private router : Router) { }
 
   ngOnInit(): void {
     this.setFrom();
@@ -82,6 +84,7 @@ export class RegistrationComponent implements OnInit {
         } else if (res.errors) {
           this.validationErrors = res.errors;
         }
+        this.router.navigate(['']);
       },
       error: (err) => {
         if (err.status === 400 && err.error?.errors) {

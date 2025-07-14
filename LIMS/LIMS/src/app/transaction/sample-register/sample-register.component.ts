@@ -534,7 +534,7 @@ export class SampleRegisterComponent implements OnInit {
       dob: formValues.dob,
       age: formValues.age,
       gender: formValues.gender,
-      email: formValues.email ?? null,
+      email: formValues.email ?? '',
       cityId: formValues.cityId,
       cityName: this.cities.find(c => c.cityId === formValues.cityId)?.cityName || '',
       areaId: formValues.areaId,

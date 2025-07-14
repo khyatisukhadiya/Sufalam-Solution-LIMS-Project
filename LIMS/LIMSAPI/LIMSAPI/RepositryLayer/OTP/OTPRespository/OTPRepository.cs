@@ -31,16 +31,14 @@ namespace LIMSAPI.RepositryLayer.OTP.OTPRespository
                     _sqlConnection.Open();
                 }
 
-                string query = "INSERT INTO OTPTables(Email, OTPValue) OUTPUT INSERTED.OTPId VALUES (@Email, @OTPValue)";
+                string query = "INSERT INTO OTPTables(Email, OTPValue, Expired) OUTPUT INSERTED.OTPId VALUES (@Email, @OTPValue, @Expired)";
 
                 using (SqlCommand command = new SqlCommand(query, _sqlConnection))
                 {
                     command.Parameters.AddWithValue("Email", toEmail);
                     command.Parameters.AddWithValue("OTPValue", otp);
+                    command.Parameters.AddWithValue("Expired", expiry);
                     command.ExecuteNonQuery();
-
-                    //int insertedId = (int)command.ExecuteScalar();
-
                 }
             }
             catch (Exception ex)
@@ -51,7 +49,7 @@ namespace LIMSAPI.RepositryLayer.OTP.OTPRespository
         }
 
 
-        public string VerifyOTP(string toEmail, string enteredOtp)
+        public string VerifyOTP(string toEmail, string enteredOtp, DateTime now)
         {
 
             if(_sqlConnection.State != System.Data.ConnectionState.Open)
@@ -59,7 +57,7 @@ namespace LIMSAPI.RepositryLayer.OTP.OTPRespository
                 _sqlConnection.Open();
             }
 
-                string query = "SELECT TOP 1 OTPValue FROM OTPTables WHERE Email = @Email ORDER BY CreatedDate DESC";
+                string query = "SELECT TOP 1 OTPValue, Expired FROM OTPTables WHERE Email = @Email ORDER BY CreatedDate DESC";
 
                 using (SqlCommand command = new SqlCommand(query, _sqlConnection))
                 {
@@ -71,11 +69,17 @@ namespace LIMSAPI.RepositryLayer.OTP.OTPRespository
                         if (reader.Read())
                         {
                             string storedOtp = reader["OTPValue"].ToString();
+                            DateTime expiryDate = (DateTime)reader["Expired"];
+ 
+                            //if (string.Equals(storedOtp, enteredOtp, StringComparison.OrdinalIgnoreCase))
+                            //{
+                            //    return storedOtp; // OTP is valid
+                            //}
 
-                            if (string.Equals(storedOtp, enteredOtp, StringComparison.OrdinalIgnoreCase))
-                            {
-                                return storedOtp; // OTP is valid
-                            }
+                             if(now < expiryDate && string.Equals(storedOtp, enteredOtp, StringComparison.OrdinalIgnoreCase))
+                             {
+                                  return storedOtp;
+                             }
                         }
                     } 
                 }
